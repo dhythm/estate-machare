@@ -33,16 +33,16 @@ function post(id: string, body: unknown) {
 
 describe('POST /api/listings/[id]/inquiries', () => {
   it('accepts an inquiry for an existing listing and records the sender', async () => {
-    const response = await post('trc-001', inquiry)
+    const response = await post('apt-001', inquiry)
     expect(response.status).toBe(201)
     expect(await response.json()).toHaveProperty('id')
-    const [stored] = await listSubmissions('listingInquiry', 'trc-001')
+    const [stored] = await listSubmissions('listingInquiry', 'apt-001')
     expect(stored.userId).toBe('demo-user')
   })
 
   it('requires login', async () => {
     signInAs(null)
-    expect((await post('trc-001', inquiry)).status).toBe(401)
+    expect((await post('apt-001', inquiry)).status).toBe(401)
   })
 
   it('rejects an inquiry for an unknown listing', async () => {
@@ -55,21 +55,23 @@ describe('POST /api/listings/[id]/inquiries', () => {
       new Request('http://localhost/api/listings', {
         method: 'POST',
         body: JSON.stringify({
-          name: '審査中マンション',
+          name: '審査中のマンション',
           category: 'マンション',
-          maker: '世田谷',
-          year: '2018',
-          hours: '500',
-          condition: '目立った傷なし',
+          zoning: '第一種住居地域',
+          layout: '3LDK',
+          floorArea: 74.2,
+          builtYear: 2019,
+          nearestStation: '小田急線 経堂駅',
+          walkMinutes: 6,
           prefecture: '新潟県',
           city: '長岡市',
           deals: ['sale'],
           salePrice: '1000000',
-          rentPerDay: '',
-          rentToOwn: false,
+          rentPerMonth: '',
+          purchaseOption: false,
           summary: '審査中。',
           sellerName: '審査農園',
-          sellerKind: '不動産会社',
+          sellerKind: '宅建業者',
           contactEmail: 'seller@example.com',
         }),
       }),
@@ -79,13 +81,13 @@ describe('POST /api/listings/[id]/inquiries', () => {
   })
 
   it('rejects a mode the listing does not offer', async () => {
-    const response = await post('trc-006', { ...inquiry, mode: 'rent' })
+    const response = await post('lnd-004', { ...inquiry, mode: 'rent' })
     expect(response.status).toBe(400)
     expect((await response.json()).errors).toHaveProperty('mode')
   })
 
   it('returns field errors', async () => {
-    const response = await post('trc-001', { ...inquiry, email: 'bad' })
+    const response = await post('apt-001', { ...inquiry, email: 'bad' })
     expect(response.status).toBe(400)
     expect((await response.json()).errors).toHaveProperty('email')
   })

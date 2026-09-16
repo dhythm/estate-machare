@@ -1,22 +1,25 @@
 import Link from 'next/link'
 import {
+  ArrowUpRight,
   Bell,
   CalendarDays,
+  Handshake,
+  History,
   Inbox,
   Send,
   Building2,
-  History,
 } from 'lucide-react'
 
 const navigationItems = [
   { label: '確認すること', href: '#activity', icon: Inbox },
   { label: '取引の履歴', href: '#deals', icon: History },
-  { label: '掲載管理', href: '#equipment', icon: Building2 },
-  { label: '賃貸管理', href: '#rentals', icon: CalendarDays },
+  { label: '出品管理', href: '#equipment', icon: Building2 },
+  { label: '賃貸管理', href: '#leases', icon: CalendarDays },
+  { label: 'リクエスト管理', href: '#requests', icon: Handshake },
   { label: '送信したやり取り', href: '#sent', icon: Send },
 ]
 
-export function AccountNavigation() {
+export function AccountNavigation({ isAgent }: { isAgent: boolean }) {
   return (
     <aside className="min-w-0 lg:sticky lg:top-36 xl:top-24 lg:self-start">
       <nav
@@ -46,6 +49,16 @@ export function AccountNavigation() {
           </Link>
         </div>
       </nav>
+      <Link
+        href={isAgent ? '#agent' : '/requests/register'}
+        className="mt-4 hidden rounded-2xl bg-primary p-5 text-primary-foreground transition-opacity hover:opacity-90 lg:block"
+      >
+        <Handshake className="size-6" aria-hidden="true" />
+        <span className="mt-5 flex items-center justify-between gap-2 text-sm font-semibold">
+          {isAgent ? '担当者プロフィール' : '担当者として参加する'}
+          <ArrowUpRight className="size-4" aria-hidden="true" />
+        </span>
+      </Link>
     </aside>
   )
 }

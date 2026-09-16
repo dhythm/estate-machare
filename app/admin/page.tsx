@@ -29,11 +29,21 @@ const workspaces = [
     title: '取引管理',
     icon: Handshake,
     links: [
-      { label: '掲載の審査', href: '/admin/deals' },
+      { label: '出品の審査', href: '/admin/deals' },
       { label: '注文', href: '/admin/deals/orders' },
-      { label: '賃貸', href: '/admin/deals/rentals' },
+      { label: '賃貸', href: '/admin/deals/leases' },
       { label: '問い合わせ', href: '/admin/deals/inquiries' },
       { label: 'レビュー', href: '/admin/deals/reviews' },
+    ],
+  },
+  {
+    title: 'リクエスト管理',
+    icon: Handshake,
+    links: [
+      { label: '物件リクエストの審査', href: '/admin/requests' },
+      { label: 'リクエストへの提案', href: '/admin/requests/proposals' },
+      { label: 'リクエストへの質問', href: '/admin/requests/inquiries' },
+      { label: '担当者', href: '/admin/requests/agents' },
     ],
   },
   {
@@ -49,7 +59,7 @@ export default async function AdminDashboardPage() {
     listRecentActivity(8),
     listRecentReviews(5),
   ])
-  const pendingCount = counts.pendingListings
+  const pendingCount = counts.pendingListings + counts.pendingPropertyRequests
   const metrics = [
     {
       label: '承諾待ちの注文',
@@ -59,15 +69,30 @@ export default async function AdminDashboardPage() {
     },
     {
       label: '申込中の賃貸',
-      value: counts.requestedRentals,
+      value: counts.requestedLeases,
       icon: CalendarDays,
-      links: [{ label: '申込一覧', href: '/admin/deals/rentals' }],
+      links: [{ label: '申込一覧', href: '/admin/deals/leases' }],
+    },
+    {
+      label: '紹介中のリクエスト',
+      value: counts.introducingRequests,
+      icon: Handshake,
+      links: [{ label: '物件リクエスト', href: '/admin/requests' }],
     },
     {
       label: '未対応のやり取り',
       value: counts.openThreads,
       icon: MessageSquare,
-      links: [{ label: '問い合わせ', href: '/admin/deals/inquiries' }],
+      links: [
+        { label: '問い合わせ', href: '/admin/deals/inquiries' },
+        { label: 'リクエストへの提案', href: '/admin/requests/proposals' },
+      ],
+    },
+    {
+      label: '登録済みの担当者',
+      value: counts.agents,
+      icon: Handshake,
+      links: [{ label: '担当者一覧', href: '/admin/requests/agents' }],
     },
   ]
 
@@ -91,7 +116,9 @@ export default async function AdminDashboardPage() {
               <ClipboardCheck className="size-4" aria-hidden="true" />
               REVIEW QUEUE
             </p>
-            <h2 className="text-lg font-medium">審査を待っている案件</h2>
+            <h2 className="text-lg font-medium">
+              審査を待っている出品・リクエスト
+            </h2>
             <p
               aria-label={`審査待ち ${pendingCount} 件`}
               className="mt-2 font-display text-6xl font-medium tracking-tight tabular-nums"
@@ -102,12 +129,17 @@ export default async function AdminDashboardPage() {
               </span>
             </p>
           </div>
-          <div className="grid gap-3 xl:w-[52%]">
+          <div className="grid gap-3 sm:grid-cols-2 xl:w-[52%]">
             {[
               {
-                label: '審査待ちの掲載',
+                label: '審査待ちの出品',
                 value: counts.pendingListings,
                 href: '/admin/deals',
+              },
+              {
+                label: '審査待ちのリクエスト',
+                value: counts.pendingPropertyRequests,
+                href: '/admin/requests',
               },
             ].map((item) => (
               <Link
@@ -139,7 +171,7 @@ export default async function AdminDashboardPage() {
         </div>
       </section>
 
-      <ul className="mt-5 grid gap-4 sm:grid-cols-2">
+      <ul className="mt-5 grid gap-4 sm:grid-cols-3">
         {metrics.map((metric) => (
           <li
             key={metric.label}
@@ -193,7 +225,11 @@ export default async function AdminDashboardPage() {
                   className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm"
                 >
                   <Badge variant="outline">
-                    {item.kind === 'order' ? '注文' : '賃貸'}
+                    {item.kind === 'order'
+                      ? '注文'
+                      : item.kind === 'lease'
+                        ? '賃貸'
+                        : '物件リクエスト'}
                   </Badge>
                   <Link
                     href={item.href}
@@ -269,7 +305,7 @@ export default async function AdminDashboardPage() {
           </h2>
           <span className="h-px flex-1 bg-border" />
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3">
           {workspaces.map((workspace) => (
             <div
               key={workspace.title}

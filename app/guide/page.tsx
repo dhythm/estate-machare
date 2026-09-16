@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Repeat2, ShoppingCart, Tag } from 'lucide-react'
+import { Handshake, Repeat2, ShoppingCart, Tag } from 'lucide-react'
 import { PageIntro, PageShell } from '@/components/page-shell'
 import { Badge } from '@/components/badge'
 
@@ -10,38 +10,45 @@ const roles = [
   {
     icon: Tag,
     title: '売る・貸す',
-    body: '住み替えで売却する、所有物件を貸し出す。所在地・間取り・面積・価格を登録し、購入希望者や入居希望者を募ります。',
+    body: '空いている期間だけ貸す、住み替えで手放す。出品フォームから間取り・面積・価格を登録すると、売買と賃貸をまとめて募集できます。',
     href: '/listings/new',
-    action: '掲載する',
+    action: '出品する',
   },
   {
     icon: Repeat2,
     title: '借りる',
-    body: 'エリア・家賃・間取りから住まいを検索。気になる物件は内見や入居条件を相談し、マイページでやり取りを確認できます。',
+    body: '必要な期間だけ借りる。物件の詳細で入居期間を選び、申込み後はマイページで承認状況を確認できます。',
     href: '/listings?deal=rent',
-    action: '賃貸できる物件を探す',
+    action: '借りられる物件を探す',
   },
   {
     icon: ShoppingCart,
     title: '買う',
-    body: '写真・価格・間取り・周辺環境を比較。気になる物件の掲載者に内見や購入条件を相談できます。',
+    body: '写真・間取り・築年を確認して、出品者に問い合わせ。マイページのメッセージで条件を相談し、取引を進めます。',
     href: '/listings?deal=sale',
-    action: '販売中の物件を探す',
+    action: '売り出し中の物件を探す',
+  },
+  {
+    icon: Handshake,
+    title: 'つなぐ',
+    body: '探している人の希望条件に、空いている物件を提案します。担当者登録のあと、リクエストに提案できます。',
+    href: '/requests',
+    action: '物件リクエストを見る',
   },
 ]
 
-const searchSteps = [
+const purchaseOptionSteps = [
   {
-    title: '条件に合う物件を探す',
-    body: 'エリア・価格・間取りを比較して、気になる住まいを見つけます。',
+    title: 'まず借りて試す',
+    body: '「買取オプション付き」の物件をまず賃貸。暮らしに合うかを実際に住んで確かめます。',
   },
   {
-    title: '内見・条件を相談する',
-    body: '掲載者へ問い合わせ。内見希望日や入居時期をメッセージで調整します。',
+    title: '気に入ったら購入へ',
+    body: '入居中はマイページから購入に切り替えられます。申込み時の充当条件で購入価格が決まります。',
   },
   {
-    title: '契約条件を確認する',
-    body: '価格や入居時期、契約条件を掲載者と確認し、合意内容をやり取りに残します。',
+    title: '賃料を一部充当',
+    body: '支払い済み賃料の一部（出品者が設定した割合・上限）を購入価格に充当。試した分が無駄になりません。',
   },
 ]
 
@@ -52,12 +59,12 @@ export default function GuidePage() {
         <p className="eyebrow mb-5">HOW ESTATE MACHARE WORKS</p>
         <PageIntro
           title="はじめての方へ"
-          description="買う、借りる、売る、貸す。物件探しから新しい暮らしまで、あなたに合う入口から。"
+          description="物件を売る、買う、借りる、つなぐ。あなたに合う入口から、次のつながりを。出品・申込み・問い合わせにはログインが必要です。"
         />
 
         <section className="mt-10">
           <h2 className="font-display text-xl font-bold text-foreground">
-            3つの使い方
+            4つの使い方
           </h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {roles.map(({ icon: Icon, title, body, href, action }) => (
@@ -85,16 +92,16 @@ export default function GuidePage() {
           </div>
         </section>
 
-        <section id="find-your-home" className="mt-12 scroll-mt-20">
+        <section id="purchase-option" className="mt-12 scroll-mt-20">
           <Badge variant="accent">
             <Repeat2 className="size-3.5" />
-            住まい探しの流れ
+            買取オプション
           </Badge>
           <h2 className="mt-3 font-display text-xl font-bold text-foreground">
-            見つける、その先まで。
+            「借りて、良ければ買う」の流れ
           </h2>
           <ol className="mt-4 grid gap-4 md:grid-cols-3">
-            {searchSteps.map((step, index) => (
+            {purchaseOptionSteps.map((step, index) => (
               <li
                 key={step.title}
                 className="rounded-2xl border border-border bg-card p-5"
@@ -112,10 +119,10 @@ export default function GuidePage() {
             ))}
           </ol>
           <Link
-            href="/listings"
+            href="/listings?deal=purchaseOption"
             className="mt-4 inline-block text-sm font-medium text-primary"
           >
-            あなたに合う物件を探す →
+            買取オプション付きの物件を探す →
           </Link>
         </section>
 
@@ -128,11 +135,21 @@ export default function GuidePage() {
               <strong className="text-foreground">
                 やり取りをひとつの場所に。
               </strong>
-              問い合わせ・返信をマイページで確認できます。現在はコンセプト検証版のため、実際の取引・決済は行われません。
+              問い合わせ・提案・返信をマイページで確認できます。現在はコンセプト検証版のため、実際の取引・決済は行われません。
             </li>
             <li>
-              <strong className="text-foreground">状態の記録。</strong>
-              所在地・築年・間取り・面積を掲載時に登録し、詳細ページで確認できます。
+              <strong className="text-foreground">物件情報の記録。</strong>
+              用途地域・間取り・専有面積・築年・最寄駅からの徒歩分を出品時に登録し、詳細ページで確認できます。
+            </li>
+            <li>
+              <strong className="text-foreground">
+                条件から探すこともできます。
+              </strong>
+              希望のエリアと予算を登録すると、条件に合う物件を持つ出品者から提案が届きます。入居時の費用は
+              <Link href="/costs" className="text-primary">
+                初期費用のめやす
+              </Link>
+              を参照してください。
             </li>
           </ul>
           <p className="mt-6 text-sm text-muted-foreground">

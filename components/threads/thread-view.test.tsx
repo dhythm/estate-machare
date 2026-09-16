@@ -12,7 +12,7 @@ const thread: Thread = {
   submission: {
     id: 't-1',
     kind: 'listingInquiry',
-    targetId: 'trc-001',
+    targetId: 'apt-001',
     userId: 'demo-user',
     receivedAt: '2026-09-13T01:00:00.000Z',
     payload: {
@@ -27,22 +27,24 @@ const thread: Thread = {
   target: {
     kind: 'listing',
     listing: {
-      id: 'trc-001',
+      id: 'apt-001',
       name: 'クボタ 45馬力',
-      category: 'トラクター',
-      maker: 'クボタ',
-      year: 2019,
-      hours: 620,
-      condition: '目立った傷なし',
+      category: 'マンション',
+      zoning: '第一種住居地域',
+      layout: '3LDK',
+      floorArea: 74.2,
+      builtYear: 2019,
+      nearestStation: '小田急線 経堂駅',
+      walkMinutes: 6,
       prefecture: '新潟県',
       city: '長岡市',
-      image: '/equipment/tractor.png',
+      image: '/properties/apartment.svg',
       summary: '',
       deals: ['rent'],
-      rentPerDay: 22_000,
+      rentPerMonth: 22_000,
       seller: {
-        name: '中村ファーム',
-        kind: '農業法人',
+        name: '中村不動産',
+        kind: '宅建業者',
         rating: 4.8,
         reviews: 34,
       },
@@ -68,36 +70,6 @@ afterEach(() => {
 })
 
 describe('ThreadView', () => {
-  it('shows monthly property rent without reinterpreting the legacy daily rate', () => {
-    if (thread.target?.kind !== 'listing')
-      throw new Error('Expected listing fixture')
-    render(
-      <ThreadView
-        currentUserId="demo-user"
-        thread={{
-          ...thread,
-          target: {
-            ...thread.target,
-            listing: {
-              ...thread.target.listing,
-              property: {
-                areaSqm: 62,
-                floorPlan: '2LDK',
-                builtYear: 2019,
-                monthlyRent: 125000,
-                access: '駅徒歩8分',
-              },
-            },
-          },
-        }}
-      />,
-    )
-    expect(screen.getByText('月額賃料')).toBeInTheDocument()
-    expect(screen.getByText('¥125,000')).toBeInTheDocument()
-    expect(screen.queryByText('短期利用 / 日')).not.toBeInTheDocument()
-    expect(screen.queryByText('¥22,000')).not.toBeInTheDocument()
-  })
-
   it('shows the opening message, replies, and posts a new reply', async () => {
     const fetchMock = vi.fn(async () =>
       Response.json({ id: 'm-2' }, { status: 201 }),
@@ -109,7 +81,7 @@ describe('ThreadView', () => {
     expect(screen.getByText('相手')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'クボタ 45馬力' })).toHaveAttribute(
       'href',
-      '/listings/trc-001',
+      '/listings/apt-001',
     )
     expect(screen.queryByRole('button', { name: '成約' })).toBeNull()
     const user = userEvent.setup()
@@ -146,7 +118,7 @@ describe('ThreadView', () => {
     expect(refresh).toHaveBeenCalled()
   })
 
-  it('does not offer moving services after an inquiry is agreed', () => {
+  it('offers a property request once an inquiry is agreed', () => {
     render(
       <ThreadView
         thread={{ ...thread, status: 'agreed' }}
@@ -154,8 +126,8 @@ describe('ThreadView', () => {
       />,
     )
     expect(
-      screen.queryByRole('link', { name: '引越しを依頼する' }),
-    ).not.toBeInTheDocument()
+      screen.getByRole('link', { name: '希望条件を登録する' }),
+    ).toHaveAttribute('href', '/requests/new?listingId=apt-001')
   })
 
   it('shows the review form to the sender of an agreed inquiry', () => {

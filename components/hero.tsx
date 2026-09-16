@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 const options = [
   { id: 'sale', label: '買う', caption: 'BUY' },
   { id: 'rent', label: '借りる', caption: 'RENT' },
+  { id: 'purchaseOption', label: '借りてから買う', caption: 'OWN' },
 ] as const
 
 export function Hero() {
@@ -56,7 +57,11 @@ export function Hero() {
       </div>
       <div className="relative z-20 mx-auto -mt-3 max-w-[1160px] bg-card px-5 pb-6 pt-5 shadow-[0_12px_40px_-20px_rgba(32,58,67,0.25)] sm:px-8 lg:-mt-20">
         <div className="flex items-center justify-between border-b border-border">
-          <div className="flex gap-8" role="group" aria-label="取引方法">
+          <div
+            className="flex gap-5 sm:gap-8"
+            role="group"
+            aria-label="取引方法"
+          >
             {options.map(({ id, label, caption }) => (
               <button
                 type="button"
@@ -64,14 +69,17 @@ export function Hero() {
                 onClick={() => setDeal(id)}
                 aria-pressed={deal === id}
                 className={cn(
-                  'relative flex items-baseline gap-3 pb-4 text-base font-bold after:absolute after:inset-x-0 after:bottom-[-1px] after:h-0.5',
+                  'relative flex items-baseline gap-3 whitespace-nowrap pb-4 text-sm sm:text-base font-bold after:absolute after:inset-x-0 after:bottom-[-1px] after:h-0.5',
                   deal === id
                     ? 'text-primary after:bg-primary'
                     : 'text-muted-foreground',
                 )}
               >
                 {label}
-                <span className="text-[10px] font-medium tracking-widest">
+                <span
+                  aria-hidden="true"
+                  className="hidden text-[10px] font-medium tracking-widest sm:inline"
+                >
                   {caption}
                 </span>
               </button>
@@ -79,7 +87,7 @@ export function Hero() {
           </div>
           <Link
             href="/listings/new"
-            className="mb-4 inline-flex items-center gap-1 text-xs text-muted-foreground"
+            className="mb-4 hidden md:inline-flex items-center gap-1 text-xs text-muted-foreground"
           >
             売りたい・貸したい
             <ArrowUpRight className="size-3" />
@@ -132,6 +140,22 @@ export function Hero() {
       </div>
       <div className="mx-auto mt-6 flex max-w-[1160px] flex-wrap items-center justify-between gap-4 px-1 text-xs text-muted-foreground">
         <p>暮らしに合う物件を、自分らしい選び方で。</p>
+        <div className="flex flex-wrap gap-x-6 gap-y-3">
+          <Link
+            href="/requests/new"
+            className="inline-flex items-center gap-2 font-medium text-primary hover:underline"
+          >
+            希望条件を登録する
+            <ArrowUpRight className="size-3.5" />
+          </Link>
+          <Link
+            href="/requests"
+            className="inline-flex items-center gap-2 font-medium text-primary hover:underline"
+          >
+            物件リクエストを探す
+            <ArrowUpRight className="size-3.5" />
+          </Link>
+        </div>
       </div>
     </section>
   )

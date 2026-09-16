@@ -1,4 +1,3 @@
-import { seedLegacyRentalListings } from '@/test/legacy-listings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   listOrdersForBuyer,
@@ -8,23 +7,20 @@ import {
 } from './orders'
 import { getListing } from './listings'
 import { listNotifications } from './notifications'
-import { requestRental, updateRentalStatus } from './rentals'
+import { requestLease, updateLeaseStatus } from './leases'
 import { createReview, reviewableSources } from './reviews'
 import { resetStore } from './store'
 import { demoAdmin, demoSeller, demoUser } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
 
-beforeEach(async () => {
-  await resetStore()
-  await seedLegacyRentalListings()
-})
+beforeEach(() => resetStore())
 
 const titles = async (userId: string) =>
   (await listNotifications(userId)).map((n) => n.title)
 
 async function request(
-  listingId = 'trc-001',
+  listingId = 'apt-001',
   user = demoUser,
   message?: string,
 ) {
@@ -33,24 +29,24 @@ async function request(
 
 describe('requestOrder', () => {
   it('snapshots the price, notifies the seller, and blocks a second open order', async () => {
-    const created = await request('trc-001', demoUser, '現金で')
+    const created = await request('apt-001', demoUser, '現金で')
     expect(created.ok && created.value).toMatchObject({
-      listingId: 'trc-001',
+      listingId: 'apt-001',
       buyerUserId: 'demo-user',
       sellerUserId: 'demo-seller',
-      price: 18_800_000,
+      price: 88_000_000,
       status: 'requested',
       message: '現金で',
     })
     expect(await titles('demo-seller')).toEqual(['購入の申込が届きました'])
-    const again = await request('trc-001', demoUser)
+    const again = await request('apt-001', demoUser)
     expect(!again.ok && again.reason).toBe('conflict')
   })
 
   it('refuses the owner, listings without a sale price, and unpublished listings', async () => {
-    const own = await request('trc-001', demoSeller)
+    const own = await request('apt-001', demoSeller)
     expect(!own.ok && own.reason).toBe('forbidden')
-    const rentOnly = await request('drn-005')
+    const rentOnly = await request('cml-005')
     expect(!rentOnly.ok && rentOnly.reason).toBe('unavailable')
   })
 })
@@ -72,7 +68,7 @@ describe('updateOrderStatus', () => {
     const completed = await updateOrderStatus(id, demoUser, 'completed')
     expect(completed.ok && completed.value.status).toBe('completed')
     expect(await titles('demo-seller')).toContain('購入が「完了」になりました')
-    expect((await getListing('trc-001'))?.withdrawnAt).toEqual(
+    expect((await getListing('apt-001'))?.withdrawnAt).toEqual(
       expect.any(String),
     )
   })
@@ -102,27 +98,23 @@ describe('updateOrderStatus', () => {
   })
 })
 
-describe('rental conversion', () => {
-  it('creates a delivered order from the rental terms', async () => {
-    const rental = await requestRental(
-      (await getListing('trc-001'))!,
-      demoUser,
-      {
-        startDate: '2026-10-01',
-        endDate: '2026-10-07',
-      },
-    )
-    const rentalId = rental.ok ? rental.value.id : ''
-    await updateRentalStatus(rentalId, demoSeller, 'active')
-    await updateRentalStatus(rentalId, demoUser, 'converted')
+describe('lease conversion', () => {
+  it('creates a delivered order from the lease terms', async () => {
+    const lease = await requestLease((await getListing('apt-001'))!, demoUser, {
+      startDate: '2026-10-01',
+      endDate: '2026-10-07',
+    })
+    const leaseId = lease.ok ? lease.value.id : ''
+    await updateLeaseStatus(leaseId, demoSeller, 'active')
+    await updateLeaseStatus(leaseId, demoUser, 'converted')
     const orders = await listOrdersForBuyer('demo-user')
     expect(orders).toHaveLength(1)
     expect(orders[0].order).toMatchObject({
       status: 'delivered',
-      price: 18_800_000 - 77_000,
-      sourceRentalId: rentalId,
+      price: 88_000_000 - 134_000,
+      sourceLeaseId: leaseId,
     })
-    expect(orders[0].listing?.id).toBe('trc-001')
+    expect(orders[0].listing?.id).toBe('apt-001')
     expect(
       (await listOrdersForSeller('demo-seller')).map((o) => o.order.id),
     ).toEqual([orders[0].order.id])

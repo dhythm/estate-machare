@@ -26,27 +26,27 @@ type Account = AuthenticatedUser & { password?: string }
 type Persona = { id: string; name: string }
 
 /**
- * Cast of the sample data: the sellers behind the seeded listings, plus
- * buyers and renters who trade with them. They sign in with one shared
+ * Cast of the sample data: the owners behind the seeded listings, plus
+ * seekers and agents who deal with them. They sign in with one shared
  * password (`DEMO_PERSONA_PASSWORD`, `dev-persona` outside production).
  */
 const personas: Persona[] = [
-  { id: 'nakamura-farm', name: '中村不動産' },
-  { id: 'sato-noki', name: '佐藤住まい' },
+  { id: 'nakamura-estate', name: '中村不動産' },
+  { id: 'sato-jutaku', name: '佐藤住宅' },
   { id: 'tamura', name: '田村さん' },
-  { id: 'kobayashi-engei', name: '小林住宅' },
-  { id: 'sky-agri', name: 'スカイホーム' },
-  { id: 'tokachi-agri', name: '十勝住まい' },
+  { id: 'kobayashi-kanri', name: '小林管理' },
+  { id: 'sky-realty', name: 'スカイリアルティ' },
+  { id: 'minato-chintai', name: 'みなと賃貸' },
   { id: 'takahashi', name: '高橋さん' },
-  { id: 'yamada-nosan', name: '山田不動産' },
-  { id: 'midori-kikai', name: 'みどり不動産' },
+  { id: 'yamada-jisho', name: '山田地所' },
+  { id: 'midori-kanri', name: 'みどり管理' },
   { id: 'watanabe', name: '渡辺さん' },
   { id: 'suzuki', name: '鈴木さん' },
-  { id: 'ito-farm', name: '伊藤住まい' },
+  { id: 'ito-estate', name: '伊藤不動産' },
   { id: 'kato', name: '加藤さん' },
-  { id: 'hokuriku-unso', name: '北陸住まい' },
-  { id: 'yamamoto-transport', name: '山本不動産' },
-  { id: 'okada', name: '岡田さん' },
+  { id: 'hokuriku-kanri', name: '北陸管理' },
+  { id: 'yamamoto-jisho', name: '山本地所' },
+  { id: 'okada', name: '岡田不動産' },
 ]
 
 type AccountSource = {
@@ -76,7 +76,7 @@ const accountSources: AccountSource[] = [
   },
   {
     id: 'demo-seller',
-    name: '掲載者デモ',
+    name: '出品者デモ',
     role: 'user',
     emailEnv: 'DEMO_SELLER_EMAIL',
     passwordEnv: 'DEMO_SELLER_PASSWORD',

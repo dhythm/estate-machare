@@ -3,13 +3,13 @@
 import { useState, type FormEvent } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, MessageSquare } from 'lucide-react'
+import { propertyImage } from '@/lib/property-image'
+import { ArrowUpRight, MessageSquare, Handshake } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/badge'
 import { FormAlert, TextareaField } from '@/components/forms/fields'
 import { SubmitButton } from '@/components/forms/submit-button'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   formatYen,
   threadStatusLabels,
@@ -21,12 +21,12 @@ import { validateMessage } from '@/lib/validation/thread'
 import { ReviewForm } from '@/components/reviews/review-form'
 import { StarRating } from '@/components/reviews/star-rating'
 import type { Review } from '@/lib/server/store/types'
+import { cn } from '@/lib/utils'
 
 const inquiryModeLabels: Record<string, string> = {
   buy: '購入したい',
   rent: '賃貸したい',
-  rentToOwn: '購入相談付き賃貸したい',
-  viewing: '内見したい',
+  purchaseOption: '買取オプションしたい',
   question: '質問',
 }
 
@@ -42,7 +42,7 @@ function TargetCard({ target }: { target: Thread['target'] }) {
   if (!target)
     return (
       <p className="text-sm text-muted-foreground">
-        対象の物件は削除されました。
+        対象の物件・リクエストは削除されました。
       </p>
     )
   if (target.kind === 'listing') {
@@ -51,7 +51,7 @@ function TargetCard({ target }: { target: Thread['target'] }) {
       <div className="text-sm">
         <div className="mb-5 flex justify-center rounded-xl bg-muted/60 p-4">
           <Image
-            src={listing.image}
+            src={propertyImage(listing.image)}
             alt=""
             width={240}
             height={150}
@@ -59,7 +59,7 @@ function TargetCard({ target }: { target: Thread['target'] }) {
           />
         </div>
         <p className="mb-2 text-xs text-muted-foreground">
-          {listing.maker} · {listing.category}
+          {listing.category} · {listing.zoning}
         </p>
         <Link
           href={`/listings/${listing.id}`}
@@ -75,24 +75,17 @@ function TargetCard({ target }: { target: Thread['target'] }) {
           {listing.prefecture} {listing.city}
         </p>
         <dl className="mt-5 space-y-3 border-t border-border pt-4">
-          {listing.property?.monthlyRent ? (
+          {listing.rentPerMonth && (
             <div className="flex items-center justify-between gap-3">
-              <dt className="text-xs text-muted-foreground">月額賃料</dt>
+              <dt className="text-xs text-muted-foreground">賃貸 / 日</dt>
               <dd className="font-semibold tabular-nums">
-                {formatYen(listing.property.monthlyRent)}
+                {formatYen(listing.rentPerMonth)}
               </dd>
             </div>
-          ) : listing.rentPerDay ? (
-            <div className="flex items-center justify-between gap-3">
-              <dt className="text-xs text-muted-foreground">短期利用 / 日</dt>
-              <dd className="font-semibold tabular-nums">
-                {formatYen(listing.rentPerDay)}
-              </dd>
-            </div>
-          ) : null}
+          )}
           {listing.salePrice && (
             <div className="flex items-center justify-between gap-3">
-              <dt className="text-xs text-muted-foreground">売買価格</dt>
+              <dt className="text-xs text-muted-foreground">販売価格</dt>
               <dd className="font-semibold tabular-nums">
                 {formatYen(listing.salePrice)}
               </dd>
@@ -102,10 +95,47 @@ function TargetCard({ target }: { target: Thread['target'] }) {
       </div>
     )
   }
+  const { request } = target
+  return (
+    <div className="text-sm">
+      <span className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/5 text-primary">
+        <Handshake className="size-6" aria-hidden="true" />
+      </span>
+      <div className="flex flex-wrap items-center gap-2">
+        <Link
+          href={`/requests/${request.id}`}
+          className="font-semibold text-foreground hover:text-primary"
+        >
+          {request.title}
+        </Link>
+        <Badge variant="muted">{request.status}</Badge>
+      </div>
+      <div className="mt-5 space-y-3 border-y border-border py-4">
+        <p className="flex gap-3">
+          <span className="text-xs text-muted-foreground">希望エリア</span>
+          {request.prefecture} {request.city}
+        </p>
+        <p className="flex gap-3">
+          <span className="text-xs text-muted-foreground">条件</span>
+          {request.category}
+          {request.layout ? ` / ${request.layout}` : ''}
+        </p>
+      </div>
+      <p className="mt-4 flex justify-between gap-3">
+        <span className="text-xs text-muted-foreground">
+          {request.deal === 'rent' ? '月額賃料の上限' : '予算の上限'}
+        </span>
+        <span className="font-semibold tabular-nums">
+          {formatYen(request.budget)}
+        </span>
+      </p>
+    </div>
+  )
 }
 
 function OpeningMessage({ thread }: { thread: Thread }) {
   const { payload } = thread.submission
+  const isInquiry = thread.submission.kind === 'listingInquiry'
   return (
     <div className="rounded-2xl border border-border bg-card p-4 text-sm sm:p-5">
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -113,12 +143,18 @@ function OpeningMessage({ thread }: { thread: Thread }) {
           {text(payload.name)}
         </span>
         <span>{when(thread.submission.receivedAt)}</span>
-        {text(payload.mode) && (
+        {isInquiry && text(payload.mode) && (
           <Badge variant="outline">
             {inquiryModeLabels[text(payload.mode)] ?? text(payload.mode)}
           </Badge>
         )}
-        {text(payload.preferredDate) && (
+        {!isInquiry && (
+          <span>
+            {text(payload.vehicle)}
+            {text(payload.availableDate) && `・${text(payload.availableDate)}`}
+          </span>
+        )}
+        {isInquiry && text(payload.preferredDate) && (
           <span>希望日 {text(payload.preferredDate)}</span>
         )}
       </div>
@@ -227,7 +263,7 @@ export function ThreadView({
           <p className="min-w-0 font-medium leading-relaxed">
             {thread.target?.kind === 'listing'
               ? thread.target.listing.name
-              : ''}
+              : thread.target?.request.title}
           </p>
           <Link
             href="#transaction-title"
@@ -333,6 +369,17 @@ export function ThreadView({
               </div>
             </div>
           )}
+          {thread.status === 'agreed' &&
+            thread.target?.kind === 'listing' &&
+            thread.role !== 'admin' && (
+              <Link
+                href={`/requests/new?listingId=${thread.target.listing.id}`}
+                className={cn(buttonVariants(), 'mt-5 h-10 w-full')}
+              >
+                <Handshake className="size-4" aria-hidden="true" />
+                希望条件を登録する
+              </Link>
+            )}
         </section>
         {review && (
           <section

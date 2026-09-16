@@ -28,22 +28,28 @@ describe('submissions', () => {
     await acceptSubmission(
       'listingInquiry',
       { message: 'x' },
-      { targetId: 'trc-001' },
+      { targetId: 'apt-001' },
     )
     await acceptSubmission(
       'listingInquiry',
       { message: 'y' },
-      { targetId: 'trc-006' },
+      { targetId: 'apt-006' },
     )
-    expect(await listSubmissions('listingInquiry', 'trc-001')).toHaveLength(1)
+    await acceptSubmission(
+      'requestProposal',
+      { message: 'z' },
+      { targetId: 'pr-01' },
+    )
+    expect(await listSubmissions('listingInquiry', 'apt-001')).toHaveLength(1)
     expect(await listSubmissions('listingInquiry')).toHaveLength(2)
+    expect(await listSubmissions('requestProposal', 'pr-01')).toHaveLength(1)
   })
 
   it('records the sender and lists submissions by user', async () => {
     await acceptSubmission(
       'listingInquiry',
       { message: 'mine' },
-      { targetId: 'trc-001', userId: 'demo-user' },
+      { targetId: 'apt-001', userId: 'demo-user' },
     )
     await acceptSubmission('contact', { message: 'anonymous' })
     const mine = await listSubmissionsByUser('demo-user')
@@ -58,14 +64,14 @@ describe('submissions', () => {
     await acceptSubmission(
       'listingInquiry',
       { message: 'x' },
-      { targetId: 'trc-001' },
+      { targetId: 'apt-001' },
     )
     await acceptSubmission(
       'listingInquiry',
       { message: 'y' },
-      { targetId: 'trc-006' },
+      { targetId: 'apt-006' },
     )
-    await deleteListing('trc-001')
+    await deleteListing('apt-001')
     expect(await listSubmissions('listingInquiry')).toHaveLength(1)
   })
 })

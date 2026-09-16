@@ -56,6 +56,21 @@ export function HowItWorks() {
           ))}
         </ol>
       </div>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4 text-sm">
+        <Link
+          href="/listings?deal=purchaseOption"
+          className="inline-flex items-center gap-3 font-medium text-primary hover:underline"
+        >
+          買取オプション付きの物件
+          <ArrowUpRight className="size-4" />
+        </Link>
+        <Link
+          href="/guide#purchase-option"
+          className="text-xs text-muted-foreground underline underline-offset-4"
+        >
+          しくみと充当条件を見る
+        </Link>
+      </div>
     </section>
   )
 }

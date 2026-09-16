@@ -5,7 +5,8 @@ import type { DealView } from '@/lib/server/deals'
 
 const kindLabels = {
   order: '注文',
-  rental: 'レンタル',
+  lease: '賃貸',
+  propertyRequest: '物件リクエスト',
 } as const
 
 function when(iso: string): string {

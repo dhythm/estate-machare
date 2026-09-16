@@ -2,13 +2,14 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { propertyImage } from '@/lib/property-image'
 import Link from 'next/link'
 import {
   MapPin,
   Star,
   Ruler,
   Calendar,
-  LayoutGrid,
+  TrainFront,
   ShieldCheck,
   Repeat2,
   ShoppingCart,
@@ -23,27 +24,35 @@ import { buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/badge'
 import { BackLink } from '@/components/back-link'
 import { ListingCard } from '@/components/listing-card'
-import { RentToOwnSimulator } from '@/components/rent-to-own/rent-to-own-simulator'
-import { RentalRequestForm } from '@/components/rent-to-own/rental-request-form'
+import { PurchaseOptionSimulator } from '@/components/purchase-option/purchase-option-simulator'
+import { LeaseRequestForm } from '@/components/leases/lease-request-form'
 import { OrderRequestForm } from '@/components/orders/order-request-form'
+import { InitialCostEstimate } from '@/components/leases/initial-cost-estimate'
 import { StarRating } from '@/components/reviews/star-rating'
 import type { Review } from '@/lib/server/store/types'
-import type { DateRange, RentToOwnTerms } from '@/lib/rent-to-own'
+import type { DateRange } from '@/lib/lease'
+import type { PurchaseOptionTerms } from '@/lib/purchase-option'
 import {
+  formatArea,
+  formatBuildingAge,
   formatYen,
   type Listing,
   type ListingMode,
   type ListingModeConfig,
 } from '@/lib/data'
 
-const modeIcon = { buy: ShoppingCart, rent: Calendar, rentToOwn: Repeat2 }
-const modeLabel = { buy: '購入', rent: '借りる', rentToOwn: '試して購入' }
+const modeIcon = { buy: ShoppingCart, rent: Calendar, purchaseOption: Repeat2 }
+const modeLabel = {
+  buy: '購入',
+  rent: '賃貸',
+  purchaseOption: '住んでから買う',
+}
 
 export function ListingDetail({
   listing,
   modes,
   related,
-  rentToOwnTerms,
+  purchaseOptionTerms,
   booked,
   viewer,
   sellerReviews = [],
@@ -52,7 +61,7 @@ export function ListingDetail({
   listing: Listing
   modes: ListingModeConfig[]
   related: Listing[]
-  rentToOwnTerms?: RentToOwnTerms
+  purchaseOptionTerms?: PurchaseOptionTerms
   booked: DateRange[]
   viewer: { signedIn: boolean; isOwner: boolean; canEdit?: boolean }
   sellerReviews?: Review[]
@@ -92,7 +101,7 @@ export function ListingDetail({
             {listing.category}
           </Link>
           <span aria-hidden="true">/</span>
-          <span>{listing.property?.floorPlan ?? listing.maker}</span>
+          <span>{listing.zoning}</span>
         </div>
         <h1 className="mt-3 text-balance font-display text-2xl font-bold leading-snug tracking-tight text-foreground sm:text-3xl lg:text-4xl">
           {listing.name}
@@ -105,9 +114,9 @@ export function ListingDetail({
 
       <div className="mt-7 grid items-start gap-7 lg:grid-cols-[minmax(0,1.5fr)_minmax(350px,1fr)] lg:gap-x-9">
         <section aria-label="物件の写真と仕様" className="min-w-0">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted">
+          <div className="relative aspect-[1.4] overflow-hidden rounded-lg bg-muted">
             <Image
-              src={mainPicture || '/placeholder.svg'}
+              src={propertyImage(mainPicture)}
               alt={listing.name}
               fill
               loading="eager"
@@ -118,7 +127,7 @@ export function ListingDetail({
             <div className="absolute left-4 top-4 flex flex-wrap gap-1.5">
               {listing.deals.includes('sale') && (
                 <Badge className="bg-card/95 text-foreground shadow-sm">
-                  販売
+                  売買
                 </Badge>
               )}
               {listing.deals.includes('rent') && (
@@ -126,9 +135,9 @@ export function ListingDetail({
                   賃貸
                 </Badge>
               )}
-              {listing.rentToOwn && (
+              {listing.purchaseOption && (
                 <Badge className="bg-primary text-primary-foreground shadow-sm">
-                  購入充当
+                  買取オプション
                 </Badge>
               )}
             </div>
@@ -153,7 +162,7 @@ export function ListingDetail({
                     )}
                   >
                     <Image
-                      src={picture}
+                      src={propertyImage(picture)}
                       alt=""
                       fill
                       sizes="80px"
@@ -164,55 +173,45 @@ export function ListingDetail({
               ))}
             </ul>
           )}
-          <dl className="mt-5 grid grid-cols-2 overflow-hidden rounded-2xl border border-border bg-card sm:grid-cols-4">
-            <Spec
-              icon={<Calendar className="size-4" />}
-              label={listing.category === '土地' ? '交通' : '築年'}
-              value={
-                listing.property
-                  ? listing.category === '土地'
-                    ? listing.property.access
-                    : `${listing.property.builtYear}年`
-                  : '要確認'
-              }
-            />
+          <dl className="mt-5 grid grid-cols-2 overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-4">
             <Spec
               icon={<Ruler className="size-4" />}
-              label="専有・土地面積"
+              label="間取り・専有面積"
+              value={`${listing.layout ? `${listing.layout} / ` : ''}${formatArea(listing.floorArea)}`}
+            />
+            <Spec
+              icon={<Calendar className="size-4" />}
+              label="築年"
               value={
-                listing.property ? `${listing.property.areaSqm}㎡` : '要確認'
+                listing.builtYear === undefined
+                  ? '—'
+                  : `${listing.builtYear}年（${formatBuildingAge(listing.builtYear, new Date())}）`
               }
             />
             <Spec
-              icon={<LayoutGrid className="size-4" />}
-              label="間取り"
-              value={listing.property?.floorPlan ?? '要確認'}
+              icon={<TrainFront className="size-4" />}
+              label="最寄駅"
+              value={`${listing.nearestStation} 徒歩${listing.walkMinutes}分`}
             />
             <Spec
               icon={<MapPin className="size-4" />}
-              label="所在地"
-              value={`${listing.prefecture} ${listing.city}`}
+              label="用途地域"
+              value={listing.zoning}
             />
           </dl>
-          {listing.property && listing.category !== '土地' && (
-            <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="size-4" />
-              {listing.property.access}
-            </p>
-          )}
         </section>
 
         <aside
           className="min-w-0 lg:sticky lg:top-36 xl:top-24 lg:row-span-2"
           aria-label="利用方法と申し込み"
         >
-          <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
             <div className="border-b border-border px-5 py-5 sm:px-6">
               <h2 className="text-sm font-semibold text-foreground">
                 利用方法を選ぶ
               </h2>
               <div
-                className="mt-4 flex gap-1 rounded-xl bg-muted p-1"
+                className="mt-4 flex gap-1 rounded-lg bg-muted p-1"
                 role="group"
                 aria-label="利用方法"
               >
@@ -244,39 +243,31 @@ export function ListingDetail({
                 {active.title}
               </p>
               <p className="mt-2 break-words font-display text-3xl font-bold leading-tight tracking-tight text-primary sm:text-4xl">
-                {active.id === 'rentToOwn' && listing.rentPerDay
-                  ? `${formatYen(listing.rentPerDay)}/日`
+                {active.id === 'purchaseOption' && listing.rentPerMonth
+                  ? `${formatYen(listing.rentPerMonth)}/月`
                   : active.price}
               </p>
               <p className="mt-3 text-xs leading-6 text-muted-foreground">
                 {active.desc}
               </p>
               {active.note && (
-                <div className="mt-4 flex gap-2 rounded-xl bg-secondary p-3 text-xs leading-6 text-secondary-foreground">
+                <div className="mt-4 flex gap-2 rounded-lg bg-secondary p-3 text-xs leading-6 text-secondary-foreground">
                   <CircleCheckBig className="mt-1 size-4 shrink-0 text-primary" />
                   <span>{active.note}</span>
                 </div>
               )}
-              {active.id === 'rentToOwn' && rentToOwnTerms && (
+              {active.id === 'purchaseOption' && purchaseOptionTerms && (
                 <div className="mt-4">
-                  <RentToOwnSimulator terms={rentToOwnTerms} />
+                  <PurchaseOptionSimulator terms={purchaseOptionTerms} />
                 </div>
               )}
               <div className="mt-6 flex flex-col gap-2">
-                {listing.property ? (
-                  <Link
-                    href={`/listings/${listing.id}/inquiry?mode=${active.id}`}
-                    className={cn(buttonVariants(), 'h-12 gap-2')}
-                  >
-                    {active.cta}
-                    <ArrowRight className="size-4" />
-                  </Link>
-                ) : active.id !== 'buy' &&
-                  listing.rentPerDay &&
-                  !viewer.isOwner ? (
-                  <RentalRequestForm
+                {active.id !== 'buy' &&
+                listing.rentPerMonth &&
+                !viewer.isOwner ? (
+                  <LeaseRequestForm
                     listingId={listing.id}
-                    rentPerDay={listing.rentPerDay}
+                    rentPerMonth={listing.rentPerMonth}
                     booked={booked}
                     signedIn={viewer.signedIn}
                   />
@@ -303,14 +294,40 @@ export function ListingDetail({
                   className={cn(buttonVariants({ variant: 'outline' }), 'h-11')}
                 >
                   <MessageSquare className="size-4" />
-                  掲載者に質問する
+                  出品者に質問する
                 </Link>
               </div>
+            </div>
+            <div className="border-t border-border bg-muted/35 p-5 sm:px-6">
+              {listing.rentPerMonth === undefined ? (
+                <Link
+                  href={`/requests/new?listingId=${encodeURIComponent(listing.id)}`}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                >
+                  希望条件を登録して提案を受ける
+                  <ArrowRight className="size-3.5" />
+                </Link>
+              ) : (
+                <>
+                  <InitialCostEstimate
+                    rentPerMonth={listing.rentPerMonth}
+                    depositMonths={listing.depositMonths}
+                    keyMoneyMonths={listing.keyMoneyMonths}
+                  />
+                  <Link
+                    href={`/requests/new?listingId=${encodeURIComponent(listing.id)}`}
+                    className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                  >
+                    希望条件を登録して提案を受ける
+                    <ArrowRight className="size-3.5" />
+                  </Link>
+                </>
+              )}
             </div>
           </div>
           <p className="mt-4 flex items-start gap-2 px-2 text-xs leading-6 text-muted-foreground">
             <ShieldCheck className="mt-1 size-4 shrink-0 text-primary" />
-            申込みと掲載者とのやり取りは、マイページで確認できます。
+            申込みと出品者とのやり取りは、マイページで確認できます。
           </p>
         </aside>
 
@@ -330,11 +347,11 @@ export function ListingDetail({
               ))}
             </div>
           </section>
-          <section className="mt-8" aria-label="掲載者情報">
+          <section className="mt-8" aria-label="出品者情報">
             <h2 className="font-display text-xl font-bold text-foreground">
-              掲載者
+              出品者
             </h2>
-            <div className="mt-4 flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-card p-5">
+            <div className="mt-4 flex flex-wrap items-center gap-4 rounded-lg border border-border bg-card p-5">
               <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-secondary font-display text-lg font-bold text-primary">
                 {listing.seller.name.charAt(0)}
               </span>
@@ -350,7 +367,7 @@ export function ListingDetail({
                     href={`/sellers/${listing.ownerUserId}`}
                     className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
                   >
-                    掲載者ページ
+                    出品者ページ
                     <ArrowUpRight className="size-3.5" aria-hidden="true" />
                   </Link>
                 )}
@@ -373,7 +390,7 @@ export function ListingDetail({
           {sellerReviews.length > 0 && (
             <section className="mt-8">
               <h2 className="font-display text-lg font-bold text-foreground">
-                掲載者へのレビュー
+                出品者へのレビュー
               </h2>
               <ul className="mt-4 divide-y divide-border">
                 {sellerReviews.map((review) => (

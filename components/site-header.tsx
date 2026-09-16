@@ -8,6 +8,7 @@ import { BrandLogo } from '@/components/brand-logo'
 
 const links = [
   { href: '/listings', label: '物件を探す' },
+  { href: '/requests', label: 'リクエストマッチング' },
   { href: '/guide', label: 'はじめての方へ' },
 ]
 
@@ -42,7 +43,7 @@ export function SiteHeader() {
           <AccountMenu />
           <Link
             href="/listings/new"
-            className="hidden h-11 items-center gap-2 rounded-sm bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/85 sm:inline-flex"
+            className="hidden h-11 items-center gap-2 rounded-md bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/85 sm:inline-flex"
           >
             <Plus className="size-4" />
             物件を掲載

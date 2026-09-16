@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { resetStore } from './store'
 import { acceptSubmission } from './submissions'
+import { getPropertyRequest } from './property-requests'
 import { deleteListing } from './listings'
 import {
   addMessage,
@@ -21,7 +22,16 @@ async function openInquiry() {
   const receipt = await acceptSubmission(
     'listingInquiry',
     { mode: 'rent', name: '利用者デモ', message: '借りたい' },
-    { targetId: 'trc-001', userId: 'demo-user' },
+    { targetId: 'apt-001', userId: 'demo-user' },
+  )
+  return receipt.id
+}
+
+async function openApplication() {
+  const receipt = await acceptSubmission(
+    'requestProposal',
+    { name: '利用者デモ', vehicle: 'マンション', availableDate: '2026-10-03' },
+    { targetId: 'pr-01', userId: 'demo-user' },
   )
   return receipt.id
 }
@@ -76,8 +86,26 @@ describe('addMessage', () => {
   it('removes messages with their thread', async () => {
     const id = await openInquiry()
     await addMessage(id, demoSeller, '在庫あります')
-    await deleteListing('trc-001')
+    await deleteListing('apt-001')
     expect(await listMessages(id)).toEqual([])
+  })
+})
+
+describe('request inquiries', () => {
+  it('opens a thread between the asker and the request owner and notifies the owner', async () => {
+    const { id } = await acceptSubmission(
+      'requestInquiry',
+      { name: '利用者デモ', message: '積載方法は？' },
+      { targetId: 'pr-01', userId: 'demo-user' },
+    )
+    const asOwner = await getThread(id, demoSeller)
+    expect(asOwner.ok && asOwner.value.role).toBe('owner')
+    expect(asOwner.ok && asOwner.value.target?.kind).toBe('propertyRequest')
+    const asSender = await getThread(id, demoUser)
+    expect(asSender.ok && asSender.value.role).toBe('sender')
+    expect(
+      (await listNotifications('demo-seller')).map((n) => n.title),
+    ).toEqual(['リクエストへの質問が届きました'])
   })
 })
 
@@ -96,5 +124,13 @@ describe('updateThreadStatus', () => {
     expect((await listNotifications('demo-user')).map((n) => n.title)).toEqual([
       '問い合わせが「見送り」になりました',
     ])
+  })
+
+  it('accepting an application moves the request to 調整中', async () => {
+    const id = await openApplication()
+    expect((await getPropertyRequest('pr-01'))?.status).toBe('募集中')
+    const result = await updateThreadStatus(id, demoSeller, 'agreed')
+    expect(result.ok && result.value.status).toBe('agreed')
+    expect((await getPropertyRequest('pr-01'))?.status).toBe('調整中')
   })
 })

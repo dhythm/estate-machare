@@ -23,19 +23,12 @@ const stores: { name: string; store: Store }[] = [
 describe.each(stores)('$name store with demo activity', ({ store }) => {
   it('loads the activity rows and keeps the sample listings first', async () => {
     const listings = await store.listings.list()
-    expect(listings.some((listing) => listing.id === 'trc-101')).toBe(true)
-    expect(listings.some((listing) => listing.id === 'trc-001')).toBe(true)
+    expect(listings.some((listing) => listing.id === 'apt-101')).toBe(true)
+    expect(listings.some((listing) => listing.id === 'apt-001')).toBe(true)
     expect((await store.orders.list()).length).toBeGreaterThan(0)
-    expect((await store.rentals.list()).length).toBeGreaterThan(0)
+    expect((await store.leases.list()).length).toBeGreaterThan(0)
     expect((await store.reviews.list()).length).toBeGreaterThan(0)
     expect((await store.notifications.list()).length).toBeGreaterThan(0)
-    expect(await store.transportJobs.list()).toEqual([])
-    expect(await store.carrierProfiles.list()).toEqual([])
-    expect(
-      (await store.submissions.list()).every(
-        (item) => item.kind === 'listingInquiry',
-      ),
-    ).toBe(true)
     const events = await store.dealEvents.list()
     expect(events[0]?.createdAt.localeCompare(events.at(-1)!.createdAt)).toBe(1)
     await store.reset()

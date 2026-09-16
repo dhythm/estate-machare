@@ -2,19 +2,24 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { propertyImage } from '@/lib/property-image'
 import {
   Check,
   ClipboardCheck,
+  Handshake,
   Search,
   SearchX,
-  Building2,
   X,
 } from 'lucide-react'
 import { Badge } from '@/components/badge'
 import { FormAlert } from '@/components/forms/fields'
 import { Button } from '@/components/ui/button'
 import { ListingStatusButton } from '@/components/listings/listing-status-button'
-import { type ModerationQueue, type ModerationQueueFilter } from '@/lib/data'
+import {
+  formatYen,
+  type ModerationQueue,
+  type ModerationQueueFilter,
+} from '@/lib/data'
 
 const filters: { id: ModerationQueueFilter; label: string }[] = [
   { id: 'all', label: 'すべて' },
@@ -38,7 +43,7 @@ export function AdminQueue({
   kind,
   initialQueue,
 }: {
-  kind: 'listing'
+  kind: 'listing' | 'propertyRequest'
   initialQueue: ModerationQueue
 }) {
   const [status, setStatus] = useState<ModerationQueueFilter>('all')
@@ -47,7 +52,7 @@ export function AdminQueue({
   const [pendingId, setPendingId] = useState<string>()
   const [loading, setLoading] = useState(false)
   const [query, setQuery] = useState('')
-  const title = '掲載'
+  const title = kind === 'listing' ? '出品' : '物件リクエスト'
   const normalizedQuery = query.trim().toLocaleLowerCase('ja-JP')
 
   const load = async (nextStatus: ModerationQueueFilter) => {
@@ -66,7 +71,7 @@ export function AdminQueue({
   }
 
   const decide = async (
-    kind: 'listing',
+    kind: 'listing' | 'propertyRequest',
     id: string,
     decision: 'approved' | 'rejected',
     note: string,
@@ -135,7 +140,7 @@ export function AdminQueue({
 
       {kind === 'listing' && (
         <QueueSection
-          title="掲載"
+          title="出品"
           empty="該当なし"
           pendingId={pendingId}
           items={pendingFirst(queue.listings)
@@ -155,6 +160,30 @@ export function AdminQueue({
             }))}
           onDecide={(id, decision, note) =>
             decide('listing', id, decision, note)
+          }
+        />
+      )}
+
+      {kind === 'propertyRequest' && (
+        <QueueSection
+          title="物件リクエスト"
+          empty="該当なし"
+          pendingId={pendingId}
+          items={pendingFirst(queue.propertyRequests)
+            .filter((request) =>
+              `${request.id} ${request.title} ${request.prefecture} ${request.city} ${request.status}`
+                .toLocaleLowerCase('ja-JP')
+                .includes(normalizedQuery),
+            )
+            .map((request) => ({
+              id: request.id,
+              title: request.title,
+              meta: `${request.prefecture} ${request.city}・${request.category}・${formatYen(request.budget)}・${request.status}`,
+              status: request.moderationStatus ?? 'approved',
+              note: request.moderationNote,
+            }))}
+          onDecide={(id, decision, note) =>
+            decide('propertyRequest', id, decision, note)
           }
         />
       )}
@@ -259,7 +288,7 @@ function QueueItem({
           {item.image && (
             <span className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-border bg-muted sm:size-24">
               <Image
-                src={item.image}
+                src={propertyImage(item.image)}
                 alt=""
                 fill
                 sizes="96px"
@@ -269,7 +298,7 @@ function QueueItem({
           )}
           {!item.image && (
             <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary">
-              <Building2 className="size-6" aria-hidden="true" />
+              <Handshake className="size-6" aria-hidden="true" />
             </span>
           )}
           <div className="min-w-0">

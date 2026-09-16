@@ -23,14 +23,13 @@ async function resolveSource(
   id: string,
 ): Promise<Source | undefined> {
   const store = getStore()
-  if (kind === 'rental') {
-    const rental = await store.rentals.get(id)
-    if (!rental) return undefined
+  if (kind === 'lease') {
+    const lease = await store.leases.get(id)
+    if (!lease) return undefined
     return {
-      listingId: rental.listingId,
-      reviewerUserId: rental.renterUserId,
-      reviewable:
-        rental.status === 'completed' || rental.status === 'converted',
+      listingId: lease.listingId,
+      reviewerUserId: lease.tenantUserId,
+      reviewable: lease.status === 'completed' || lease.status === 'converted',
     }
   }
   if (kind === 'order') {
@@ -122,13 +121,13 @@ export async function listReviewsForSeller(
   return reviews.filter((review) => review.sellerUserId === sellerUserId)
 }
 
-/** Rentals and threads of the user that are finished but not yet reviewed. */
+/** Leases and threads of the user that are finished but not yet reviewed. */
 export async function reviewableSources(
   user: AuthenticatedUser,
-): Promise<{ rentals: string[]; threads: string[]; orders: string[] }> {
+): Promise<{ leases: string[]; threads: string[]; orders: string[] }> {
   const store = getStore()
-  const [rentals, submissions, reviews, orders] = await Promise.all([
-    store.rentals.list(),
+  const [leases, submissions, reviews, orders] = await Promise.all([
+    store.leases.list(),
     store.submissions.list(),
     store.reviews.list(),
     store.orders.list(),
@@ -139,14 +138,14 @@ export async function reviewableSources(
       .map((review) => `${review.sourceKind}:${review.sourceId}`),
   )
   return {
-    rentals: rentals
+    leases: leases
       .filter(
-        (rental) =>
-          rental.renterUserId === user.id &&
-          (rental.status === 'completed' || rental.status === 'converted') &&
-          !reviewed.has(`rental:${rental.id}`),
+        (lease) =>
+          lease.tenantUserId === user.id &&
+          (lease.status === 'completed' || lease.status === 'converted') &&
+          !reviewed.has(`lease:${lease.id}`),
       )
-      .map((rental) => rental.id),
+      .map((lease) => lease.id),
     threads: submissions
       .filter(
         (submission) =>

@@ -8,19 +8,21 @@ import type { Listing, ListingPage } from '@/lib/data'
 
 const listing: Listing = {
   id: 'initial',
-  name: '初期マンション',
+  name: '初期レジデンス',
   category: 'マンション',
-  maker: 'メーカー',
-  year: 2020,
-  hours: 100,
-  condition: '目立った傷なし',
+  zoning: '第一種住居地域',
+  layout: '3LDK',
+  floorArea: 74.2,
+  builtYear: 2019,
+  nearestStation: '小田急線 経堂駅',
+  walkMinutes: 6,
   prefecture: '新潟県',
   city: '長岡市',
-  image: '/equipment/tractor.png',
+  image: '/properties/apartment.svg',
   summary: '説明',
   deals: ['sale'],
   salePrice: 100000,
-  seller: { name: '農家', kind: '個人農家', rating: 4, reviews: 1 },
+  seller: { name: '農家', kind: '個人', rating: 4, reviews: 1 },
   tags: [],
 }
 
@@ -62,7 +64,7 @@ describe('Marketplace', () => {
     vi.stubGlobal('fetch', fetchMock)
     setup()
     expect(
-      screen.getByRole('heading', { name: '初期マンション' }),
+      screen.getByRole('heading', { name: '初期レジデンス' }),
     ).toBeInTheDocument()
     expect(fetchMock).not.toHaveBeenCalled()
   })
@@ -78,7 +80,7 @@ describe('Marketplace', () => {
     ).toHaveAttribute('href', '/listings')
     expect(screen.getByRole('link', { name: /48件/ })).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'マンション' }))
-    await user.click(screen.getByRole('button', { name: '買う' }))
+    await user.click(screen.getByRole('button', { name: '購入できる' }))
     expect(await screen.findByRole('link', { name: /3件/ })).toHaveAttribute(
       'href',
       '/listings?category=%E3%83%9E%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%B3&deal=sale',
@@ -99,7 +101,7 @@ describe('Marketplace', () => {
     vi.stubGlobal('fetch', fetchMock)
     const user = setup()
     await user.click(screen.getByRole('button', { name: 'マンション' }))
-    await user.click(screen.getByRole('button', { name: '買う' }))
+    await user.click(screen.getByRole('button', { name: '購入できる' }))
     await waitFor(() =>
       expect(fetchMock).toHaveBeenLastCalledWith(
         '/api/listings?category=%E3%83%9E%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%B3&deal=sale&page=1&pageSize=6',
@@ -110,7 +112,7 @@ describe('Marketplace', () => {
       await screen.findByRole('heading', { name: 'サーバーの検索結果' }),
     ).toBeInTheDocument()
     expect(
-      screen.queryByRole('heading', { name: '初期マンション' }),
+      screen.queryByRole('heading', { name: '初期レジデンス' }),
     ).not.toBeInTheDocument()
   })
 
@@ -126,7 +128,7 @@ describe('Marketplace', () => {
       ),
     )
     const user = setup()
-    await user.click(screen.getByRole('button', { name: '店舗' }))
+    await user.click(screen.getByRole('button', { name: '土地' }))
     expect(screen.getByRole('status')).toHaveTextContent('読み込み中')
     resolveResponse(new Response(pageWith([])))
     expect(
@@ -141,7 +143,7 @@ describe('Marketplace', () => {
       .mockResolvedValueOnce(new Response(pageWith([])))
     vi.stubGlobal('fetch', fetchMock)
     const user = setup()
-    await user.click(screen.getByRole('button', { name: '店舗' }))
+    await user.click(screen.getByRole('button', { name: '土地' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(
       '物件を取得できませんでした',
     )

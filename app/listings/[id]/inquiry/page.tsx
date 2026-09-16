@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import { propertyImage } from '@/lib/property-image'
 import { notFound } from 'next/navigation'
 import { LoginPrompt } from '@/components/auth/login-prompt'
 import { PageShell } from '@/components/page-shell'
@@ -14,7 +15,7 @@ import {
   type InquiryMode,
 } from '@/lib/validation/listing-inquiry'
 
-export const metadata: Metadata = { title: '掲載者に連絡する | Estate Machare' }
+export const metadata: Metadata = { title: '出品者に連絡する | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 
@@ -41,7 +42,7 @@ export default async function InquiryPage({
     (inquiryModes as readonly string[]).includes(requested) &&
     offered.has(requested as InquiryMode)
       ? (requested as InquiryMode)
-      : (modes[0]?.id ?? 'question')
+      : modes[0].id
 
   return (
     <PageShell>
@@ -50,7 +51,7 @@ export default async function InquiryPage({
         <div className="mt-6 flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
           <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-muted">
             <Image
-              src={listing.image}
+              src={propertyImage(listing.image)}
               alt={listing.name}
               fill
               sizes="80px"
@@ -59,29 +60,20 @@ export default async function InquiryPage({
           </div>
           <div className="min-w-0">
             <p className="text-xs text-muted-foreground">
-              {listing.property?.floorPlan ?? listing.maker} ·{' '}
-              {listing.category}
+              {listing.category} · {listing.zoning}
             </p>
             <h1 className="mt-0.5 truncate font-display text-lg font-bold text-foreground">
               {listing.name}
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {listing.property?.monthlyRent !== undefined
-                ? `月額 ${formatYen(listing.property.monthlyRent)}`
-                : listing.rentPerDay !== undefined
-                  ? `${formatYen(listing.rentPerDay)}/日`
-                  : null}
-              {(listing.property?.monthlyRent !== undefined ||
-                listing.rentPerDay !== undefined) &&
-                listing.salePrice !== undefined &&
-                ' · '}
-              {listing.salePrice !== undefined &&
-                `売買 ${formatYen(listing.salePrice)}`}
+              {listing.rentPerMonth && `${formatYen(listing.rentPerMonth)}/日`}
+              {listing.rentPerMonth && listing.salePrice && ' · '}
+              {listing.salePrice && `販売 ${formatYen(listing.salePrice)}`}
             </p>
           </div>
         </div>
         <h2 className="mt-8 font-display text-2xl font-bold text-foreground">
-          掲載者に連絡する
+          出品者に連絡する
         </h2>
         <div className="mt-6">
           {user ? (
@@ -93,7 +85,7 @@ export default async function InquiryPage({
             />
           ) : (
             <LoginPrompt
-              action="掲載者に連絡する"
+              action="出品者に連絡する"
               callbackUrl={`/listings/${listing.id}/inquiry?mode=${initialMode}`}
             />
           )}

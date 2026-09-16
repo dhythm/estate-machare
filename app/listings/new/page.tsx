@@ -4,7 +4,7 @@ import { ListingForm } from '@/components/forms/listing-form'
 import { PageIntro, PageShell } from '@/components/page-shell'
 import { getCurrentUser } from '@/lib/server/auth/session'
 
-export const metadata: Metadata = { title: '掲載する | Estate Machare' }
+export const metadata: Metadata = { title: '出品する | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 
@@ -15,14 +15,14 @@ export default async function NewListingPage() {
       <div className="mx-auto max-w-4xl px-5 py-12 sm:px-8">
         <p className="eyebrow mb-5">SHARE YOUR MACHINERY</p>
         <PageIntro
-          title="物件を掲載する"
-          description="販売とレンタルをひとつの出品でまとめて募集できます。内容を確認のうえ掲載します。"
+          title="物件を出品する"
+          description="販売と賃貸をひとつの出品でまとめて募集できます。内容を確認のうえ掲載します。"
         />
         <div className="mt-8">
           {user ? (
             <ListingForm contact={{ name: user.name, email: user.email }} />
           ) : (
-            <LoginPrompt action="掲載する" callbackUrl="/listings/new" />
+            <LoginPrompt action="出品する" callbackUrl="/listings/new" />
           )}
         </div>
       </div>

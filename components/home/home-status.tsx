@@ -4,9 +4,11 @@ import { ArrowRight } from 'lucide-react'
 export type HomeStatusCounts = {
   unreadThreads: number
   openInquiries: number
-  requestedRentals: number
+  requestedLeases: number
   requestedOrders: number
   pendingListings: number
+  /** Only for users with a agent profile. */
+  matchingRequests?: number
   unreadNotifications: number
 }
 
@@ -20,13 +22,13 @@ export function HomeStatus({
   const items = [
     { label: '未読のやり取り', value: status.unreadThreads, href: '/account' },
     {
-      label: '未対応の問い合わせ',
+      label: '未対応の問い合わせ・提案',
       value: status.openInquiries,
       href: '/account',
     },
     {
       label: '申込中の賃貸',
-      value: status.requestedRentals,
+      value: status.requestedLeases,
       href: '/account',
     },
     {
@@ -35,16 +37,22 @@ export function HomeStatus({
       href: '/account',
     },
     {
-      label: '審査待ちの掲載',
+      label: '審査待ちの出品',
       value: status.pendingListings,
       href: '/account',
+    },
+    {
+      label: '対応地域の募集中リクエスト',
+      value: status.matchingRequests ?? 0,
+      href: '/requests',
+      show: status.matchingRequests !== undefined,
     },
     {
       label: '通知',
       value: status.unreadNotifications,
       href: '/account/notifications',
     },
-  ].filter((item) => item.value > 0)
+  ].filter((item) => item.show !== false && item.value > 0)
 
   return (
     <section

@@ -10,7 +10,7 @@ describe('listing query', () => {
   it('keeps separate cache entries for every search condition', () => {
     const base = listingQueryOptions({ category: 'すべて', deal: 'all' }, page)
     expect(base.queryKey).not.toEqual(
-      listingQueryOptions({ category: 'トラクター', deal: 'all' }, page)
+      listingQueryOptions({ category: 'マンション', deal: 'all' }, page)
         .queryKey,
     )
     expect(base.queryKey).not.toEqual(
@@ -86,7 +86,7 @@ describe('listing query', () => {
     )
     await queryClient.fetchQuery(
       listingQueryOptions(
-        { category: 'ドローン', deal: 'rent', keyword: 'DJI' },
+        { category: '土地', deal: 'rent', keyword: 'DJI' },
         { page: 2, pageSize: 6 },
       ),
     )
@@ -94,7 +94,7 @@ describe('listing query', () => {
       '/api/listings?category=%E3%81%99%E3%81%B9%E3%81%A6&deal=all&page=1&pageSize=12',
     )
     expect(fetchMock.mock.calls[1][0]).toBe(
-      '/api/listings?category=%E3%83%89%E3%83%AD%E3%83%BC%E3%83%B3&deal=rent&page=2&pageSize=6&q=DJI',
+      '/api/listings?category=%E5%9C%9F%E5%9C%B0&deal=rent&page=2&pageSize=6&q=DJI',
     )
     queryClient.clear()
   })

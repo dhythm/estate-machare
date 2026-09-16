@@ -10,7 +10,7 @@ export default function ContactPage() {
       <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
         <PageIntro
           title="お問い合わせ"
-          description="物件探し・掲載・売買・賃貸に関するご質問や不具合の報告を受け付けています。"
+          description="取引・出品・物件リクエストに関するご質問や不具合の報告を受け付けています。"
         />
         <div className="page-form mt-8">
           <ContactForm />

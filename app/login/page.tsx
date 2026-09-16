@@ -21,7 +21,7 @@ export default async function LoginPage({
   return (
     <PageShell>
       <div className="mx-auto grid max-w-6xl gap-0 px-5 py-10 sm:px-8 sm:py-16 md:grid-cols-2">
-        <div className="relative hidden min-h-[540px] overflow-hidden rounded-l-2xl bg-primary md:block">
+        <div className="relative hidden min-h-[540px] overflow-hidden rounded-l-lg bg-primary md:block">
           <Image
             src="/estate-hero.webp"
             alt="自然光が差し込む住まい"
@@ -44,7 +44,7 @@ export default async function LoginPage({
             </p>
           </div>
         </div>
-        <div className="flex flex-col justify-center rounded-2xl border border-border bg-card p-7 sm:p-12 md:rounded-l-none lg:p-16">
+        <div className="flex flex-col justify-center rounded-lg border border-border bg-card p-7 sm:p-12 md:rounded-l-none lg:p-16">
           <p className="eyebrow">WELCOME BACK</p>
           <h1 className="mt-4 font-display text-3xl font-bold">ログイン</h1>
           <div className="mt-9">

@@ -25,33 +25,33 @@ describe('GET /api/listings', () => {
   it('returns filtered, searched, and paged listings', async () => {
     const response = await GET(
       new Request(
-        'http://localhost/api/listings?category=マンション&deal=rent&q=世田谷&page=1&pageSize=3',
+        'http://localhost/api/listings?category=マンション&deal=rent&q=経堂&page=1&pageSize=3',
       ),
     )
     expect(response.status).toBe(200)
     const body = await response.json()
     expect(body.items.length).toBeGreaterThan(0)
     expect(body.items.length).toBeLessThanOrEqual(3)
-    expect(body.items[0]).toMatchObject({ id: 'trc-001' })
+    expect(body.items[0]).toMatchObject({ id: 'apt-001' })
     expect(body.pageSize).toBe(3)
   })
 
   it('passes refinements through and rejects invalid ones', async () => {
     const ok = await GET(
       new Request(
-        'http://localhost/api/listings?prefecture=新潟県&priceMax=20000000&sort=priceDesc&from=2026-10-01&to=2026-10-07',
+        'http://localhost/api/listings?prefecture=東京都&priceMax=200000000&sort=priceDesc&from=2026-10-01&to=2027-09-30',
       ),
     )
     expect(ok.status).toBe(200)
     const body = await ok.json()
     expect(
       body.items.every(
-        (item: { prefecture: string }) => item.prefecture === '新潟県',
+        (item: { prefecture: string }) => item.prefecture === '東京都',
       ),
     ).toBe(true)
     expect(
       body.items.every(
-        (item: { rentPerDay?: number }) => item.rentPerDay !== undefined,
+        (item: { rentPerMonth?: number }) => item.rentPerMonth !== undefined,
       ),
     ).toBe(true)
   })
@@ -66,7 +66,7 @@ describe('GET /api/listings', () => {
     'deal=',
     'category=',
     'deal=rent&deal=sale',
-    'category=すべて&category=ドローン',
+    'category=すべて&category=戸建',
     'page=0',
     'page=abc',
     'pageSize=0',
@@ -82,21 +82,23 @@ describe('GET /api/listings', () => {
 })
 
 const submission = {
-  name: '世田谷 マンション 30馬力',
+  name: 'テストレジデンス 長野市 3LDK',
   category: 'マンション',
-  maker: '世田谷',
-  year: '2018',
-  hours: '500',
-  condition: '目立った傷なし',
-  prefecture: '新潟県',
-  city: '長岡市',
+  zoning: '第一種住居地域',
+  layout: '3LDK',
+  floorArea: 74.2,
+  builtYear: 2019,
+  nearestStation: '小田急線 経堂駅',
+  walkMinutes: 6,
+  prefecture: '長野県',
+  city: '長野市',
   deals: ['sale'],
-  salePrice: '1500000',
-  rentPerDay: '',
-  rentToOwn: false,
-  summary: 'キャビン付き。',
-  sellerName: 'テスト農園',
-  sellerKind: '不動産会社',
+  salePrice: '32000000',
+  rentPerMonth: '',
+  purchaseOption: false,
+  summary: '南向き角住戸。',
+  sellerName: 'テスト不動産',
+  sellerKind: '宅建業者',
   contactEmail: 'seller@example.com',
 }
 
@@ -127,7 +129,7 @@ describe('POST /api/listings', () => {
     const list = await (
       await GET(new Request('http://localhost/api/listings?pageSize=1'))
     ).json()
-    expect(list.items[0].id).toBe('trc-001')
+    expect(list.items[0].id).toBe('apt-001')
     expect(list.items.map((item: { id: string }) => item.id)).not.toContain(
       body.id,
     )

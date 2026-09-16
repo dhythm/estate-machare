@@ -10,7 +10,7 @@ import {
   type ValidationResult,
 } from './shared'
 
-const sourceKinds = ['rental', 'thread', 'order'] as const
+const sourceKinds = ['lease', 'thread', 'order'] as const
 
 export type ReviewInput = {
   sourceKind: (typeof sourceKinds)[number]

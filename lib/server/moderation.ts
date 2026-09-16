@@ -6,11 +6,13 @@ import {
   type ModerationQueue,
   type ModerationQueueFilter,
   type ModerationStatus,
+  type PropertyRequest,
 } from '@/lib/data'
+import { recordDealEvent } from './deal-events'
 import { notify } from './notifications'
 import { getStore } from './store'
 
-export type ModerationKind = 'listing'
+export type ModerationKind = 'listing' | 'propertyRequest'
 
 export type ModerationDecision = {
   status: Extract<ModerationStatus, 'approved' | 'rejected'>
@@ -30,9 +32,15 @@ export async function getModerationQueue(
   status: ModerationQueueFilter = 'pending',
 ): Promise<ModerationQueue> {
   const store = getStore()
-  const listings = await store.listings.list()
+  const [listings, propertyRequests] = await Promise.all([
+    store.listings.list(),
+    store.propertyRequests.list(),
+  ])
   return {
     listings: listings.filter((listing) => matchesFilter(listing, status)),
+    propertyRequests: propertyRequests.filter((request) =>
+      matchesFilter(request, status),
+    ),
   }
 }
 
@@ -40,7 +48,7 @@ export async function applyModeration(
   kind: ModerationKind,
   id: string,
   decision: ModerationDecision,
-): Promise<Listing | undefined> {
+): Promise<Listing | PropertyRequest | undefined> {
   const now = new Date().toISOString()
   const patch = {
     moderationStatus: decision.status,
@@ -50,16 +58,25 @@ export async function applyModeration(
   }
   const store = getStore()
   const updated =
-    kind === 'listing' ? await store.listings.update(id, patch) : undefined
+    kind === 'listing'
+      ? await store.listings.update(id, patch)
+      : await store.propertyRequests.update(id, patch)
+  if (updated && kind === 'propertyRequest')
+    await recordDealEvent({
+      dealKind: 'propertyRequest',
+      dealId: id,
+      status: decision.status,
+      note: decision.note,
+    })
   if (updated?.ownerUserId) {
-    const label = '掲載'
-    const name = updated.name
+    const label = kind === 'listing' ? '出品' : '物件リクエスト'
+    const name = 'name' in updated ? updated.name : updated.title
     await notify({
       userId: updated.ownerUserId,
       kind: 'moderation',
       title: `${label}が${decision.status === 'approved' ? '承認' : '却下'}されました`,
       body: decision.note ? `${name}: ${decision.note}` : name,
-      href: `/listings/${id}`,
+      href: kind === 'listing' ? `/listings/${id}` : `/requests/${id}`,
     })
   }
   return updated

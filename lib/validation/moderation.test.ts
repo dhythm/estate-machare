@@ -7,7 +7,7 @@ import {
 describe('validateModerationInput', () => {
   const valid = {
     kind: 'listing',
-    id: 'trc-001',
+    id: 'apt-001',
     status: 'approved',
     note: '掲載可',
   }
@@ -19,14 +19,8 @@ describe('validateModerationInput', () => {
     })
     expect(validateModerationInput({ ...valid, note: '' })).toEqual({
       ok: true,
-      value: { kind: 'listing', id: 'trc-001', status: 'approved' },
+      value: { kind: 'listing', id: 'apt-001', status: 'approved' },
     })
-  })
-
-  it('rejects removed moving services', () => {
-    expect(validateModerationInput({ ...valid, kind: 'transportJob' }).ok).toBe(
-      false,
-    )
   })
 
   it('rejects unknown kinds and decisions', () => {

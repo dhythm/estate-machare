@@ -6,20 +6,21 @@ import {
   threadStatusLabels,
   isThreadKind,
   type Listing,
+  type PropertyRequest,
 } from '@/lib/data'
-import { rentalStatusLabels } from '@/lib/rent-to-own'
+import { leaseStatusLabels } from '@/lib/lease'
 import { configuredAccounts, type AuthenticatedUser } from './auth/accounts'
 import { listDealEvents } from './deal-events'
 import {
   getStore,
   type DealKind,
   type Order,
-  type Rental,
+  type Lease,
   type Submission,
 } from './store'
 
 export type DealSummary = {
-  kind: Extract<DealKind, 'order' | 'rental'>
+  kind: DealKind
   id: string
   title: string
   href: string
@@ -45,7 +46,7 @@ export type DealView = {
   events: DealEventView[]
   relatedThreads: { id: string; label: string; statusLabel: string }[]
   relatedDeals: {
-    kind: Extract<DealKind, 'order' | 'rental'>
+    kind: DealKind
     id: string
     title: string
     statusLabel: string
@@ -55,14 +56,17 @@ export type DealView = {
 export type DealResult<T> =
   { ok: true; value: T } | { ok: false; reason: 'not_found' | 'forbidden' }
 
+const jobStatusLabels: Record<string, string> = {
+  approved: '承認',
+  rejected: '却下',
+}
+
 function statusLabel(kind: DealKind, status: string): string {
   if (kind === 'order')
     return orderStatusLabels[status as keyof typeof orderStatusLabels] ?? status
-  if (kind === 'rental')
-    return (
-      rentalStatusLabels[status as keyof typeof rentalStatusLabels] ?? status
-    )
-  return status
+  if (kind === 'lease')
+    return leaseStatusLabels[status as keyof typeof leaseStatusLabels] ?? status
+  return jobStatusLabels[status] ?? status
 }
 
 function accountName(userId: string | undefined): string {
@@ -73,6 +77,16 @@ function accountName(userId: string | undefined): string {
   )
 }
 
+async function agreedAgentOf(requestId: string): Promise<string | undefined> {
+  const submissions = await getStore().submissions.list()
+  return submissions.find(
+    (submission) =>
+      submission.kind === 'requestProposal' &&
+      submission.targetId === requestId &&
+      submission.status === 'agreed',
+  )?.userId
+}
+
 type Loaded =
   | {
       kind: 'order'
@@ -81,10 +95,15 @@ type Loaded =
       parties: [string, string]
     }
   | {
-      kind: 'rental'
-      rental: Rental
+      kind: 'lease'
+      lease: Lease
       listing?: Listing
       parties: [string, string | undefined]
+    }
+  | {
+      kind: 'propertyRequest'
+      request: PropertyRequest
+      parties: [string | undefined, string | undefined]
     }
 
 async function load(kind: DealKind, id: string): Promise<Loaded | undefined> {
@@ -100,18 +119,24 @@ async function load(kind: DealKind, id: string): Promise<Loaded | undefined> {
       parties: [order.buyerUserId, order.sellerUserId],
     }
   }
-  if (kind === 'rental') {
-    const rental = await store.rentals.get(id)
-    if (!rental) return undefined
-    const listing = await store.listings.get(rental.listingId)
+  if (kind === 'lease') {
+    const lease = await store.leases.get(id)
+    if (!lease) return undefined
+    const listing = await store.listings.get(lease.listingId)
     return {
       kind,
-      rental,
+      lease,
       listing,
-      parties: [rental.renterUserId, listing?.ownerUserId],
+      parties: [lease.tenantUserId, listing?.ownerUserId],
     }
   }
-  return undefined
+  const request = await store.propertyRequests.get(id)
+  if (!request) return undefined
+  return {
+    kind,
+    request,
+    parties: [request.ownerUserId, await agreedAgentOf(id)],
+  }
 }
 
 function summarize(loaded: Loaded, viewerId: string): DealSummary {
@@ -129,7 +154,7 @@ function summarize(loaded: Loaded, viewerId: string): DealSummary {
       role: isBuyer
         ? '買い手'
         : order.sellerUserId === viewerId
-          ? '掲載者'
+          ? '出品者'
           : '運営',
       counterpart: accountName(
         isBuyer ? order.sellerUserId : order.buyerUserId,
@@ -137,25 +162,41 @@ function summarize(loaded: Loaded, viewerId: string): DealSummary {
       updatedAt: order.updatedAt,
     }
   }
-  const { rental, listing } = loaded
-  const isRenter = rental.renterUserId === viewerId
+  if (loaded.kind === 'lease') {
+    const { lease, listing } = loaded
+    const isTenant = lease.tenantUserId === viewerId
+    return {
+      kind: 'lease',
+      id: lease.id,
+      title: listing?.name ?? '削除された物件',
+      href: `/listings/${lease.listingId}`,
+      amount: lease.purchasePrice ?? lease.rentTotal,
+      status: lease.status,
+      statusLabel: leaseStatusLabels[lease.status],
+      role: isTenant
+        ? '申込者'
+        : listing?.ownerUserId === viewerId
+          ? '所有者'
+          : '運営',
+      counterpart: accountName(
+        isTenant ? listing?.ownerUserId : lease.tenantUserId,
+      ),
+      updatedAt: lease.updatedAt,
+    }
+  }
+  const { request, parties } = loaded
+  const isOwner = request.ownerUserId === viewerId
   return {
-    kind: 'rental',
-    id: rental.id,
-    title: listing?.name ?? '削除された物件',
-    href: `/listings/${rental.listingId}`,
-    amount: rental.purchasePrice ?? rental.rentTotal,
-    status: rental.status,
-    statusLabel: rentalStatusLabels[rental.status],
-    role: isRenter
-      ? '申込者'
-      : listing?.ownerUserId === viewerId
-        ? '所有者'
-        : '運営',
-    counterpart: accountName(
-      isRenter ? listing?.ownerUserId : rental.renterUserId,
-    ),
-    updatedAt: rental.updatedAt,
+    kind: 'propertyRequest',
+    id: request.id,
+    title: request.title,
+    href: `/requests/${request.id}`,
+    amount: request.budget,
+    status: request.status,
+    statusLabel: request.status,
+    role: isOwner ? '募集者' : parties[1] === viewerId ? '担当者' : '運営',
+    counterpart: accountName(isOwner ? parties[1] : request.ownerUserId),
+    updatedAt: request.updatedAt ?? request.createdAt ?? '',
   }
 }
 
@@ -184,12 +225,16 @@ export async function getDeal(
     return { ok: false, reason: 'forbidden' }
   const store = getStore()
   const targetId =
-    loaded.kind === 'order' ? loaded.order.listingId : loaded.rental.listingId
-  const [events, submissions, orders, rentals] = await Promise.all([
+    loaded.kind === 'propertyRequest'
+      ? loaded.request.id
+      : loaded.kind === 'order'
+        ? loaded.order.listingId
+        : loaded.lease.listingId
+  const [events, submissions, orders, leases] = await Promise.all([
     listDealEvents(kind, id),
     store.submissions.list(),
     store.orders.list(),
-    store.rentals.list(),
+    store.leases.list(),
   ])
   const relatedThreads = submissions
     .filter((submission) => threadInvolves(submission, targetId, parties))
@@ -201,8 +246,8 @@ export async function getDeal(
       statusLabel: threadStatusLabels[submission.status ?? 'new'],
     }))
   const relatedDeals: DealView['relatedDeals'] = []
-  if (loaded.kind === 'rental') {
-    for (const order of orders.filter((order) => order.sourceRentalId === id))
+  if (loaded.kind === 'lease') {
+    for (const order of orders.filter((order) => order.sourceLeaseId === id))
       relatedDeals.push({
         kind: 'order',
         id: order.id,
@@ -210,16 +255,16 @@ export async function getDeal(
         statusLabel: orderStatusLabels[order.status],
       })
   }
-  if (loaded.kind === 'order' && loaded.order.sourceRentalId) {
-    const rental = rentals.find(
-      (rental) => rental.id === loaded.order.sourceRentalId,
+  if (loaded.kind === 'order' && loaded.order.sourceLeaseId) {
+    const lease = leases.find(
+      (lease) => lease.id === loaded.order.sourceLeaseId,
     )
-    if (rental)
+    if (lease)
       relatedDeals.push({
-        kind: 'rental',
-        id: rental.id,
+        kind: 'lease',
+        id: lease.id,
         title: loaded.listing?.name ?? '削除された物件',
-        statusLabel: rentalStatusLabels[rental.status],
+        statusLabel: leaseStatusLabels[lease.status],
       })
   }
   return {
@@ -241,15 +286,26 @@ export async function getDeal(
   }
 }
 
-/** Every order and rental the user takes part in, newest change first. */
+/** Every order, lease, and request the user takes part in, newest change first. */
 export async function listDealsForUser(userId: string): Promise<DealSummary[]> {
   const store = getStore()
-  const [orders, rentals, listings] = await Promise.all([
+  const [orders, leases, requests, listings, submissions] = await Promise.all([
     store.orders.list(),
-    store.rentals.list(),
+    store.leases.list(),
+    store.propertyRequests.list(),
     store.listings.list(),
+    store.submissions.list(),
   ])
   const listingById = new Map(listings.map((listing) => [listing.id, listing]))
+  const agentByJob = new Map(
+    submissions
+      .filter(
+        (submission) =>
+          submission.kind === 'requestProposal' &&
+          submission.status === 'agreed',
+      )
+      .map((submission) => [submission.targetId, submission.userId]),
+  )
   const deals: DealSummary[] = []
   for (const order of orders)
     if (order.buyerUserId === userId || order.sellerUserId === userId)
@@ -264,16 +320,30 @@ export async function listDealsForUser(userId: string): Promise<DealSummary[]> {
           userId,
         ),
       )
-  for (const rental of rentals) {
-    const listing = listingById.get(rental.listingId)
-    if (rental.renterUserId === userId || listing?.ownerUserId === userId)
+  for (const lease of leases) {
+    const listing = listingById.get(lease.listingId)
+    if (lease.tenantUserId === userId || listing?.ownerUserId === userId)
       deals.push(
         summarize(
           {
-            kind: 'rental',
-            rental,
+            kind: 'lease',
+            lease,
             listing,
-            parties: [rental.renterUserId, listing?.ownerUserId],
+            parties: [lease.tenantUserId, listing?.ownerUserId],
+          },
+          userId,
+        ),
+      )
+  }
+  for (const request of requests) {
+    const agent = agentByJob.get(request.id)
+    if (request.ownerUserId === userId || agent === userId)
+      deals.push(
+        summarize(
+          {
+            kind: 'propertyRequest',
+            request,
+            parties: [request.ownerUserId, agent],
           },
           userId,
         ),

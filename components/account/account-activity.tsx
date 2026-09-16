@@ -13,9 +13,21 @@ export function AccountActivity({ overview }: { overview: AccountOverview }) {
         received: true,
       })),
     ),
+    ...overview.propertyRequests.flatMap(({ request, applications }) =>
+      applications.map((submission) => ({
+        submission,
+        title: request.title,
+        received: true,
+      })),
+    ),
     ...overview.sentInquiries.map(({ submission, listing }) => ({
       submission,
       title: listing?.name ?? '削除された物件',
+      received: false,
+    })),
+    ...overview.sentApplications.map(({ submission, request }) => ({
+      submission,
+      title: request?.title ?? '削除されたリクエスト',
       received: false,
     })),
   ]
@@ -38,7 +50,7 @@ export function AccountActivity({ overview }: { overview: AccountOverview }) {
 
   return (
     <div id="activity" className="scroll-mt-28">
-      {overview.summary.requestedRentals > 0 && (
+      {overview.summary.requestedLeases > 0 && (
         <Link
           href="#lending"
           aria-label="賃貸申込を確認する"
@@ -46,7 +58,7 @@ export function AccountActivity({ overview }: { overview: AccountOverview }) {
         >
           <span>
             <span className="font-semibold">
-              {overview.summary.requestedRentals}件の賃貸申込
+              {overview.summary.requestedLeases}件の賃貸申込
             </span>
             が承認を待っています
           </span>
@@ -99,7 +111,9 @@ export function AccountActivity({ overview }: { overview: AccountOverview }) {
                       </Badge>
                     </span>
                     <span className="mt-1 block truncate text-xs text-muted-foreground">
-                      物件の問い合わせ
+                      {submission.kind === 'listingInquiry'
+                        ? '物件の問い合わせ'
+                        : 'リクエストへの提案'}
                       {typeof submission.payload.name === 'string' &&
                         ` · ${submission.payload.name}`}
                     </span>

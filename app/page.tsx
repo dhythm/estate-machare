@@ -3,6 +3,7 @@ import { Hero } from '@/components/hero'
 import { RoleChannels } from '@/components/role-channels'
 import { HowItWorks } from '@/components/how-it-works'
 import { Marketplace } from '@/components/marketplace'
+import { RequestPreview } from '@/components/request-preview'
 import { HomeStatus } from '@/components/home/home-status'
 import { featuredListingCount } from '@/lib/data'
 import { getAccountOverview } from '@/lib/server/account'
@@ -19,6 +20,7 @@ async function homeStatus(userId: string) {
   ])
   return {
     ...overview.summary,
+    matchingRequests: overview.agent?.matchingRequests.length,
     unreadNotifications,
   }
 }
@@ -36,6 +38,7 @@ export default async function Page() {
       {user && status && <HomeStatus name={user.name} status={status} />}
       <Marketplace initialPage={featured} />
       <HowItWorks />
+      <RequestPreview />
       <RoleChannels />
     </PageShell>
   )

@@ -7,10 +7,13 @@ vi.mock('next/navigation', () => ({ usePathname: () => '/admin' }))
 vi.mock('@/lib/server/admin-overview', () => ({
   getAdminCounts: vi.fn(async () => ({
     pendingListings: 2,
-    requestedRentals: 4,
-    activeRentals: 1,
+    pendingPropertyRequests: 3,
+    requestedLeases: 4,
+    activeLeases: 1,
     requestedOrders: 5,
+    introducingRequests: 2,
     openThreads: 6,
+    agents: 8,
   })),
   listRecentActivity: vi.fn(async () => [
     {
@@ -19,7 +22,7 @@ vi.mock('@/lib/server/admin-overview', () => ({
       dealId: 'o-1',
       title: 'クボタ 45馬力',
       statusLabel: '承諾',
-      actorName: '掲載者デモ',
+      actorName: '出品者デモ',
       createdAt: '2026-09-13T01:00:00.000Z',
       href: '/account/deals/order/o-1',
     },
@@ -28,7 +31,7 @@ vi.mock('@/lib/server/admin-overview', () => ({
     {
       review: {
         id: 'rv-1',
-        listingId: 'trc-001',
+        listingId: 'apt-001',
         sellerUserId: 'demo-seller',
         reviewerUserId: 'demo-user',
         sourceKind: 'order',
@@ -46,15 +49,19 @@ describe('AdminDashboardPage', () => {
   it('prioritizes pending review work and provides access to every operation', async () => {
     render(await AdminDashboardPage())
     expect(
-      screen.getByRole('heading', { name: '審査を待っている案件' }),
+      screen.getByRole('heading', { name: '審査を待っている出品・リクエスト' }),
     ).toBeInTheDocument()
-    expect(screen.getByLabelText('審査待ち 2 件')).toBeInTheDocument()
+    expect(screen.getByLabelText('審査待ち 5 件')).toBeInTheDocument()
     for (const path of [
       '/admin/deals',
       '/admin/deals/orders',
-      '/admin/deals/rentals',
+      '/admin/deals/leases',
       '/admin/deals/inquiries',
       '/admin/deals/reviews',
+      '/admin/requests',
+      '/admin/requests/proposals',
+      '/admin/requests/inquiries',
+      '/admin/requests/agents',
       '/admin/accounts',
     ]) {
       expect(
@@ -65,17 +72,16 @@ describe('AdminDashboardPage', () => {
     }
   })
 
-  it('shows property transaction metrics, recent activity, and recent reviews', async () => {
+  it('shows order and haul metrics, recent activity, and recent reviews', async () => {
     render(await AdminDashboardPage())
     expect(screen.getByText('承諾待ちの注文')).toBeInTheDocument()
-    expect(screen.queryByText('運搬中の案件')).not.toBeInTheDocument()
-    expect(screen.queryByText('引越し管理')).not.toBeInTheDocument()
+    expect(screen.getByText('紹介中のリクエスト')).toBeInTheDocument()
     const activity = screen.getByRole('region', { name: '直近の取引の動き' })
     expect(
       within(activity).getByRole('link', { name: /クボタ 45馬力/ }),
     ).toHaveAttribute('href', '/account/deals/order/o-1')
     expect(within(activity).getByText('承諾')).toBeInTheDocument()
-    expect(within(activity).getByText('掲載者デモ')).toBeInTheDocument()
+    expect(within(activity).getByText('出品者デモ')).toBeInTheDocument()
     const reviews = screen.getByRole('region', { name: '直近のレビュー' })
     expect(within(reviews).getByText('助かりました')).toBeInTheDocument()
     expect(within(reviews).getByLabelText('評価 4')).toBeInTheDocument()

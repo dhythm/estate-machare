@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="戸建">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dce6ee"/><stop offset="1" stop-color="#f2f5f8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="520" fill="url(#sky)"/>
+  <circle cx="150" cy="120" r="44" fill="#e3b778" opacity=".35"/>
+  <path d="M400 110 640 290v190H160V290z" fill="#173a4f"/>
+  <path d="M400 96 676 302H124z" fill="#0f2a3a"/>
+  <rect x="220" y="330" width="90" height="70" rx="4" fill="#e3b778"/>
+  <rect x="490" y="330" width="90" height="70" rx="4" fill="#e3b778"/>
+  <path d="M265 330v70M220 365h90M535 330v70M490 365h90" stroke="#173a4f" stroke-width="5"/>
+  <rect x="352" y="358" width="96" height="122" rx="5" fill="#e3b778" opacity=".75"/>
+  <rect x="352" y="358" width="96" height="122" rx="5" fill="none" stroke="#0f2a3a" stroke-width="5"/>
+  <circle cx="430" cy="422" r="6" fill="#0f2a3a"/>
+  <rect x="612" y="392" width="118" height="88" rx="6" fill="#2f5e78"/>
+  <rect y="480" width="800" height="40" fill="#cfd8e0"/>
+  <path d="M70 480c0-38 26-64 58-64s58 26 58 64z" fill="#5b8199" opacity=".6"/>
+</svg>

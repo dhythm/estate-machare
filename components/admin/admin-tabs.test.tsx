@@ -9,12 +9,12 @@ vi.mock('next/navigation', () => ({ usePathname }))
 
 describe('AdminTabs', () => {
   it('marks the current tab', () => {
-    usePathname.mockReturnValue('/admin/deals/rentals')
+    usePathname.mockReturnValue('/admin/deals/leases')
     render(
       <AdminTabs
         items={[
-          { href: '/admin/deals', label: '掲載' },
-          { href: '/admin/deals/rentals', label: '賃貸' },
+          { href: '/admin/deals', label: '出品' },
+          { href: '/admin/deals/leases', label: '賃貸' },
         ]}
       />,
     )
@@ -22,7 +22,7 @@ describe('AdminTabs', () => {
       'aria-current',
       'page',
     )
-    expect(screen.getByRole('link', { name: '掲載' })).not.toHaveAttribute(
+    expect(screen.getByRole('link', { name: '出品' })).not.toHaveAttribute(
       'aria-current',
     )
   })

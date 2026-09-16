@@ -19,9 +19,9 @@ const zenKaku = Zen_Kaku_Gothic_New({
 
 export const metadata: Metadata = {
   icons: { icon: { url: '/icon.svg', type: 'image/svg+xml' } },
-  title: 'Estate Machare | 不動産売買・賃貸マッチング',
+  title: 'Estate Machare | 不動産の売買・賃貸・物件リクエスト',
   description:
-    'マンション・戸建て・土地・事業用物件の売買と賃貸。物件探しから内見・契約条件の相談までつなぐ Estate Machare。',
+    'マンション・戸建・土地・事業用物件を、売る・買う・借りる。所有する人と必要とする人をつなぎ、賃貸から購入までスムーズに。',
 }
 
 export const viewport: Viewport = {

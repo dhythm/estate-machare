@@ -54,7 +54,7 @@ export function ReviewForm({
       <FormAlert error={error} />
       <fieldset>
         <legend className="mb-1.5 text-sm font-medium text-foreground">
-          掲載者の評価
+          出品者の評価
         </legend>
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((value) => (

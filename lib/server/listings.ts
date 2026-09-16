@@ -8,7 +8,7 @@ import type {
   ListingPage,
   PageRequest,
 } from '@/lib/data'
-import { rangesOverlap } from '@/lib/rent-to-own'
+import { rangesOverlap } from '@/lib/lease'
 import type { ListingSubmission } from '@/lib/validation/listing-submission'
 import type { AuthenticatedUser } from './auth/accounts'
 import { canManage } from './auth/access'
@@ -18,10 +18,9 @@ import { deleteSubmissionsFor } from './submissions'
 
 const imageByCategory: Record<string, string> = {
   マンション: '/properties/apartment.webp',
-  戸建て: '/properties/house.webp',
+  戸建: '/properties/house.webp',
   土地: '/properties/land.webp',
-  オフィス: '/properties/office.webp',
-  店舗: '/properties/shop.webp',
+  事業用: '/properties/office.webp',
 }
 
 /** Lists carry only the thumbnail; the detail page loads the full pictures. */
@@ -46,13 +45,12 @@ function searchableText(listing: Listing): string {
   return normalize(
     [
       listing.name,
-      listing.property?.floorPlan ?? '',
-      listing.property?.access ?? '',
-      listing.maker,
       listing.category,
+      listing.zoning,
+      listing.layout ?? '',
+      listing.nearestStation,
       listing.prefecture,
       listing.city,
-      listing.condition,
       listing.seller.name,
       ...listing.tags,
     ].join(' '),
@@ -60,9 +58,7 @@ function searchableText(listing: Listing): string {
 }
 
 function priceFor(listing: Listing, filter: ListingFilter): number | undefined {
-  return filter.deal === 'rent'
-    ? (listing.property?.monthlyRent ?? listing.rentPerDay)
-    : listing.salePrice
+  return filter.deal === 'rent' ? listing.rentPerMonth : listing.salePrice
 }
 
 function withinPrice(listing: Listing, filter: ListingFilter): boolean {
@@ -97,9 +93,7 @@ function sortListings(listings: Listing[], sort: ListingFilter['sort']) {
     case 'priceDesc':
       return [...listings].sort(compareBy((l) => l.salePrice, -1))
     case 'rentAsc':
-      return [...listings].sort(
-        compareBy((l) => l.property?.monthlyRent ?? l.rentPerDay, 1),
-      )
+      return [...listings].sort(compareBy((l) => l.rentPerMonth, 1))
     default:
       return listings
   }
@@ -110,15 +104,15 @@ async function bookedListingIds(
   from: string,
   to: string,
 ): Promise<Set<string>> {
-  const rentals = await getStore().rentals.list()
+  const leases = await getStore().leases.list()
   return new Set(
-    rentals
+    leases
       .filter(
-        (rental) =>
-          (rental.status === 'requested' || rental.status === 'active') &&
-          rangesOverlap(rental, { startDate: from, endDate: to }),
+        (lease) =>
+          (lease.status === 'requested' || lease.status === 'active') &&
+          rangesOverlap(lease, { startDate: from, endDate: to }),
       )
-      .map((rental) => rental.listingId),
+      .map((lease) => lease.listingId),
   )
 }
 
@@ -127,11 +121,13 @@ function matches(listing: Listing, filter: ListingFilter, terms: string[]) {
     return false
   if (filter.prefecture && listing.prefecture !== filter.prefecture)
     return false
+  if (filter.layout && listing.layout !== filter.layout) return false
   if (!withinPrice(listing, filter)) return false
-  if (filter.deal === 'rentToOwn' && listing.rentToOwn !== true) return false
+  if (filter.deal === 'purchaseOption' && listing.purchaseOption !== true)
+    return false
   if (
     filter.deal !== 'all' &&
-    filter.deal !== 'rentToOwn' &&
+    filter.deal !== 'purchaseOption' &&
     !listing.deals.includes(filter.deal)
   )
     return false
@@ -155,7 +151,7 @@ export async function searchListings(
       isApproved(listing) &&
       matches(listing, filter, terms) &&
       (booked === undefined ||
-        (listing.rentPerDay !== undefined && !booked.has(listing.id))),
+        (listing.rentPerMonth !== undefined && !booked.has(listing.id))),
   )
   return sortListings(matched, filter.sort).map(withoutImages)
 }
@@ -213,13 +209,14 @@ export async function getListingIds(): Promise<string[]> {
 /** Public listing fields derived from a submission; contact details stay out. */
 function listingFields(submission: ListingSubmission) {
   return {
-    property: submission.property,
     name: submission.name,
     category: submission.category,
-    maker: submission.maker,
-    year: submission.year,
-    hours: submission.hours,
-    condition: submission.condition,
+    zoning: submission.zoning,
+    layout: submission.layout,
+    floorArea: submission.floorArea,
+    builtYear: submission.builtYear,
+    nearestStation: submission.nearestStation,
+    walkMinutes: submission.walkMinutes,
     prefecture: submission.prefecture,
     city: submission.city,
     image:
@@ -231,10 +228,13 @@ function listingFields(submission: ListingSubmission) {
     summary: submission.summary,
     deals: submission.deals,
     salePrice: submission.salePrice,
-    rentPerDay: submission.rentPerDay,
-    rentToOwn: submission.rentToOwn,
-    rentToOwnCreditRate: submission.rentToOwnCreditRate,
-    rentToOwnCreditCap: submission.rentToOwnCreditCap,
+    rentPerMonth: submission.rentPerMonth,
+    depositMonths: submission.depositMonths,
+    keyMoneyMonths: submission.keyMoneyMonths,
+    leaseType: submission.leaseType,
+    purchaseOption: submission.purchaseOption,
+    purchaseOptionCreditRate: submission.purchaseOptionCreditRate,
+    purchaseOptionCreditCap: submission.purchaseOptionCreditCap,
     tags: [] as string[],
   }
 }
@@ -286,7 +286,7 @@ export async function deleteListing(id: string): Promise<boolean> {
 
 export type ListingStatusResult =
   | { ok: true; value: Listing }
-  | { ok: false; reason: 'not_found' | 'forbidden' | 'rental_open' }
+  | { ok: false; reason: 'not_found' | 'forbidden' | 'lease_open' }
 
 /** Take a listing off the site or put it back; the review state is untouched. */
 export async function setListingStatus(
@@ -299,13 +299,13 @@ export async function setListingStatus(
   if (!listing) return { ok: false, reason: 'not_found' }
   if (!canManage(user, listing)) return { ok: false, reason: 'forbidden' }
   if (status === 'withdrawn') {
-    const rentals = await store.rentals.list()
-    const open = rentals.some(
-      (rental) =>
-        rental.listingId === id &&
-        (rental.status === 'requested' || rental.status === 'active'),
+    const leases = await store.leases.list()
+    const open = leases.some(
+      (lease) =>
+        lease.listingId === id &&
+        (lease.status === 'requested' || lease.status === 'active'),
     )
-    if (open) return { ok: false, reason: 'rental_open' }
+    if (open) return { ok: false, reason: 'lease_open' }
   }
   const now = new Date().toISOString()
   const updated = await store.listings.update(id, {
@@ -321,7 +321,7 @@ export async function setListingStatus(
     await notify({
       userId: listing.ownerUserId,
       kind: 'moderation',
-      title: '掲載が運営により取り下げられました',
+      title: '出品が運営により取り下げられました',
       body: listing.name,
       href: `/listings/${id}`,
     })

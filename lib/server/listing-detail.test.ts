@@ -1,35 +1,32 @@
-import { seedLegacyRentalListings } from '@/test/legacy-listings'
-import { resetStore } from './store'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { getListing } from './listings'
 import { buildModes } from './listing-detail'
 
 vi.mock('server-only', () => ({}))
 
-beforeEach(async () => {
-  await resetStore()
-  await seedLegacyRentalListings()
-})
-
 describe('listing detail business rules', () => {
-  it('offers rental, rent-to-own, and purchase for eligible equipment', async () => {
-    const listing = (await getListing('trc-001'))!
+  it('offers a lease, a purchase option, and a purchase where eligible', async () => {
+    const listing = (await getListing('apt-001'))!
     const modes = buildModes(listing)
-    expect(modes.map((mode) => mode.id)).toEqual(['rent', 'rentToOwn', 'buy'])
-    expect(modes[0].price).toBe('¥22,000/日')
-    expect(modes[2].price).toBe('¥18,800,000')
+    expect(modes.map((mode) => mode.id)).toEqual([
+      'rent',
+      'purchaseOption',
+      'buy',
+    ])
+    expect(modes[0].price).toBe('¥268,000/月')
+    expect(modes[2].price).toBe('¥88,000,000')
     expect(modes[1].note).toBe(
-      'レンタル料の50%（上限 ¥5,000,000）を購入価格に充当します。試してから決められるので、高額な買い物でも安心です。',
+      '賃料の50%（上限 ¥5,000,000）を購入価格に充当します。住んでから決められるので、高額な買い物でも安心です。',
     )
     expect(JSON.parse(JSON.stringify(modes))).toEqual(modes)
   })
 
   it('only offers supported transactions', async () => {
     expect(
-      buildModes((await getListing('drn-005'))!).map((mode) => mode.id),
+      buildModes((await getListing('cml-005'))!).map((mode) => mode.id),
     ).toEqual(['rent'])
     expect(
-      buildModes((await getListing('trc-006'))!).map((mode) => mode.id),
+      buildModes((await getListing('lnd-004'))!).map((mode) => mode.id),
     ).toEqual(['buy'])
   })
 })

@@ -1,8 +1,33 @@
 import { describe, expect, it } from 'vitest'
 import {
   buildListingSearchParams,
+  hasInvalidRefinement,
   parseListingSearchParams,
 } from './listing-search-params'
+
+describe('layout refinement', () => {
+  it('reads a known layout and drops an unknown one', () => {
+    expect(
+      parseListingSearchParams(new URLSearchParams('layout=2LDK')).filter
+        .layout,
+    ).toBe('2LDK')
+    expect(
+      parseListingSearchParams(new URLSearchParams('layout=5LDK')).filter
+        .layout,
+    ).toBeUndefined()
+  })
+
+  it('rejects an unknown layout for the API and round-trips a known one', () => {
+    expect(hasInvalidRefinement(new URLSearchParams('layout=5LDK'))).toBe(true)
+    expect(hasInvalidRefinement(new URLSearchParams('layout=2LDK'))).toBe(false)
+    expect(
+      buildListingSearchParams(
+        { category: 'すべて', deal: 'rent', keyword: '', layout: '2LDK' },
+        1,
+      ),
+    ).toBe('deal=rent&layout=2LDK')
+  })
+})
 
 describe('parseListingSearchParams', () => {
   it('falls back to defaults for missing or invalid values', () => {
@@ -26,13 +51,13 @@ describe('parseListingSearchParams', () => {
   it('reads valid values and trims keywords', () => {
     expect(
       parseListingSearchParams({
-        category: '店舗',
+        category: '戸建',
         deal: 'rent',
         page: '3',
-        q: ' 横浜 ',
+        q: ' 南向き ',
       }),
     ).toEqual({
-      filter: { category: '店舗', deal: 'rent', keyword: '横浜' },
+      filter: { category: '戸建', deal: 'rent', keyword: '南向き' },
       page: 3,
     })
   })
@@ -48,7 +73,7 @@ describe('parseListingSearchParams', () => {
 })
 
 describe('refinements', () => {
-  it('reads prefecture, price range, sort, and rental dates', () => {
+  it('reads prefecture, price range, sort, and lease dates', () => {
     expect(
       parseListingSearchParams({
         prefecture: '新潟県',
@@ -124,9 +149,11 @@ describe('buildListingSearchParams', () => {
     ).toBe('')
     expect(
       buildListingSearchParams(
-        { category: '店舗', deal: 'rent', keyword: '横浜' },
+        { category: '戸建', deal: 'rent', keyword: '南向き' },
         3,
       ),
-    ).toBe('q=%E6%A8%AA%E6%B5%9C&category=%E5%BA%97%E8%88%97&deal=rent&page=3')
+    ).toBe(
+      'q=%E5%8D%97%E5%90%91%E3%81%8D&category=%E6%88%B8%E5%BB%BA&deal=rent&page=3',
+    )
   })
 })

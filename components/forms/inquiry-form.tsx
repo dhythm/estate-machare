@@ -43,8 +43,8 @@ export function InquiryForm({
     return (
       <ReceiptPanel
         receipt={form.receipt}
-        title="掲載者への連絡"
-        description="掲載者とのやり取りはマイページで確認できます。"
+        title="出品者への連絡"
+        description="出品者とのやり取りはマイページで確認できます。"
         links={[
           {
             href: `/account/threads/${form.receipt.id}`,

@@ -1,4 +1,6 @@
-/** Japanese prefectures in geographic order for property search. */
+/** Prefecture names shared by listing search, property requests, and profiles. */
+
+/** North to south, matching the order used in the pickers. */
 export const prefectureNames = [
   '北海道',
   '青森県',
@@ -48,3 +50,8 @@ export const prefectureNames = [
   '鹿児島県',
   '沖縄県',
 ]
+
+/** Leading prefecture in a free-form place such as "東京都 世田谷区". */
+export function prefectureOf(place: string): string | undefined {
+  return prefectureNames.find((name) => place.trim().startsWith(name))
+}

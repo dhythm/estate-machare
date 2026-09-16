@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import type { Listing } from '@/lib/data'
+import type { Listing, PropertyRequest } from '@/lib/data'
 import type { AccountOverview } from '@/lib/server/account'
 import { AccountOverviewView } from './account-overview'
 
@@ -16,26 +16,41 @@ const listing = (
 ): Listing => ({
   id,
   name,
-  category: 'トラクター',
-  maker: 'クボタ',
-  year: 2019,
-  hours: 620,
-  condition: '目立った傷なし',
+  category: 'マンション',
+  zoning: '第一種住居地域',
+  layout: '3LDK',
+  floorArea: 74.2,
+  builtYear: 2019,
+  nearestStation: '小田急線 経堂駅',
+  walkMinutes: 6,
   prefecture: '新潟県',
   city: '長岡市',
-  image: '/equipment/tractor.png',
+  image: '/properties/apartment.svg',
   summary: '説明',
   deals: ['sale'],
   salePrice: 1_000_000,
-  seller: { name: '掲載者デモ', kind: '農業法人', rating: 0, reviews: 0 },
+  seller: { name: '出品者デモ', kind: '宅建業者', rating: 0, reviews: 0 },
   tags: [],
   ...extra,
 })
 
+const request: PropertyRequest = {
+  id: 'pr-01',
+  title: '駅徒歩10分以内の2LDKを借りたい',
+  deal: 'rent',
+  category: 'マンション',
+  layout: '2LDK',
+  prefecture: '東京都',
+  city: '世田谷区',
+  budget: 220_000,
+  moveInDate: '2026-12-01',
+  status: '募集中',
+}
+
 const overview: AccountOverview = {
   listings: [
     {
-      listing: listing('l-1', '公開中のトラクター'),
+      listing: listing('l-1', '公開中のマンション'),
       inquiries: [
         {
           id: 'i-1',
@@ -53,29 +68,62 @@ const overview: AccountOverview = {
       ],
     },
     {
-      listing: listing('l-2', '審査中のコンバイン', {
+      listing: listing('l-2', '審査中の戸建', {
         moderationStatus: 'pending',
       }),
       inquiries: [],
     },
     {
-      listing: listing('l-3', '取り下げ中の田植機', {
+      listing: listing('l-3', '取り下げ中の土地', {
         withdrawnAt: '2026-09-13T00:00:00.000Z',
       }),
       inquiries: [],
     },
   ],
+  propertyRequests: [{ request, applications: [], inquiries: [] }],
   sentInquiries: [
     {
       submission: {
         id: 'i-2',
         kind: 'listingInquiry',
-        targetId: 'trc-001',
+        targetId: 'apt-001',
         userId: 'me',
         receivedAt: '2026-09-13T02:00:00.000Z',
         payload: { mode: 'buy', message: '買いたい' },
       },
-      listing: listing('trc-001', 'クボタ 45馬力'),
+      listing: listing('apt-001', 'クボタ 45馬力'),
+    },
+  ],
+  sentApplications: [
+    {
+      submission: {
+        id: 'a-1',
+        kind: 'requestProposal',
+        targetId: 'pr-09',
+        userId: 'me',
+        receivedAt: '2026-09-13T03:00:00.000Z',
+        payload: { vehicle: 'マンション', availableDate: '2026-10-03' },
+        status: 'agreed',
+      },
+      request: {
+        ...request,
+        id: 'pr-09',
+        title: '受託した3LDK',
+        status: '調整中',
+      },
+    },
+  ],
+  sentJobInquiries: [
+    {
+      submission: {
+        id: 'q-1',
+        kind: 'requestInquiry',
+        targetId: 'pr-01',
+        userId: 'me',
+        receivedAt: '2026-09-13T04:00:00.000Z',
+        payload: { message: '積載方法は？' },
+      },
+      request,
     },
   ],
   replyCounts: { 'i-1': 2 },
@@ -85,7 +133,7 @@ const overview: AccountOverview = {
       {
         order: {
           id: 'o-1',
-          listingId: 'trc-006',
+          listingId: 'apt-006',
           buyerUserId: 'me',
           sellerUserId: 'demo-seller',
           price: 21_000_000,
@@ -93,7 +141,7 @@ const overview: AccountOverview = {
           createdAt: '2026-09-13T00:00:00.000Z',
           updatedAt: '2026-09-13T00:00:00.000Z',
         },
-        listing: listing('trc-006', 'ジョンディア 90馬力'),
+        listing: listing('apt-006', 'ジョンディア 90馬力'),
       },
     ],
     asSeller: [
@@ -109,7 +157,7 @@ const overview: AccountOverview = {
           createdAt: '2026-09-13T00:00:00.000Z',
           updatedAt: '2026-09-13T00:00:00.000Z',
         },
-        listing: listing('l-1', '公開中のトラクター'),
+        listing: listing('l-1', '公開中のマンション'),
       },
     ],
   },
@@ -123,56 +171,89 @@ const overview: AccountOverview = {
       status: 'delivered',
       statusLabel: '引き渡し済み',
       role: '買い手',
-      counterpart: '掲載者デモ',
+      counterpart: '出品者デモ',
       updatedAt: '2026-09-13T00:00:00.000Z',
+    },
+    {
+      kind: 'propertyRequest',
+      id: 'pr-01',
+      title: '駅徒歩10分以内の2LDKを借りたい',
+      href: '/requests/pr-01',
+      amount: 220_000,
+      status: '募集中',
+      statusLabel: '募集中',
+      role: '募集者',
+      counterpart: '未定',
+      updatedAt: '',
     },
   ],
   unreadThreadIds: ['i-1'],
+  agent: {
+    profile: {
+      id: 'me',
+      name: '高橋不動産',
+      kind: '法人',
+      prefecture: '秋田県',
+      handledCategories: ['マンション'],
+      serviceAreas: ['秋田県', '山形県'],
+      createdAt: '2026-09-13T00:00:00.000Z',
+      updatedAt: '2026-09-13T00:00:00.000Z',
+    },
+    matchingRequests: [request],
+  },
   summary: {
     unreadThreads: 1,
     openInquiries: 2,
-    requestedRentals: 1,
+    requestedLeases: 1,
     requestedOrders: 1,
     pendingListings: 1,
   },
-  rentals: {
-    asRenter: [
+  leases: {
+    asTenant: [
       {
-        rental: {
+        lease: {
           id: 'r-1',
-          listingId: 'trc-001',
-          renterUserId: 'me',
+          listingId: 'apt-001',
+          tenantUserId: 'me',
           startDate: '2026-10-01',
-          endDate: '2026-10-07',
-          days: 7,
-          rentPerDay: 22_000,
-          rentTotal: 154_000,
-          salePrice: 18_800_000,
+          endDate: '2027-09-30',
+          months: 12,
+          rentPerMonth: 268_000,
+          rentTotal: 3_216_000,
+          deposit: 536_000,
+          keyMoney: 268_000,
+          initialCost: 1_340_000,
+          salePrice: 88_000_000,
           creditRate: 50,
           status: 'converted',
-          purchasePrice: 18_723_000,
+          purchasePrice: 86_392_000,
           createdAt: '2026-09-13T00:00:00.000Z',
           updatedAt: '2026-09-13T00:00:00.000Z',
         },
-        listing: listing('trc-001', 'クボタ 45馬力', { rentToOwn: true }),
+        listing: listing('apt-001', 'シティタワー 世田谷区 3LDK', {
+          purchaseOption: true,
+        }),
       },
     ],
     asOwner: [
       {
-        rental: {
+        lease: {
           id: 'r-2',
           listingId: 'l-1',
-          renterUserId: 'demo-user',
+          tenantUserId: 'demo-user',
           startDate: '2026-11-01',
-          endDate: '2026-11-03',
-          days: 3,
-          rentPerDay: 10_000,
+          endDate: '2028-10-31',
+          months: 24,
+          deposit: 0,
+          keyMoney: 0,
+          initialCost: 0,
+          rentPerMonth: 10_000,
           rentTotal: 30_000,
           status: 'requested',
           createdAt: '2026-09-13T00:00:00.000Z',
           updatedAt: '2026-09-13T00:00:00.000Z',
         },
-        listing: listing('l-1', '公開中のトラクター'),
+        listing: listing('l-1', '公開中のマンション'),
       },
     ],
   },
@@ -198,18 +279,16 @@ describe('AccountOverviewView', () => {
         }}
       />,
     )
-    expect(
-      screen
-        .getAllByRole('link')
-        .some((link) => link.getAttribute('href')?.includes('transport')),
-    ).toBe(false)
     const navigation = screen.getByRole('navigation', { name: '取引メニュー' })
     expect(
-      within(navigation).getByRole('link', { name: '掲載管理' }),
+      within(navigation).getByRole('link', { name: '出品管理' }),
     ).toHaveAttribute('href', '#equipment')
     expect(
       within(navigation).getByRole('link', { name: '賃貸管理' }),
-    ).toHaveAttribute('href', '#rentals')
+    ).toHaveAttribute('href', '#leases')
+    expect(
+      within(navigation).getByRole('link', { name: 'リクエスト管理' }),
+    ).toHaveAttribute('href', '#requests')
     expect(
       within(navigation).getByRole('link', { name: '送信したやり取り' }),
     ).toHaveAttribute('href', '#sent')
@@ -232,12 +311,12 @@ describe('AccountOverviewView', () => {
         overview={{
           ...overview,
           reviewedSources: {
-            'rental:r-1': {
+            'lease:r-1': {
               id: 'rv-1',
-              listingId: 'trc-001',
+              listingId: 'apt-001',
               sellerUserId: 'demo-seller',
               reviewerUserId: 'me',
-              sourceKind: 'rental',
+              sourceKind: 'lease',
               sourceId: 'r-1',
               rating: 4,
               comment: '助かりました',
@@ -257,8 +336,8 @@ describe('AccountOverviewView', () => {
 
   it('lists owned rows with status and what came in', () => {
     render(<AccountOverviewView overview={overview} />)
-    const mine = screen.getByRole('region', { name: '自分の掲載' })
-    expect(within(mine).getByText('公開中のトラクター')).toBeInTheDocument()
+    const mine = screen.getByRole('region', { name: '自分の出品' })
+    expect(within(mine).getByText('公開中のマンション')).toBeInTheDocument()
     expect(within(mine).getByText('審査待ち')).toBeInTheDocument()
     expect(within(mine).getByText('取り下げ中')).toBeInTheDocument()
     expect(
@@ -276,17 +355,51 @@ describe('AccountOverviewView', () => {
     expect(within(mine).getByText('未読')).toBeInTheDocument()
     const summary = screen.getByRole('region', { name: '概要' })
     expect(within(summary).getByText('未読のやり取り')).toBeInTheDocument()
-    expect(within(summary).getByText('未対応の問い合わせ')).toBeInTheDocument()
+    expect(
+      within(summary).getByText('未対応の問い合わせ・提案'),
+    ).toBeInTheDocument()
     expect(within(summary).getAllByText('1件')).toHaveLength(3)
     expect(within(summary).getByText('2件')).toBeInTheDocument()
+    const agent = screen.getByRole('region', { name: '担当者プロフィール' })
+    expect(within(agent).getByText('高橋不動産')).toBeInTheDocument()
+    expect(
+      within(agent).getByRole('link', { name: 'プロフィールを編集' }),
+    ).toHaveAttribute('href', '/requests/register')
+    expect(
+      within(agent).getByRole('link', {
+        name: '駅徒歩10分以内の2LDKを借りたい',
+      }),
+    ).toHaveAttribute('href', '/requests/pr-01')
+    expect(within(mine).getByText('未対応')).toBeInTheDocument()
+    const requests = screen.getByRole('region', {
+      name: '自分の物件リクエスト',
+    })
+    expect(
+      within(requests).getByText('駅徒歩10分以内の2LDKを借りたい'),
+    ).toBeInTheDocument()
+    expect(
+      within(requests).getByText('提案はまだありません'),
+    ).toBeInTheDocument()
+    expect(
+      within(requests).getByRole('button', { name: '成約にする' }),
+    ).toBeInTheDocument()
     const sent = screen.getByRole('region', { name: '送った問い合わせ' })
     expect(
       within(sent).getByRole('link', { name: 'クボタ 45馬力' }),
-    ).toHaveAttribute('href', '/listings/trc-001')
+    ).toHaveAttribute('href', '/listings/apt-001')
     expect(within(sent).getByText('買いたい')).toBeInTheDocument()
     expect(
       within(sent).getByRole('link', { name: 'やり取りを開く' }),
     ).toHaveAttribute('href', '/account/threads/i-2')
+    const applications = screen.getByRole('region', { name: '送った提案' })
+    expect(within(applications).getByText('受託した3LDK')).toBeInTheDocument()
+    expect(
+      within(applications).getByRole('button', {
+        name: '紹介を開始する',
+      }),
+    ).toBeInTheDocument()
+    const questions = screen.getByRole('region', { name: '送った質問' })
+    expect(within(questions).getByText('積載方法は？')).toBeInTheDocument()
     const bought = screen.getByRole('region', { name: '買った物件' })
     expect(within(bought).getByText('ジョンディア 90馬力')).toBeInTheDocument()
     expect(within(bought).getByText('引き渡し済み')).toBeInTheDocument()
@@ -294,8 +407,8 @@ describe('AccountOverviewView', () => {
       within(bought).getByRole('button', { name: '受け取りを確認' }),
     ).toBeInTheDocument()
     expect(
-      within(bought).queryByRole('link', { name: '引越しを依頼する' }),
-    ).not.toBeInTheDocument()
+      within(bought).getByRole('link', { name: '希望条件を登録する' }),
+    ).toHaveAttribute('href', '/requests/new?listingId=apt-006')
     const history = screen.getByRole('region', { name: '取引の履歴' })
     expect(
       within(history).getByRole('link', { name: /ジョンディア 90馬力/ }),
@@ -307,15 +420,15 @@ describe('AccountOverviewView', () => {
       within(sold).getByRole('button', { name: '承諾する' }),
     ).toBeInTheDocument()
     const renting = screen.getByRole('region', { name: '借りている物件' })
-    expect(within(renting).getByText('購入に切替')).toBeInTheDocument()
+    expect(within(renting).getByText('購入へ切替')).toBeInTheDocument()
     expect(
-      within(renting).queryByRole('link', { name: '引越しを依頼する' }),
-    ).not.toBeInTheDocument()
+      within(renting).getByRole('link', { name: '希望条件を登録する' }),
+    ).toHaveAttribute('href', '/requests/new?listingId=apt-001')
     expect(
       within(renting).getByRole('button', { name: 'レビューを送る' }),
     ).toBeInTheDocument()
     expect(
-      within(renting).getByText('2026-10-01 〜 2026-10-07・7日間・¥154,000'),
+      within(renting).getByText('2026-10-01 〜 2027-09-30・12か月・¥3,216,000'),
     ).toBeInTheDocument()
     expect(
       within(renting).queryByRole('button', { name: '購入に切り替える' }),

@@ -13,12 +13,12 @@ describe('ListingStatusButton', () => {
   it('withdraws a listed listing', async () => {
     const fetchMock = vi.fn(async () => Response.json({ withdrawnAt: 'x' }))
     vi.stubGlobal('fetch', fetchMock)
-    render(<ListingStatusButton listingId="trc-001" withdrawn={false} />)
+    render(<ListingStatusButton listingId="apt-001" withdrawn={false} />)
     await userEvent
       .setup()
       .click(screen.getByRole('button', { name: '取り下げる' }))
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/listings/trc-001/status',
+      '/api/listings/apt-001/status',
       expect.objectContaining({ method: 'PATCH' }),
     )
     expect(
@@ -34,18 +34,15 @@ describe('ListingStatusButton', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () =>
-        Response.json(
-          { error: '進行中のレンタルがあります。' },
-          { status: 409 },
-        ),
+        Response.json({ error: '進行中の賃貸があります。' }, { status: 409 }),
       ),
     )
-    render(<ListingStatusButton listingId="trc-001" withdrawn />)
+    render(<ListingStatusButton listingId="apt-001" withdrawn />)
     await userEvent
       .setup()
       .click(screen.getByRole('button', { name: '再掲載する' }))
     expect(
-      await screen.findByText('進行中のレンタルがあります。'),
+      await screen.findByText('進行中の賃貸があります。'),
     ).toBeInTheDocument()
   })
 })

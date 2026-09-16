@@ -24,7 +24,7 @@ export async function PATCH(
       return notFound('物件が見つかりません。')
     case 'forbidden':
       return forbidden('この物件を編集する権限がありません。')
-    case 'rental_open':
-      return conflict('進行中のレンタルがあります。')
+    case 'lease_open':
+      return conflict('進行中の賃貸借契約があります。')
   }
 }

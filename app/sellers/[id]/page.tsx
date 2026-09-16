@@ -8,7 +8,7 @@ import { PageShell } from '@/components/page-shell'
 import { StarRating } from '@/components/reviews/star-rating'
 import { getSellerProfile } from '@/lib/server/sellers'
 
-export const metadata: Metadata = { title: '掲載者 | Estate Machare' }
+export const metadata: Metadata = { title: '出品者 | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 

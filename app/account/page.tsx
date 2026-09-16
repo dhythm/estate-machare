@@ -58,7 +58,7 @@ export default async function AccountPage() {
               className={cn(buttonVariants(), 'h-10 px-4')}
             >
               <Plus className="size-4" aria-hidden="true" />
-              新しく掲載する
+              新しく出品する
             </Link>
           </div>
         </div>

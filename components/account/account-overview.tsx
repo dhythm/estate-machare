@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { propertyImage } from '@/lib/property-image'
 import {
   ArrowUpRight,
   CalendarDays,
   Clock3,
+  Handshake,
   Inbox,
   MessageSquare,
   Plus,
@@ -20,16 +22,18 @@ import {
 } from '@/lib/data'
 import type { AccountOverview } from '@/lib/server/account'
 import type { Submission } from '@/lib/server/store/types'
-import { RentalActions } from './rental-actions'
+import { CloseRequestButton } from './close-request-button'
+import { LeaseActions } from './lease-actions'
+import { StartIntroductionButton } from './start-introduction-button'
 import { ListingStatusButton } from '@/components/listings/listing-status-button'
 import { ReviewForm } from '@/components/reviews/review-form'
 import { StarRating } from '@/components/reviews/star-rating'
 import type { Review } from '@/lib/server/store/types'
-import { rentalStatusLabels } from '@/lib/rent-to-own'
+import { leaseStatusLabels } from '@/lib/lease'
 import { orderStatusLabels } from '@/lib/data'
 import type { OrderWithListing } from '@/lib/server/orders'
 import { OrderActions } from './order-actions'
-import type { RentalWithListing } from '@/lib/server/rentals'
+import type { LeaseWithListing } from '@/lib/server/leases'
 
 const moderationLabels: Record<ModerationStatus, string> = {
   pending: '審査待ち',
@@ -199,7 +203,7 @@ function OrderList({
             </Badge>
             <span className="text-muted-foreground">
               {formatYen(order.price)}
-              {order.sourceRentalId && '（賃貸から切替）'}
+              {order.sourceLeaseId && '（賃貸から切替）'}
             </span>
           </div>
           {order.message && (
@@ -211,6 +215,17 @@ function OrderList({
               status={order.status}
               party={party}
             />
+            {party === 'buyer' &&
+              listing &&
+              (order.status === 'delivered' ||
+                order.status === 'completed') && (
+                <Link
+                  href={`/requests/new?listingId=${listing.id}`}
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  希望条件を登録する
+                </Link>
+              )}
           </div>
           {party === 'buyer' &&
             order.status === 'completed' &&
@@ -227,21 +242,21 @@ function OrderList({
   )
 }
 
-function RentalList({
+function LeaseList({
   items,
   party,
   reviewedSources,
 }: {
-  items: RentalWithListing[]
-  party: 'owner' | 'renter'
+  items: LeaseWithListing[]
+  party: 'owner' | 'tenant'
   reviewedSources: Record<string, Review>
 }) {
   if (items.length === 0) return <Empty label="まだありません" />
   return (
     <ul className="flex flex-col gap-3">
-      {items.map(({ rental, listing }) => (
+      {items.map(({ lease, listing }) => (
         <li
-          key={rental.id}
+          key={lease.id}
           className="rounded-2xl border border-border bg-card p-5 text-sm sm:p-6"
         >
           <div className="flex flex-wrap items-center gap-2">
@@ -255,39 +270,44 @@ function RentalList({
             ) : (
               <span className="text-muted-foreground">削除された物件</span>
             )}
-            <Badge
-              variant={rental.status === 'requested' ? 'default' : 'muted'}
-            >
-              {rentalStatusLabels[rental.status]}
+            <Badge variant={lease.status === 'requested' ? 'default' : 'muted'}>
+              {leaseStatusLabels[lease.status]}
             </Badge>
           </div>
           <p className="mt-1 text-muted-foreground">
-            {rental.startDate} 〜 {rental.endDate}・{rental.days}日間・
-            {formatYen(rental.rentTotal)}
+            {lease.startDate} 〜 {lease.endDate}・{lease.months}か月・
+            {formatYen(lease.rentTotal)}
           </p>
-          {rental.purchasePrice !== undefined && (
+          {lease.purchasePrice !== undefined && (
             <p className="mt-1 text-foreground">
-              購入価格 {formatYen(rental.purchasePrice)}（充当後）
+              購入価格 {formatYen(lease.purchasePrice)}（充当後）
             </p>
           )}
+          {lease.status === 'converted' && listing && party === 'tenant' && (
+            <Link
+              href={`/requests/new?listingId=${listing.id}`}
+              className="mt-2 inline-block text-sm font-medium text-primary hover:underline"
+            >
+              希望条件を登録する
+            </Link>
+          )}
           <div className="mt-4 border-t border-border pt-4">
-            <RentalActions
-              rentalId={rental.id}
-              status={rental.status}
+            <LeaseActions
+              leaseId={lease.id}
+              status={lease.status}
               party={party}
               canConvert={
-                rental.salePrice !== undefined &&
-                rental.creditRate !== undefined
+                lease.salePrice !== undefined && lease.creditRate !== undefined
               }
             />
           </div>
-          {party === 'renter' &&
-            (rental.status === 'completed' || rental.status === 'converted') &&
-            (reviewedSources[`rental:${rental.id}`] ? (
-              <WrittenReview review={reviewedSources[`rental:${rental.id}`]} />
+          {party === 'tenant' &&
+            (lease.status === 'completed' || lease.status === 'converted') &&
+            (reviewedSources[`lease:${lease.id}`] ? (
+              <WrittenReview review={reviewedSources[`lease:${lease.id}`]} />
             ) : (
               <div className="mt-3 border-t border-border pt-3">
-                <ReviewForm sourceKind="rental" sourceId={rental.id} />
+                <ReviewForm sourceKind="lease" sourceId={lease.id} />
               </div>
             ))}
         </li>
@@ -312,19 +332,19 @@ export function AccountOverviewView({
       icon: MessageSquare,
     },
     {
-      label: '未対応の問い合わせ',
+      label: '未対応の問い合わせ・提案',
       value: overview.summary.openInquiries,
       href: '#activity',
       icon: Inbox,
     },
     {
       label: '承認待ちの賃貸',
-      value: overview.summary.requestedRentals,
+      value: overview.summary.requestedLeases,
       href: '#lending',
       icon: CalendarDays,
     },
     {
-      label: '審査待ちの掲載',
+      label: '審査待ちの出品',
       value: overview.summary.pendingListings,
       href: '#equipment',
       icon: Clock3,
@@ -362,12 +382,12 @@ export function AccountOverviewView({
         </ul>
       </section>
       <div className="grid items-start gap-7 lg:grid-cols-[205px_minmax(0,1fr)] lg:gap-9">
-        <AccountNavigation />
+        <AccountNavigation isAgent={Boolean(overview.agent)} />
         <div className="flex min-w-0 flex-col gap-10">
           <AccountActivity overview={overview} />
           <Section
             id="equipment"
-            title="自分の掲載"
+            title="自分の出品"
             count={overview.listings.length}
             action={
               <Link
@@ -378,7 +398,7 @@ export function AccountOverviewView({
                 )}
               >
                 <Plus className="size-3.5" aria-hidden="true" />
-                掲載する
+                出品する
               </Link>
             }
           >
@@ -394,7 +414,7 @@ export function AccountOverviewView({
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex min-w-0 items-center gap-4">
                         <Image
-                          src={listing.image}
+                          src={propertyImage(listing.image)}
                           alt=""
                           width={72}
                           height={72}
@@ -402,7 +422,7 @@ export function AccountOverviewView({
                         />
                         <div className="min-w-0">
                           <p className="mb-1 text-xs text-muted-foreground">
-                            {listing.maker} · {listing.category}
+                            {listing.category} · {listing.zoning}
                           </p>
                           <Link
                             href={`/listings/${listing.id}`}
@@ -478,7 +498,11 @@ export function AccountOverviewView({
                     className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card px-5 py-4 text-sm"
                   >
                     <Badge variant="outline">
-                      {deal.kind === 'order' ? '注文' : '賃貸'}
+                      {deal.kind === 'order'
+                        ? '注文'
+                        : deal.kind === 'lease'
+                          ? '賃貸'
+                          : '物件リクエスト'}
                     </Badge>
                     <Link
                       href={`/account/deals/${deal.kind}/${deal.id}`}
@@ -527,13 +551,13 @@ export function AccountOverviewView({
           </Section>
 
           <Section
-            id="rentals"
+            id="leases"
             title="借りている物件"
-            count={overview.rentals.asRenter.length}
+            count={overview.leases.asTenant.length}
           >
-            <RentalList
-              items={overview.rentals.asRenter}
-              party="renter"
+            <LeaseList
+              items={overview.leases.asTenant}
+              party="tenant"
               reviewedSources={overview.reviewedSources}
             />
           </Section>
@@ -541,14 +565,192 @@ export function AccountOverviewView({
           <Section
             id="lending"
             title="貸している物件"
-            count={overview.rentals.asOwner.length}
+            count={overview.leases.asOwner.length}
           >
-            <RentalList
-              items={overview.rentals.asOwner}
+            <LeaseList
+              items={overview.leases.asOwner}
               party="owner"
               reviewedSources={overview.reviewedSources}
             />
           </Section>
+
+          <Section
+            id="requests"
+            title="自分の物件リクエスト"
+            count={overview.propertyRequests.length}
+            action={
+              <Link
+                href="/requests/new"
+                className={cn(
+                  buttonVariants({ variant: 'outline', size: 'sm' }),
+                  'gap-1.5',
+                )}
+              >
+                <Plus className="size-3.5" aria-hidden="true" />
+                物件リクエストを依頼
+              </Link>
+            }
+          >
+            {overview.propertyRequests.length === 0 ? (
+              <Empty label="まだありません" />
+            ) : (
+              <ul className="flex flex-col gap-4">
+                {overview.propertyRequests.map(
+                  ({ request, applications, inquiries }) => (
+                    <li
+                      key={request.id}
+                      className="rounded-2xl border border-border bg-card p-5"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Link
+                            href={`/requests/${request.id}`}
+                            className="font-semibold text-foreground hover:text-primary hover:underline"
+                          >
+                            {request.title}
+                          </Link>
+                          <ModerationBadge status={request.moderationStatus} />
+                          <Badge variant="muted">{request.status}</Badge>
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          {request.prefecture} {request.city}・
+                          {formatYen(request.budget)}
+                        </span>
+                      </div>
+                      <div className="mt-3 flex items-center gap-3">
+                        <Link
+                          href={`/requests/${request.id}/edit`}
+                          className="text-xs font-medium text-primary hover:underline"
+                        >
+                          編集
+                        </Link>
+                        {request.status !== '成約' && (
+                          <CloseRequestButton requestId={request.id} />
+                        )}
+                      </div>
+                      <IncomingList
+                        items={inquiries}
+                        empty=""
+                        render={(inquiry) => (
+                          <div className="flex flex-col gap-1">
+                            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                              <span className="shrink-0 text-muted-foreground">
+                                {receivedAt(inquiry)}
+                              </span>
+                              <Badge variant="outline">質問</Badge>
+                              <span className="shrink-0 font-medium">
+                                {text(inquiry.payload.name)}
+                              </span>
+                              <span className="text-foreground">
+                                {text(inquiry.payload.message)}
+                              </span>
+                            </div>
+                            <ThreadMeta
+                              submission={inquiry}
+                              replyCount={getReplyCount(inquiry)}
+                              unread={unread.has(inquiry.id)}
+                            />
+                          </div>
+                        )}
+                      />
+                      <IncomingList
+                        items={applications}
+                        empty="提案はまだありません"
+                        render={(application) => (
+                          <div className="flex flex-col gap-1">
+                            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                              <span className="shrink-0 text-muted-foreground">
+                                {receivedAt(application)}
+                              </span>
+                              <span className="shrink-0 font-medium">
+                                {text(application.payload.name)}
+                              </span>
+                              <span className="text-muted-foreground">
+                                {text(application.payload.vehicle)}
+                                {text(application.payload.availableDate) &&
+                                  `・${text(application.payload.availableDate)}`}
+                              </span>
+                              <span className="text-foreground">
+                                {text(application.payload.message)}
+                              </span>
+                            </div>
+                            <ThreadMeta
+                              submission={application}
+                              replyCount={getReplyCount(application)}
+                              unread={unread.has(application.id)}
+                            />
+                          </div>
+                        )}
+                      />
+                    </li>
+                  ),
+                )}
+              </ul>
+            )}
+          </Section>
+
+          {overview.agent && (
+            <Section id="agent" title="担当者プロフィール">
+              <div className="rounded-2xl border border-border bg-card p-5 text-sm">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium text-foreground">
+                    {overview.agent.profile.name}
+                  </span>
+                  <Badge variant="muted">{overview.agent.profile.kind}</Badge>
+                  <span className="text-muted-foreground">
+                    拠点 {overview.agent.profile.prefecture}
+                  </span>
+                  <Link
+                    href="/requests/register"
+                    className="ml-auto text-xs font-medium text-primary hover:underline"
+                  >
+                    プロフィールを編集
+                  </Link>
+                </div>
+                <p className="mt-2 text-muted-foreground">
+                  取扱カテゴリ:{' '}
+                  {overview.agent.profile.handledCategories.join('・')}
+                  ／対応地域: {overview.agent.profile.serviceAreas.join('・')}
+                </p>
+                <h3 className="mt-4 text-sm font-medium text-foreground">
+                  対応地域の募集中リクエスト
+                </h3>
+                {overview.agent.matchingRequests.length === 0 ? (
+                  <p className="mt-1 text-muted-foreground">該当なし</p>
+                ) : (
+                  <ul className="mt-2 flex flex-col gap-1">
+                    {overview.agent.matchingRequests.map((request) => (
+                      <li key={request.id} className="flex flex-wrap gap-2">
+                        <Link
+                          href={`/requests/${request.id}`}
+                          className="font-semibold text-foreground hover:text-primary hover:underline"
+                        >
+                          {request.title}
+                        </Link>
+                        <span className="text-muted-foreground">
+                          {request.prefecture} {request.city}・
+                          {formatYen(request.budget)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </Section>
+          )}
+
+          {!overview.agent && (
+            <Link
+              href="/requests/register"
+              className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-muted/40 px-5 py-5 text-sm font-semibold text-primary"
+            >
+              <span className="flex items-center gap-3">
+                <Handshake className="size-5" aria-hidden="true" />
+                担当者として登録する
+              </span>
+              <ArrowUpRight className="size-4" aria-hidden="true" />
+            </Link>
+          )}
 
           <Section
             id="sent"
@@ -575,6 +777,102 @@ export function AccountOverviewView({
                       ) : (
                         <span className="text-muted-foreground">
                           削除された物件
+                        </span>
+                      )}
+                      <span className="text-muted-foreground">
+                        {receivedAt(submission)}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-foreground">
+                      {text(submission.payload.message)}
+                    </p>
+                    <div className="mt-2">
+                      <ThreadMeta
+                        submission={submission}
+                        replyCount={getReplyCount(submission)}
+                        unread={unread.has(submission.id)}
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
+
+          <Section title="送った提案" count={overview.sentApplications.length}>
+            {overview.sentApplications.length === 0 ? (
+              <Empty label="まだありません" />
+            ) : (
+              <ul className="flex flex-col gap-3">
+                {overview.sentApplications.map(({ submission, request }) => (
+                  <li
+                    key={submission.id}
+                    className="rounded-2xl border border-border bg-card p-5 text-sm sm:p-6"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      {request ? (
+                        <Link
+                          href={`/requests/${request.id}`}
+                          className="font-semibold text-foreground hover:text-primary hover:underline"
+                        >
+                          {request.title}
+                        </Link>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          削除されたリクエスト
+                        </span>
+                      )}
+                      {request && (
+                        <Badge variant="muted">{request.status}</Badge>
+                      )}
+                      <span className="text-muted-foreground">
+                        {receivedAt(submission)}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-muted-foreground">
+                      {text(submission.payload.vehicle)}・
+                      {text(submission.payload.availableDate)}
+                    </p>
+                    {submission.status === 'agreed' &&
+                      request?.status === '調整中' && (
+                        <div className="mt-2">
+                          <StartIntroductionButton requestId={request.id} />
+                        </div>
+                      )}
+                    <div className="mt-2">
+                      <ThreadMeta
+                        submission={submission}
+                        replyCount={getReplyCount(submission)}
+                        unread={unread.has(submission.id)}
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
+
+          <Section title="送った質問" count={overview.sentJobInquiries.length}>
+            {overview.sentJobInquiries.length === 0 ? (
+              <Empty label="まだありません" />
+            ) : (
+              <ul className="flex flex-col gap-3">
+                {overview.sentJobInquiries.map(({ submission, request }) => (
+                  <li
+                    key={submission.id}
+                    className="rounded-2xl border border-border bg-card p-5 text-sm sm:p-6"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      {request ? (
+                        <Link
+                          href={`/requests/${request.id}`}
+                          className="font-semibold text-foreground hover:text-primary hover:underline"
+                        >
+                          {request.title}
+                        </Link>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          削除されたリクエスト
                         </span>
                       )}
                       <span className="text-muted-foreground">

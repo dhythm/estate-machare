@@ -1,18 +1,11 @@
 import 'server-only'
 
 import { randomUUID } from 'node:crypto'
-import {
-  getStore,
-  type Submission,
-  type SubmissionKind as StoredSubmissionKind,
-} from './store'
+import { getStore, type Submission, type SubmissionKind } from './store'
 import { notify } from './notifications'
 import { deleteMessagesFor } from './threads'
 
-export type SubmissionKind = Extract<
-  StoredSubmissionKind,
-  'contact' | 'listingInquiry'
->
+export type { SubmissionKind }
 
 export type Receipt = {
   id: string
@@ -20,7 +13,7 @@ export type Receipt = {
 }
 
 export type SubmissionOptions = {
-  /** Listing the submission refers to. */
+  /** Listing or property request the submission refers to. */
   targetId?: string
   /** Signed-in sender, when the form requires login. */
   userId?: string
@@ -58,6 +51,22 @@ async function notifyTargetOwner(submission: Submission): Promise<void> {
       body: listing.name,
       href: `/account/threads/${submission.id}`,
     })
+  } else if (
+    submission.kind === 'requestProposal' ||
+    submission.kind === 'requestInquiry'
+  ) {
+    const request = await store.propertyRequests.get(submission.targetId)
+    if (!request?.ownerUserId) return
+    const isApplication = submission.kind === 'requestProposal'
+    await notify({
+      userId: request.ownerUserId,
+      kind: isApplication ? 'application' : 'inquiry',
+      title: isApplication
+        ? '提案が届きました'
+        : 'リクエストへの質問が届きました',
+      body: request.title,
+      href: `/account/threads/${submission.id}`,
+    })
   }
 }
 
@@ -77,11 +86,7 @@ export async function listSubmissionsByUser(
   userId: string,
 ): Promise<Submission[]> {
   const submissions = await getStore().submissions.list()
-  return submissions.filter(
-    (submission) =>
-      submission.userId === userId &&
-      (submission.kind === 'listingInquiry' || submission.kind === 'contact'),
-  )
+  return submissions.filter((submission) => submission.userId === userId)
 }
 
 export async function deleteSubmissionsFor(targetId: string): Promise<void> {

@@ -23,15 +23,8 @@ export function notify(input: NotificationInput): Promise<Notification> {
 export async function listNotifications(
   userId: string,
 ): Promise<Notification[]> {
-  const [notifications, retiredThreadIds] = await Promise.all([
-    getStore().notifications.list(),
-    retiredTransportThreadIds(),
-  ])
-  return notifications.filter(
-    (notification) =>
-      notification.userId === userId &&
-      !isRetiredNotification(notification, retiredThreadIds),
-  )
+  const notifications = await getStore().notifications.list()
+  return notifications.filter((notification) => notification.userId === userId)
 }
 
 export async function countUnread(userId: string): Promise<number> {
@@ -47,12 +40,7 @@ export async function markRead(
 ): Promise<Notification | undefined> {
   const store = getStore()
   const notification = await store.notifications.get(id)
-  if (
-    !notification ||
-    notification.userId !== userId ||
-    isRetiredNotification(notification, await retiredTransportThreadIds())
-  )
-    return undefined
+  if (!notification || notification.userId !== userId) return undefined
   if (notification.readAt) return notification
   return store.notifications.update(id, { readAt: new Date().toISOString() })
 }
@@ -68,37 +56,4 @@ export async function markAllRead(userId: string): Promise<void> {
       store.notifications.update(notification.id, { readAt }),
     ),
   )
-}
-
-async function retiredTransportThreadIds(): Promise<Set<string>> {
-  const submissions = await getStore().submissions.list()
-  return new Set(
-    submissions
-      .filter(
-        (submission) =>
-          submission.kind === 'transportApplication' ||
-          submission.kind === 'transportInquiry',
-      )
-      .map((submission) => submission.id),
-  )
-}
-
-function isRetiredNotification(
-  notification: Notification,
-  retiredThreadIds: Set<string>,
-): boolean {
-  const path = notification.href.split(/[?#]/, 1)[0]
-  if (
-    notification.kind === 'application' ||
-    path === '/transport' ||
-    path.startsWith('/transport/') ||
-    path.startsWith('/account/carrier') ||
-    path.startsWith('/admin/transport') ||
-    path.startsWith('/admin/carriers') ||
-    path.startsWith('/admin/applications') ||
-    path.startsWith('/account/deals/transportJob/')
-  )
-    return true
-  const threadId = path.match(/^\/account\/threads\/([^/]+)$/)?.[1]
-  return threadId !== undefined && retiredThreadIds.has(threadId)
 }

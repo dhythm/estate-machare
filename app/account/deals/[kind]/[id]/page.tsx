@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: '取引の履歴 | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 
-const kinds: DealKind[] = ['order', 'rental']
+const kinds: DealKind[] = ['order', 'lease', 'propertyRequest']
 
 export default async function DealPage({
   params,

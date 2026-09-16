@@ -9,6 +9,7 @@ const adminMenus = [
   { href: '/admin', label: 'ダッシュボード', icon: LayoutDashboard },
   { href: '/admin/accounts', label: 'アカウント管理', icon: Users },
   { href: '/admin/deals', label: '取引管理', icon: Handshake },
+  { href: '/admin/requests', label: 'リクエスト管理', icon: Handshake },
 ]
 
 function isCurrent(pathname: string, href: string): boolean {

@@ -1,7 +1,8 @@
 import Image from 'next/image'
+import { propertyImage } from '@/lib/property-image'
 import Link from 'next/link'
 import { MapPin, Star, ArrowUpRight, Repeat2 } from 'lucide-react'
-import { type Listing, formatYen } from '@/lib/data'
+import { type Listing, formatArea, formatYen } from '@/lib/data'
 
 export function ListingCard({ listing }: { listing: Listing }) {
   const canBuy = listing.deals.includes('sale')
@@ -9,11 +10,11 @@ export function ListingCard({ listing }: { listing: Listing }) {
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card transition-[box-shadow,transform] duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_-18px_rgba(23,63,53,0.3)]"
+      className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card transition-[box-shadow,transform] duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_-18px_rgba(23,58,79,0.3)]"
     >
       <div className="relative aspect-[1.4] overflow-hidden bg-muted">
         <Image
-          src={listing.image || '/placeholder.svg'}
+          src={propertyImage(listing.image)}
           alt={listing.name}
           fill
           sizes="(min-width: 1280px) 390px, (min-width: 1024px) 31vw, (min-width: 640px) 45vw, 95vw"
@@ -37,24 +38,27 @@ export function ListingCard({ listing }: { listing: Listing }) {
       </div>
       <div className="flex flex-1 flex-col p-5">
         <p className="text-[10px] font-bold tracking-wider text-muted-foreground">
-          {listing.property?.floorPlan ?? listing.maker}{' '}
-          <span className="mx-1.5 text-border">/</span> {listing.category}
+          {listing.category} <span className="mx-1.5 text-border">/</span>{' '}
+          {listing.zoning}
         </p>
         <h3 className="mt-2 line-clamp-2 text-base font-bold leading-relaxed text-foreground">
           {listing.name}
         </h3>
         <p className="mt-2 text-xs text-muted-foreground">
-          {listing.property
-            ? `${listing.property.areaSqm}㎡ · ${listing.category === '土地' ? '' : `${listing.property.builtYear}年築 · `}${listing.property.access}`
-            : '詳細はお問い合わせください'}
+          {listing.layout ? `${listing.layout} · ` : ''}
+          {formatArea(listing.floorArea)}
+          {listing.builtYear !== undefined && <> · {listing.builtYear}年築</>}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {listing.nearestStation} 徒歩{listing.walkMinutes}分
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
           <MapPin className="size-3.5" />
           {listing.prefecture} {listing.city}
-          {listing.rentToOwn && (
+          {listing.purchaseOption && (
             <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-bold text-primary">
               <Repeat2 className="size-3" />
-              購入相談可
+              買取オプション
             </span>
           )}
         </div>
@@ -62,28 +66,26 @@ export function ListingCard({ listing }: { listing: Listing }) {
           {canBuy && listing.salePrice !== undefined && (
             <p className="flex items-baseline justify-between gap-2">
               <span className="text-[11px] text-muted-foreground">
-                売買価格
+                販売価格
               </span>
               <span className="font-display text-[22px] font-bold tracking-tight text-primary">
                 {formatYen(listing.salePrice)}
               </span>
             </p>
           )}
-          {canRent &&
-            (listing.property?.monthlyRent ?? listing.rentPerDay) !==
-              undefined && (
-              <p className="flex items-baseline justify-between gap-2">
-                <span className="text-[11px] text-muted-foreground">賃貸</span>
-                <span className="font-display text-lg font-bold text-primary">
-                  {formatYen(
-                    listing.property?.monthlyRent ?? listing.rentPerDay ?? 0,
-                  )}
-                  <span className="ml-1 text-xs font-normal text-muted-foreground">
-                    / {listing.property ? '月' : '日'}
-                  </span>
+          {canRent && listing.rentPerMonth !== undefined && (
+            <p className="flex items-baseline justify-between gap-2">
+              <span className="text-[11px] text-muted-foreground">
+                月額賃料
+              </span>
+              <span className="font-display text-lg font-bold text-primary">
+                {formatYen(listing.rentPerMonth)}
+                <span className="ml-1 text-xs font-normal text-muted-foreground">
+                  / 月
                 </span>
-              </p>
-            )}
+              </span>
+            </p>
+          )}
         </div>
         <div className="mt-4 flex items-center justify-between gap-2 text-[10px] text-muted-foreground">
           <span className="truncate">{listing.seller.name}</span>

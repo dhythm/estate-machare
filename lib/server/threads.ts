@@ -7,19 +7,23 @@ import {
   threadStatusLabels,
   type Listing,
   type ThreadStatus,
+  type PropertyRequest,
 } from '@/lib/data'
 import type { AuthenticatedUser } from './auth/accounts'
+import { recordDealEvent } from './deal-events'
 import { notify } from './notifications'
 import { getStore, type Message, type Submission } from './store'
 
-type ThreadTarget = { kind: 'listing'; listing: Listing }
+type ThreadTarget =
+  | { kind: 'listing'; listing: Listing }
+  | { kind: 'propertyRequest'; request: PropertyRequest }
 
 type ThreadRole = 'sender' | 'owner' | 'admin'
 
 export type Thread = {
   submission: Submission
   status: ThreadStatus
-  /** Missing when the listing was deleted after the thread opened. */
+  /** Missing when the listing or request was deleted after the thread opened. */
   target?: ThreadTarget
   messages: Message[]
   role: ThreadRole
@@ -44,17 +48,20 @@ async function loadTarget(
     const listing = await store.listings.get(submission.targetId)
     return listing ? { kind: 'listing', listing } : undefined
   }
-  return undefined
+  const request = await store.propertyRequests.get(submission.targetId)
+  return request ? { kind: 'propertyRequest', request } : undefined
 }
 
 function ownerOf(target: ThreadTarget | undefined): string | undefined {
   if (!target) return undefined
-  return target.listing.ownerUserId
+  return target.kind === 'listing'
+    ? target.listing.ownerUserId
+    : target.request.ownerUserId
 }
 
 function targetLabel(target: ThreadTarget | undefined): string | undefined {
   if (!target) return undefined
-  return target.listing.name
+  return target.kind === 'listing' ? target.listing.name : target.request.title
 }
 
 function kindLabel(submission: Submission): string {
@@ -149,7 +156,7 @@ export async function addMessage(
   return { ok: true, value: message }
 }
 
-/** The target's owner (or an admin) drives the status. */
+/** The target's owner (or an admin) drives the status; accepting an application books the request. */
 export async function updateThreadStatus(
   threadId: string,
   user: AuthenticatedUser,
@@ -170,6 +177,23 @@ export async function updateThreadStatus(
       body: targetLabel(target),
       href: `/account/threads/${threadId}`,
     })
+  if (
+    status === 'agreed' &&
+    target?.kind === 'propertyRequest' &&
+    target.request.status === '募集中'
+  ) {
+    await store.propertyRequests.update(target.request.id, {
+      status: '調整中',
+      updatedAt: new Date().toISOString(),
+    })
+    await recordDealEvent({
+      dealKind: 'propertyRequest',
+      dealId: target.request.id,
+      status: '調整中',
+      actorUserId: user.id,
+      note: '提案を成約',
+    })
+  }
   return { ok: true, value: updated }
 }
 

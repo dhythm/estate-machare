@@ -8,7 +8,17 @@ const groups = [
     links: [
       { label: '売買物件を探す', href: '/listings?deal=sale' },
       { label: '賃貸物件を探す', href: '/listings?deal=rent' },
+      { label: '借りてから買う', href: '/listings?deal=purchaseOption' },
       { label: '物件を掲載する', href: '/listings/new' },
+    ],
+  },
+  {
+    title: '人と住まいを探す',
+    links: [
+      { label: '希望条件を登録する', href: '/requests/new' },
+      { label: '物件リクエストを探す', href: '/requests' },
+      { label: '担当者登録', href: '/requests/register' },
+      { label: '初期費用のめやす', href: '/costs' },
     ],
   },
   {
@@ -41,7 +51,7 @@ export function SiteFooter() {
               ひとつの場所から、次の暮らしがはじまる。
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-8">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3">
             {groups.map((group) => (
               <div key={group.title}>
                 <h3 className="text-xs font-bold text-[#e1c5ab]">

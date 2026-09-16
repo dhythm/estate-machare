@@ -18,7 +18,7 @@ export function listingQueryOptions(filter: ListingFilter, page: PageRequest) {
         parameter.set(key, value)
       const response = await fetch(`/api/listings?${parameter}`, { signal })
       if (!response.ok) {
-        throw new Error('農機具を取得できませんでした。')
+        throw new Error('物件を取得できませんでした。')
       }
       return response.json()
     },

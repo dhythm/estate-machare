@@ -4,7 +4,9 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import {
   categories,
+  isLayout,
   isListingSort,
+  layouts,
   listingSortLabels,
   listingSorts,
   type DealFilter,
@@ -14,8 +16,9 @@ import { prefectureNames } from '@/lib/prefectures'
 
 const dealFilters: { id: DealFilter; label: string }[] = [
   { id: 'all', label: 'すべて' },
-  { id: 'sale', label: '買う' },
-  { id: 'rent', label: '借りる' },
+  { id: 'sale', label: '購入できる' },
+  { id: 'rent', label: '賃貸できる' },
+  { id: 'purchaseOption', label: '買取オプション可' },
 ]
 
 export function DealFilterToggle({
@@ -86,6 +89,7 @@ function readYen(value: string): number | undefined {
 
 const emptyRefinements = {
   prefecture: undefined,
+  layout: undefined,
   priceMin: undefined,
   priceMax: undefined,
   sort: undefined,
@@ -96,7 +100,7 @@ const emptyRefinements = {
 const controlClass =
   'h-11 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30'
 
-/** Prefecture, price range, sort, and rental dates; each change reports only its own keys. */
+/** Prefecture, layout, price range, sort, and move-in dates; each change reports only its own keys. */
 export function SearchRefinements({
   value,
   onChange,
@@ -106,13 +110,25 @@ export function SearchRefinements({
 }) {
   const [priceMin, setPriceMin] = useState(yenText(value.priceMin))
   const [priceMax, setPriceMax] = useState(yenText(value.priceMax))
-  const priceLabel = value.deal === 'rent' ? '月額賃料' : '売買価格'
+  const [from, setFrom] = useState(value.availableFrom ?? '')
+  const [to, setTo] = useState(value.availableTo ?? '')
+  const priceLabel = value.deal === 'rent' ? '月額賃料' : '販売価格'
   const active =
     value.prefecture !== undefined ||
+    value.layout !== undefined ||
     value.priceMin !== undefined ||
     value.priceMax !== undefined ||
     (value.sort !== undefined && value.sort !== 'newest') ||
     value.availableFrom !== undefined
+
+  const applyDates = (nextFrom: string, nextTo: string) => {
+    setFrom(nextFrom)
+    setTo(nextTo)
+    if (nextFrom && nextTo && nextFrom <= nextTo)
+      onChange({ availableFrom: nextFrom, availableTo: nextTo })
+    else if (!nextFrom && !nextTo)
+      onChange({ availableFrom: undefined, availableTo: undefined })
+  }
 
   return (
     <div className="flex flex-wrap items-end gap-4">
@@ -129,6 +145,24 @@ export function SearchRefinements({
           {prefectureNames.map((name) => (
             <option key={name} value={name}>
               {name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="flex flex-col gap-1 text-xs font-medium text-foreground">
+        間取り
+        <select
+          value={value.layout ?? ''}
+          onChange={(event) => {
+            const layout = event.target.value
+            onChange({ layout: isLayout(layout) ? layout : undefined })
+          }}
+          className={cn(controlClass, 'w-32')}
+        >
+          <option value="">すべて</option>
+          {layouts.map((layout) => (
+            <option key={layout} value={layout}>
+              {layout}
             </option>
           ))}
         </select>
@@ -167,6 +201,26 @@ export function SearchRefinements({
           価格で絞り込む
         </button>
       </form>
+      <div className="flex items-end gap-2">
+        <label className="flex flex-col gap-1 text-xs font-medium text-foreground">
+          入居開始日
+          <input
+            type="date"
+            value={from}
+            onChange={(event) => applyDates(event.target.value, to)}
+            className={cn(controlClass, 'w-40')}
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-medium text-foreground">
+          入居終了日
+          <input
+            type="date"
+            value={to}
+            onChange={(event) => applyDates(from, event.target.value)}
+            className={cn(controlClass, 'w-40')}
+          />
+        </label>
+      </div>
       <label className="flex flex-col gap-1 text-xs font-medium text-foreground">
         並び替え
         <select
@@ -192,6 +246,8 @@ export function SearchRefinements({
           onClick={() => {
             setPriceMin('')
             setPriceMax('')
+            setFrom('')
+            setTo('')
             onChange(emptyRefinements)
           }}
           className="h-11 text-sm font-medium text-primary hover:underline"

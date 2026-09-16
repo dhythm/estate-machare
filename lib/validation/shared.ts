@@ -91,6 +91,35 @@ export function readInteger(
   return value
 }
 
+/** A measurement with at most two decimals, such as a floor area in m². */
+export function readDecimal(
+  errors: FieldErrors,
+  source: Record<string, unknown>,
+  key: string,
+  label: string,
+  range: { min: number; max: number },
+  required = true,
+): number | undefined {
+  const raw = source[key]
+  const text = typeof raw === 'number' ? String(raw) : readText(source, key)
+  if (text.length === 0) {
+    if (required) errors[key] = `${label}を入力してください。`
+    return undefined
+  }
+  const value = Number(text.replace(/[,，]/g, ''))
+  if (
+    !Number.isFinite(value) ||
+    value < range.min ||
+    value > range.max ||
+    Number(value.toFixed(2)) !== value
+  ) {
+    errors[key] =
+      `${label}は${range.min}〜${range.max}の数値（小数第2位まで）で入力してください。`
+    return undefined
+  }
+  return value
+}
+
 export function readBoolean(
   source: Record<string, unknown>,
   key: string,
