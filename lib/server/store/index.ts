@@ -56,7 +56,7 @@ function createStore(): Store {
 
 // Kept on globalThis so the instance survives module re-evaluation during
 // development (HMR).
-const storeKey = Symbol.for('agri-machare.store')
+const storeKey = Symbol.for('estate-machare.store')
 type StoreHolder = { [storeKey]?: Store }
 
 export function getStore(): Store {

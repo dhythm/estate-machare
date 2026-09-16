@@ -2,7 +2,14 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Check, ClipboardCheck, Search, SearchX, Truck, X } from 'lucide-react'
+import {
+  Check,
+  ClipboardCheck,
+  Handshake,
+  Search,
+  SearchX,
+  X,
+} from 'lucide-react'
 import { Badge } from '@/components/badge'
 import { FormAlert } from '@/components/forms/fields'
 import { Button } from '@/components/ui/button'
@@ -290,7 +297,7 @@ function QueueItem({
           )}
           {!item.image && (
             <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary">
-              <Truck className="size-6" aria-hidden="true" />
+              <Handshake className="size-6" aria-hidden="true" />
             </span>
           )}
           <div className="min-w-0">

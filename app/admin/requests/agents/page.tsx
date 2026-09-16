@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { AdminSection, transportTabs } from '@/components/admin/admin-section'
+import { AdminSection, requestTabs } from '@/components/admin/admin-section'
 import { AgentTable } from '@/components/admin/admin-tables'
 import { listAgents } from '@/lib/server/admin-overview'
 
@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function AdminAgentsPage() {
   return (
-    <AdminSection title="リクエスト管理" tabs={transportTabs}>
+    <AdminSection title="リクエスト管理" tabs={requestTabs}>
       <AgentTable items={await listAgents()} />
     </AdminSection>
   )

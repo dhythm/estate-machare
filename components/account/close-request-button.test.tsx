@@ -10,16 +10,19 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh }) }))
 afterEach(() => vi.unstubAllGlobals())
 
 describe('CloseRequestButton', () => {
-  it('marks the request as completed', async () => {
+  it('marks the request as agreed', async () => {
     const fetchMock = vi.fn(async () => Response.json({ status: '成約' }))
     vi.stubGlobal('fetch', fetchMock)
-    render(<CloseRequestButton requestId="tj-01" />)
+    render(<CloseRequestButton requestId="pr-01" />)
     await userEvent
       .setup()
-      .click(screen.getByRole('button', { name: '完了にする' }))
+      .click(screen.getByRole('button', { name: '成約にする' }))
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/requests/tj-01/status',
-      expect.objectContaining({ method: 'PATCH' }),
+      '/api/requests/pr-01/status',
+      expect.objectContaining({
+        method: 'PATCH',
+        body: JSON.stringify({ status: '成約' }),
+      }),
     )
     expect(refresh).toHaveBeenCalled()
   })

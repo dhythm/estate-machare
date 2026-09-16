@@ -7,7 +7,6 @@ import {
   ClipboardCheck,
   Handshake,
   MessageSquare,
-  Truck,
   Users,
 } from 'lucide-react'
 import { AdminSection } from '@/components/admin/admin-section'
@@ -39,11 +38,11 @@ const workspaces = [
   },
   {
     title: 'リクエスト管理',
-    icon: Truck,
+    icon: Handshake,
     links: [
       { label: '物件リクエストの審査', href: '/admin/requests' },
       { label: 'リクエストへの提案', href: '/admin/requests/proposals' },
-      { label: '案件への質問', href: '/admin/requests/inquiries' },
+      { label: 'リクエストへの質問', href: '/admin/requests/inquiries' },
       { label: '担当者', href: '/admin/requests/agents' },
     ],
   },
@@ -77,7 +76,7 @@ export default async function AdminDashboardPage() {
     {
       label: '紹介中のリクエスト',
       value: counts.introducingRequests,
-      icon: Truck,
+      icon: Handshake,
       links: [{ label: '物件リクエスト', href: '/admin/requests' }],
     },
     {
@@ -92,7 +91,7 @@ export default async function AdminDashboardPage() {
     {
       label: '登録済みの担当者',
       value: counts.agents,
-      icon: Truck,
+      icon: Handshake,
       links: [{ label: '担当者一覧', href: '/admin/requests/agents' }],
     },
   ]
@@ -117,7 +116,9 @@ export default async function AdminDashboardPage() {
               <ClipboardCheck className="size-4" aria-hidden="true" />
               REVIEW QUEUE
             </p>
-            <h2 className="text-lg font-medium">審査を待っている案件</h2>
+            <h2 className="text-lg font-medium">
+              審査を待っている出品・リクエスト
+            </h2>
             <p
               aria-label={`審査待ち ${pendingCount} 件`}
               className="mt-2 font-display text-6xl font-medium tracking-tight tabular-nums"

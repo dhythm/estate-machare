@@ -494,7 +494,7 @@ export function ListingForm({
         <TextareaField
           id="summary"
           label="説明"
-          placeholder="装備、整備状況、貸し出し条件など"
+          placeholder="設備、周辺環境、契約条件など"
           value={form.values.summary}
           onChange={(e) => form.setValue('summary', e.target.value)}
           error={form.errors.summary}

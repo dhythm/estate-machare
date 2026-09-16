@@ -36,7 +36,7 @@ export function Marketplace({ initialPage }: { initialPage: ListingPage }) {
         <div>
           <p className="eyebrow mb-3">THE MARKETPLACE</p>
           <h2 className="text-balance font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            次の相棒を、見つけよう。
+            次の住まいを、見つけよう。
           </h2>
           <p className="mt-2 leading-relaxed text-muted-foreground">
             暮らしに合う一件を、あなたに合う持ち方で。

@@ -16,7 +16,7 @@ export function AdminSection({
     <>
       <div className="mb-7">
         <p className="mb-3 text-[10px] font-semibold tracking-[0.2em] text-muted-foreground">
-          AGRI MACHARE / OPERATIONS
+          ESTATE MACHARE / OPERATIONS
         </p>
         <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           {title}
@@ -45,9 +45,9 @@ export const dealTabs = [
   { href: '/admin/deals/reviews', label: 'レビュー' },
 ]
 
-export const transportTabs = [
+export const requestTabs = [
   { href: '/admin/requests', label: '物件リクエスト' },
-  { href: '/admin/requests/proposals', label: '応募' },
+  { href: '/admin/requests/proposals', label: '提案' },
   { href: '/admin/requests/inquiries', label: '質問' },
   { href: '/admin/requests/agents', label: '担当者' },
 ]

@@ -6,7 +6,7 @@ import { getListing } from '@/lib/server/listings'
 import { buildModes } from '@/lib/server/listing-detail'
 
 describe('ListingDetail', () => {
-  it('preserves the selected equipment when starting a transport request', async () => {
+  it('carries the listing over when starting a property request', async () => {
     const listing = (await getListing('apt-001'))!
     render(
       <ListingDetail

@@ -13,7 +13,7 @@ export type Receipt = {
 }
 
 export type SubmissionOptions = {
-  /** Listing or transport request the submission refers to. */
+  /** Listing or property request the submission refers to. */
   targetId?: string
   /** Signed-in sender, when the form requires login. */
   userId?: string
@@ -61,7 +61,9 @@ async function notifyTargetOwner(submission: Submission): Promise<void> {
     await notify({
       userId: request.ownerUserId,
       kind: isApplication ? 'application' : 'inquiry',
-      title: isApplication ? '応募が届きました' : '案件への質問が届きました',
+      title: isApplication
+        ? '提案が届きました'
+        : 'リクエストへの質問が届きました',
       body: request.title,
       href: `/account/threads/${submission.id}`,
     })

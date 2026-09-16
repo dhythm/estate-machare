@@ -16,7 +16,7 @@ export function CloseRequestButton({ requestId }: { requestId: string }) {
       const response = await fetch(`/api/requests/${requestId}/status`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ status: '完了' }),
+        body: JSON.stringify({ status: '成約' }),
       })
       if (!response.ok) {
         setError('更新できませんでした。')
@@ -39,7 +39,7 @@ export function CloseRequestButton({ requestId }: { requestId: string }) {
         disabled={busy}
         onClick={() => void complete()}
       >
-        完了にする
+        成約にする
       </Button>
       {error && <span className="text-xs text-destructive">{error}</span>}
     </div>

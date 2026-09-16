@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { AdminQueue } from '@/components/admin/admin-queue'
-import { AdminSection, transportTabs } from '@/components/admin/admin-section'
+import { AdminSection, requestTabs } from '@/components/admin/admin-section'
 import { getModerationQueue } from '@/lib/server/moderation'
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function AdminTransportPage() {
   return (
-    <AdminSection title="リクエスト管理" tabs={transportTabs}>
+    <AdminSection title="リクエスト管理" tabs={requestTabs}>
       <AdminQueue
         kind="propertyRequest"
         initialQueue={await getModerationQueue('all')}

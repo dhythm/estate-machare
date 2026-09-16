@@ -111,7 +111,7 @@ describe('/api/admin/queue', () => {
     ).toEqual([])
   })
 
-  it('rejects a pending transport request', async () => {
+  it('rejects a pending property request', async () => {
     const created = await createJob(
       new Request('http://localhost/api/requests/requests', {
         method: 'POST',

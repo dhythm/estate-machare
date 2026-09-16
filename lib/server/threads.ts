@@ -191,7 +191,7 @@ export async function updateThreadStatus(
       dealId: target.request.id,
       status: '調整中',
       actorUserId: user.id,
-      note: '応募を成約',
+      note: '提案を成約',
     })
   }
   return { ok: true, value: updated }

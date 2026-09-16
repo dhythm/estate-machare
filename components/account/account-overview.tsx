@@ -4,10 +4,10 @@ import {
   ArrowUpRight,
   CalendarDays,
   Clock3,
+  Handshake,
   Inbox,
   MessageSquare,
   Plus,
-  Truck,
 } from 'lucide-react'
 import { AccountNavigation } from './account-navigation'
 import { AccountActivity } from './account-activity'
@@ -331,7 +331,7 @@ export function AccountOverviewView({
       icon: MessageSquare,
     },
     {
-      label: '未対応の問い合わせ・応募',
+      label: '未対応の問い合わせ・提案',
       value: overview.summary.openInquiries,
       href: '#activity',
       icon: Inbox,
@@ -574,7 +574,7 @@ export function AccountOverviewView({
           </Section>
 
           <Section
-            id="transport"
+            id="requests"
             title="自分の物件リクエスト"
             count={overview.propertyRequests.length}
             action={
@@ -654,7 +654,7 @@ export function AccountOverviewView({
                       />
                       <IncomingList
                         items={applications}
-                        empty="応募はまだありません"
+                        empty="提案はまだありません"
                         render={(application) => (
                           <div className="flex flex-col gap-1">
                             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -712,7 +712,7 @@ export function AccountOverviewView({
                   ／対応地域: {overview.agent.profile.serviceAreas.join('・')}
                 </p>
                 <h3 className="mt-4 text-sm font-medium text-foreground">
-                  対応地域の募集中案件
+                  対応地域の募集中リクエスト
                 </h3>
                 {overview.agent.matchingRequests.length === 0 ? (
                   <p className="mt-1 text-muted-foreground">該当なし</p>
@@ -744,7 +744,7 @@ export function AccountOverviewView({
               className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-muted/40 px-5 py-5 text-sm font-semibold text-primary"
             >
               <span className="flex items-center gap-3">
-                <Truck className="size-5" aria-hidden="true" />
+                <Handshake className="size-5" aria-hidden="true" />
                 担当者として登録する
               </span>
               <ArrowUpRight className="size-4" aria-hidden="true" />
@@ -798,7 +798,7 @@ export function AccountOverviewView({
             )}
           </Section>
 
-          <Section title="送った応募" count={overview.sentApplications.length}>
+          <Section title="送った提案" count={overview.sentApplications.length}>
             {overview.sentApplications.length === 0 ? (
               <Empty label="まだありません" />
             ) : (
@@ -818,7 +818,7 @@ export function AccountOverviewView({
                         </Link>
                       ) : (
                         <span className="text-muted-foreground">
-                          削除された案件
+                          削除されたリクエスト
                         </span>
                       )}
                       {request && (
@@ -871,7 +871,7 @@ export function AccountOverviewView({
                         </Link>
                       ) : (
                         <span className="text-muted-foreground">
-                          削除された案件
+                          削除されたリクエスト
                         </span>
                       )}
                       <span className="text-muted-foreground">

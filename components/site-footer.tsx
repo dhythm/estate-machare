@@ -35,7 +35,7 @@ const groups = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#173f35] text-white">
+    <footer className="bg-[#173a4f] text-white">
       <div className="mx-auto max-w-[1360px] px-5 pb-8 pt-14 sm:px-8 lg:px-10">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_2fr]">
           <div>
@@ -46,7 +46,7 @@ export function SiteFooter() {
               不動産と、次の可能性を。
             </p>
             <p className="mt-4 max-w-xs text-xs leading-7 text-white/65">
-              つくる人、使う人、運ぶ人。
+              所有する人、必要とする人、仲介する人。
               <br />
               ひとつの物件から、次の暮らしをつないでいく。
             </p>
@@ -54,7 +54,7 @@ export function SiteFooter() {
           <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3">
             {groups.map((group) => (
               <div key={group.title}>
-                <h3 className="text-xs font-bold text-[#d9eb8b]">
+                <h3 className="text-xs font-bold text-[#e3b778]">
                   {group.title}
                 </h3>
                 <ul className="mt-5 space-y-3.5">

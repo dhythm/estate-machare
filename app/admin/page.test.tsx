@@ -49,7 +49,7 @@ describe('AdminDashboardPage', () => {
   it('prioritizes pending review work and provides access to every operation', async () => {
     render(await AdminDashboardPage())
     expect(
-      screen.getByRole('heading', { name: '審査を待っている案件' }),
+      screen.getByRole('heading', { name: '審査を待っている出品・リクエスト' }),
     ).toBeInTheDocument()
     expect(screen.getByLabelText('審査待ち 5 件')).toBeInTheDocument()
     for (const path of [

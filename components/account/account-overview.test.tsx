@@ -288,7 +288,7 @@ describe('AccountOverviewView', () => {
     ).toHaveAttribute('href', '#leases')
     expect(
       within(navigation).getByRole('link', { name: 'リクエスト管理' }),
-    ).toHaveAttribute('href', '#transport')
+    ).toHaveAttribute('href', '#requests')
     expect(
       within(navigation).getByRole('link', { name: '送信したやり取り' }),
     ).toHaveAttribute('href', '#sent')
@@ -356,7 +356,7 @@ describe('AccountOverviewView', () => {
     const summary = screen.getByRole('region', { name: '概要' })
     expect(within(summary).getByText('未読のやり取り')).toBeInTheDocument()
     expect(
-      within(summary).getByText('未対応の問い合わせ・応募'),
+      within(summary).getByText('未対応の問い合わせ・提案'),
     ).toBeInTheDocument()
     expect(within(summary).getAllByText('1件')).toHaveLength(3)
     expect(within(summary).getByText('2件')).toBeInTheDocument()
@@ -378,10 +378,10 @@ describe('AccountOverviewView', () => {
       within(requests).getByText('駅徒歩10分以内の2LDKを借りたい'),
     ).toBeInTheDocument()
     expect(
-      within(requests).getByText('応募はまだありません'),
+      within(requests).getByText('提案はまだありません'),
     ).toBeInTheDocument()
     expect(
-      within(requests).getByRole('button', { name: '完了にする' }),
+      within(requests).getByRole('button', { name: '成約にする' }),
     ).toBeInTheDocument()
     const sent = screen.getByRole('region', { name: '送った問い合わせ' })
     expect(
@@ -391,11 +391,11 @@ describe('AccountOverviewView', () => {
     expect(
       within(sent).getByRole('link', { name: 'やり取りを開く' }),
     ).toHaveAttribute('href', '/account/threads/i-2')
-    const applications = screen.getByRole('region', { name: '送った応募' })
+    const applications = screen.getByRole('region', { name: '送った提案' })
     expect(within(applications).getByText('受託した3LDK')).toBeInTheDocument()
     expect(
       within(applications).getByRole('button', {
-        name: '物件リクエストを開始',
+        name: '紹介を開始する',
       }),
     ).toBeInTheDocument()
     const questions = screen.getByRole('region', { name: '送った質問' })

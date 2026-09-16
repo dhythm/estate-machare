@@ -41,7 +41,7 @@ function TargetCard({ target }: { target: Thread['target'] }) {
   if (!target)
     return (
       <p className="text-sm text-muted-foreground">
-        対象の物件・案件は削除されました。
+        対象の物件・リクエストは削除されました。
       </p>
     )
   if (target.kind === 'listing') {

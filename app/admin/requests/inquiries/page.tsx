@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { AdminSection, transportTabs } from '@/components/admin/admin-section'
+import { AdminSection, requestTabs } from '@/components/admin/admin-section'
 import { ThreadTable } from '@/components/admin/admin-tables'
 import { listThreadSummaries } from '@/lib/server/admin-overview'
 
@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function AdminTransportInquiriesPage() {
   return (
-    <AdminSection title="リクエスト管理" tabs={transportTabs}>
+    <AdminSection title="リクエスト管理" tabs={requestTabs}>
       <ThreadTable items={await listThreadSummaries('requestInquiry')} />
     </AdminSection>
   )

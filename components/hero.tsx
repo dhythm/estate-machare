@@ -6,11 +6,11 @@ import Link from 'next/link'
 import {
   ArrowRight,
   ArrowUpRight,
-  Search,
-  Truck,
-  ShoppingBag,
   CalendarDays,
+  Handshake,
   Repeat2,
+  Search,
+  ShoppingBag,
 } from 'lucide-react'
 import { categories, type DealFilter } from '@/lib/data'
 import { cn } from '@/lib/utils'
@@ -27,18 +27,18 @@ export function Hero() {
     <section className="relative pb-8 sm:pb-12">
       <div className="relative isolate overflow-hidden bg-primary">
         <Image
-          src="/brand-field.webp"
+          src="/brand-city.svg"
           alt="夕暮れの街並みに並ぶ住宅とマンション"
           fill
           preload
           sizes="100vw"
           className="object-cover object-[65%_60%]"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,39,28,0.88)_0%,rgba(10,39,28,0.66)_35%,rgba(10,39,28,0.06)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,26,38,0.9)_0%,rgba(9,26,38,0.7)_35%,rgba(9,26,38,0.1)_100%)]" />
         <div className="relative mx-auto max-w-[1360px] px-5 pb-36 pt-14 sm:px-8 sm:pb-32 sm:pt-20 lg:px-10 lg:pb-28 lg:pt-16">
-          <p className="flex items-center gap-2.5 text-[10px] font-semibold tracking-[0.22em] text-[#d9eb8b] sm:text-xs">
-            <span className="h-px w-7 bg-[#d9eb8b]" />
-            THE NEXT FIELD, TOGETHER.
+          <p className="flex items-center gap-2.5 text-[10px] font-semibold tracking-[0.22em] text-[#e3b778] sm:text-xs">
+            <span className="h-px w-7 bg-[#e3b778]" />
+            MATCH & SHARE, FOR THE NEXT HOME.
           </p>
           <h1 className="mt-7 font-display text-[clamp(2.4rem,4.8vw,4.25rem)] font-bold leading-[1.4] tracking-[-0.035em] text-white">
             物件の可能性を、
@@ -62,7 +62,7 @@ export function Hero() {
             <p className="text-[10px] leading-6 tracking-[0.12em]">
               つくる人を、つなぐ。
               <br />
-              AGRICULTURE / MACHINERY / SHARE
+              HOUSE / LAND / SHARE
             </p>
           </div>
         </div>
@@ -144,7 +144,7 @@ export function Hero() {
         </div>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-xs text-muted-foreground sm:gap-x-7">
           <span className="inline-flex items-center gap-2">
-            <Truck className="size-4 text-primary" />
+            <Handshake className="size-4 text-primary" />
             物件リクエストも、ここから。
           </span>
           <Link

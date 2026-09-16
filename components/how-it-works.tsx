@@ -1,20 +1,20 @@
 import Link from 'next/link'
-import { ArrowRight, Check, CalendarDays, Tractor, Repeat2 } from 'lucide-react'
+import { ArrowRight, Check, CalendarDays, Home, Repeat2 } from 'lucide-react'
 
 const steps = [
   {
     icon: CalendarDays,
     title: '必要な期間、借りる',
-    desc: '使う日を選んで、賃貸を申し込む。',
+    desc: '入居したい期間を選んで、申し込む。',
   },
   {
-    icon: Tractor,
+    icon: Home,
     title: '実際に住んで、確かめる',
-    desc: '操作感も、作業効率も。実際に使って判断。',
+    desc: '日当たりも、通勤も、周辺の様子も。住んで判断。',
   },
   {
     icon: Check,
-    title: '気に入ったら、その一台を',
+    title: '気に入ったら、その一件を',
     desc: '出品条件に応じて賃料を購入価格に充当。',
   },
 ]
@@ -25,7 +25,7 @@ export function HowItWorks() {
       id="how"
       className="mx-auto max-w-[1280px] scroll-mt-32 px-5 py-12 sm:px-8 sm:py-16"
     >
-      <div className="relative overflow-hidden rounded-2xl bg-[#eaf0df] p-7 sm:p-10 lg:grid lg:grid-cols-[1fr_1.1fr] lg:gap-16 lg:p-14">
+      <div className="relative overflow-hidden rounded-2xl bg-secondary p-7 sm:p-10 lg:grid lg:grid-cols-[1fr_1.1fr] lg:gap-16 lg:p-14">
         <div>
           <p className="eyebrow text-primary/70">A NEW WAY TO OWN</p>
           <h2 className="mt-5 font-display text-3xl font-bold leading-relaxed tracking-tight text-primary sm:text-4xl">

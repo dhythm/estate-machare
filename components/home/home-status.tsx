@@ -22,7 +22,7 @@ export function HomeStatus({
   const items = [
     { label: '未読のやり取り', value: status.unreadThreads, href: '/account' },
     {
-      label: '未対応の問い合わせ・応募',
+      label: '未対応の問い合わせ・提案',
       value: status.openInquiries,
       href: '/account',
     },
@@ -42,7 +42,7 @@ export function HomeStatus({
       href: '/account',
     },
     {
-      label: '対応地域の募集中案件',
+      label: '対応地域の募集中リクエスト',
       value: status.matchingRequests ?? 0,
       href: '/requests',
       show: status.matchingRequests !== undefined,

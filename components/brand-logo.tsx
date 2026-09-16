@@ -24,18 +24,25 @@ export function BrandLogo({
           width="40"
           height="40"
           rx="12"
-          fill={inverse ? '#D9EB8B' : '#173F35'}
+          fill={inverse ? '#E3B778' : '#173A4F'}
         />
         <path
-          d="M10 29 20 10l10 19M15 23h10"
-          stroke={inverse ? '#173F35' : '#D9EB8B'}
-          strokeWidth="3.2"
+          d="M11 31V15.5L20 9l9 6.5V31"
+          stroke={inverse ? '#173A4F' : '#E3B778'}
+          strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M11 33h18"
-          stroke={inverse ? '#173F35' : '#D9EB8B'}
+          d="M17 31v-7h6v7"
+          stroke={inverse ? '#173A4F' : '#E3B778'}
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M8 31h24"
+          stroke={inverse ? '#173A4F' : '#E3B778'}
           strokeWidth="2"
           strokeLinecap="round"
         />

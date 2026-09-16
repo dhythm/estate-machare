@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="土地">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dce6ee"/><stop offset="1" stop-color="#f2f5f8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="520" fill="url(#sky)"/>
+  <circle cx="660" cy="108" r="42" fill="#e3b778" opacity=".35"/>
+  <path d="M0 300h800v220H0z" fill="#dfe6ec"/>
+  <path d="M120 470 250 296h300l130 174z" fill="#e8ebee" stroke="#173a4f" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M250 296 120 470M550 296l130 174" stroke="#8fa9b8" stroke-width="3" stroke-dasharray="14 12"/>
+  <g fill="#173a4f">
+    <rect x="108" y="456" width="26" height="26" rx="4"/>
+    <rect x="666" y="456" width="26" height="26" rx="4"/>
+    <rect x="238" y="284" width="24" height="24" rx="4"/>
+    <rect x="538" y="284" width="24" height="24" rx="4"/>
+  </g>
+  <g stroke="#e3b778" stroke-width="7" stroke-linecap="round">
+    <path d="M330 400h140"/><path d="M400 400v46"/>
+  </g>
+  <rect y="480" width="800" height="40" fill="#cfd8e0"/>
+</svg>

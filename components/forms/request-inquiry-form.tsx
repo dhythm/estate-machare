@@ -24,7 +24,7 @@ export function RequestInquiryForm({ requestId }: { requestId: string }) {
             href: `/account/threads/${form.receipt.id}`,
             label: 'やり取りを見る',
           },
-          { href: `/requests/${requestId}`, label: '案件の詳細にもどる' },
+          { href: `/requests/${requestId}`, label: 'リクエストの詳細にもどる' },
         ]}
       />
     )

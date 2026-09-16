@@ -73,7 +73,7 @@ describe('getDeal', () => {
     ])
   })
 
-  it('exposes a transport request to its owner and the agreed agent', async () => {
+  it('exposes a property request to its owner and the agreed agent', async () => {
     const { id: threadId } = await acceptSubmission(
       'requestProposal',
       {

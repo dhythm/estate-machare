@@ -34,14 +34,14 @@ export function RequestProposalForm({
     return (
       <ReceiptPanel
         receipt={form.receipt}
-        title="応募"
-        description="応募の状況と依頼者からの返信はマイページで確認できます。"
+        title="提案"
+        description="提案の状況と募集者からの返信はマイページで確認できます。"
         links={[
           {
             href: `/account/threads/${form.receipt.id}`,
             label: 'やり取りを開く',
           },
-          { href: '/requests', label: 'ほかの案件を見る' },
+          { href: '/requests', label: 'ほかのリクエストを見る' },
           { href: '/requests/register', label: '担当者として登録する' },
         ]}
       />

@@ -9,7 +9,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-[box-shadow,transform] duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_-18px_rgba(23,63,53,0.3)]"
+      className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-[box-shadow,transform] duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_-18px_rgba(23,58,79,0.3)]"
     >
       <div className="relative aspect-[1.55] overflow-hidden bg-muted">
         <Image

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="事業用">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dce6ee"/><stop offset="1" stop-color="#f2f5f8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="520" fill="url(#sky)"/>
+  <rect x="80" y="120" width="640" height="360" fill="#173a4f"/>
+  <rect x="80" y="120" width="640" height="24" fill="#0f2a3a"/>
+  <g fill="#8fa9b8" opacity=".85">
+    <rect x="120" y="176" width="130" height="58" rx="4"/><rect x="286" y="176" width="130" height="58" rx="4"/>
+    <rect x="452" y="176" width="130" height="58" rx="4"/><rect x="606" y="176" width="74" height="58" rx="4"/>
+    <rect x="120" y="262" width="130" height="58" rx="4"/><rect x="286" y="262" width="130" height="58" rx="4"/>
+    <rect x="452" y="262" width="130" height="58" rx="4"/><rect x="606" y="262" width="74" height="58" rx="4"/>
+  </g>
+  <rect x="80" y="348" width="640" height="18" fill="#0f2a3a"/>
+  <path d="M80 366h640l-34 44H114z" fill="#e3b778"/>
+  <rect x="150" y="410" width="500" height="70" fill="#e8ebee"/>
+  <rect x="150" y="410" width="500" height="70" fill="none" stroke="#0f2a3a" stroke-width="5"/>
+  <path d="M316 410v70M484 410v70" stroke="#0f2a3a" stroke-width="5"/>
+  <rect y="480" width="800" height="40" fill="#cfd8e0"/>
+</svg>

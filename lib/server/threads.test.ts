@@ -91,7 +91,7 @@ describe('addMessage', () => {
   })
 })
 
-describe('transport inquiries', () => {
+describe('request inquiries', () => {
   it('opens a thread between the asker and the request owner and notifies the owner', async () => {
     const { id } = await acceptSubmission(
       'requestInquiry',
@@ -105,7 +105,7 @@ describe('transport inquiries', () => {
     expect(asSender.ok && asSender.value.role).toBe('sender')
     expect(
       (await listNotifications('demo-seller')).map((n) => n.title),
-    ).toEqual(['案件への質問が届きました'])
+    ).toEqual(['リクエストへの質問が届きました'])
   })
 })
 

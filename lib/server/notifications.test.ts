@@ -95,7 +95,7 @@ describe('notification triggers', () => {
       },
       { targetId: 'pr-01', userId: 'demo-user' },
     )
-    expect(await titles('demo-seller')).toEqual(['応募が届きました'])
+    expect(await titles('demo-seller')).toEqual(['提案が届きました'])
   })
 
   it('follows a lease through request, approval, and conversion', async () => {

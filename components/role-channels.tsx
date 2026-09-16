@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowUpRight, Tag, Truck } from 'lucide-react'
+import { ArrowUpRight, Handshake, Tag } from 'lucide-react'
 
 export function RoleChannels() {
   return (
@@ -14,10 +14,10 @@ export function RoleChannels() {
         <div className="flex-1">
           <p className="eyebrow">FOR OWNERS</p>
           <h2 className="mt-2 text-lg font-bold">
-            眠っている一台を、誰かの力に。
+            空いている一件を、次の暮らしへ。
           </h2>
           <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-            販売も、使わない期間の貸し出しも。
+            売買も、空いている期間の賃貸も。
           </p>
           <span className="mt-5 inline-flex items-center gap-3 text-sm font-bold text-primary">
             物件を出品する
@@ -30,10 +30,10 @@ export function RoleChannels() {
         className="group flex items-start gap-5 rounded-xl border border-border bg-card p-7 transition-colors hover:border-primary/50 sm:p-8"
       >
         <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
-          <Truck className="size-5" />
+          <Handshake className="size-5" />
         </span>
         <div className="flex-1">
-          <p className="eyebrow">FOR TRANSPORT PARTNERS</p>
+          <p className="eyebrow">FOR AGENTS</p>
           <h2 className="mt-2 text-lg font-bold">
             その空室が、次の暮らしにつながる。
           </h2>

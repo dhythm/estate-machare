@@ -8,7 +8,9 @@ import { formatYen } from '@/lib/data'
 import { canView, getCurrentUser } from '@/lib/server/auth/session'
 import { getPropertyRequest } from '@/lib/server/property-requests'
 
-export const metadata: Metadata = { title: '案件に質問する | Estate Machare' }
+export const metadata: Metadata = {
+  title: 'リクエストに質問する | Estate Machare',
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -26,10 +28,10 @@ export default async function TransportInquiryPage({
   return (
     <PageShell>
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <BackLink href={`/requests/${id}`} label="案件の詳細にもどる" />
+        <BackLink href={`/requests/${id}`} label="リクエストの詳細にもどる" />
         <div className="mt-6">
           <PageIntro
-            title="案件に質問する"
+            title="リクエストに質問する"
             description={`${request.title}（${request.prefecture} ${request.city}・${formatYen(request.budget)}）`}
           />
         </div>
@@ -38,7 +40,7 @@ export default async function TransportInquiryPage({
             <RequestInquiryForm requestId={request.id} />
           ) : (
             <LoginPrompt
-              action="案件に質問する"
+              action="リクエストに質問する"
               callbackUrl={`/requests/${id}/inquiry`}
             />
           )}

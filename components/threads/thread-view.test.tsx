@@ -118,7 +118,7 @@ describe('ThreadView', () => {
     expect(refresh).toHaveBeenCalled()
   })
 
-  it('offers a transport request once an inquiry is agreed', () => {
+  it('offers a property request once an inquiry is agreed', () => {
     render(
       <ThreadView
         thread={{ ...thread, status: 'agreed' }}

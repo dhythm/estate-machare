@@ -29,7 +29,7 @@ describe('HomeStatus', () => {
       '/account/notifications',
     )
     expect(
-      within(region).getByRole('link', { name: /対応地域の募集中案件/ }),
+      within(region).getByRole('link', { name: /対応地域の募集中リクエスト/ }),
     ).toHaveAttribute('href', '/requests')
     expect(within(region).getByText('5')).toBeInTheDocument()
     expect(

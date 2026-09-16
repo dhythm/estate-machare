@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Repeat2, ShoppingCart, Tag, Truck } from 'lucide-react'
+import { Handshake, Repeat2, ShoppingCart, Tag } from 'lucide-react'
 import { PageIntro, PageShell } from '@/components/page-shell'
 import { Badge } from '@/components/badge'
 
@@ -10,14 +10,14 @@ const roles = [
   {
     icon: Tag,
     title: '売る・貸す',
-    body: '使わない期間だけ貸す、買い替えで手放す。出品フォームから機種・状態・価格を登録すると、販売と賃貸をまとめて募集できます。',
+    body: '空いている期間だけ貸す、住み替えで手放す。出品フォームから間取り・面積・価格を登録すると、売買と賃貸をまとめて募集できます。',
     href: '/listings/new',
     action: '出品する',
   },
   {
     icon: Repeat2,
     title: '借りる',
-    body: '必要な期間だけ賃貸。物件の詳細で利用日を選び、申込み後はマイページで承認状況を確認できます。',
+    body: '必要な期間だけ借りる。物件の詳細で入居期間を選び、申込み後はマイページで承認状況を確認できます。',
     href: '/listings?deal=rent',
     action: '借りられる物件を探す',
   },
@@ -29,9 +29,9 @@ const roles = [
     action: '売り出し中の物件を探す',
   },
   {
-    icon: Truck,
-    title: '運ぶ',
-    body: '空いている物件を、探している人へ提案します。担当者登録のあと、リクエストに提案できます。',
+    icon: Handshake,
+    title: 'つなぐ',
+    body: '探している人の希望条件に、空いている物件を提案します。担当者登録のあと、リクエストに提案できます。',
     href: '/requests',
     action: '物件リクエストを見る',
   },
@@ -56,10 +56,10 @@ export default function GuidePage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8">
-        <p className="eyebrow mb-5">HOW AGRI MACHARE WORKS</p>
+        <p className="eyebrow mb-5">HOW ESTATE MACHARE WORKS</p>
         <PageIntro
           title="はじめての方へ"
-          description="物件を売る、買う、借りる、運ぶ。あなたに合う入口から、次のつながりを。出品・申込み・問い合わせにはログインが必要です。"
+          description="物件を売る、買う、借りる、つなぐ。あなたに合う入口から、次のつながりを。出品・申込み・問い合わせにはログインが必要です。"
         />
 
         <section className="mt-10">
@@ -135,19 +135,19 @@ export default function GuidePage() {
               <strong className="text-foreground">
                 やり取りをひとつの場所に。
               </strong>
-              問い合わせ・応募・返信をマイページで確認できます。現在はコンセプト検証版のため、実際の取引・決済は行われません。
+              問い合わせ・提案・返信をマイページで確認できます。現在はコンセプト検証版のため、実際の取引・決済は行われません。
             </li>
             <li>
-              <strong className="text-foreground">状態の記録。</strong>
-              築年・専有面積・最寄駅からの徒歩分を出品時に登録し、詳細ページで確認できます。
+              <strong className="text-foreground">物件情報の記録。</strong>
+              用途地域・間取り・専有面積・築年・最寄駅からの徒歩分を出品時に登録し、詳細ページで確認できます。
             </li>
             <li>
               <strong className="text-foreground">
-                物件リクエストもまとめて。
+                条件から探すこともできます。
               </strong>
-              遠方の物件は物件リクエストチャネルで配送を手配できます。料金は
+              希望のエリアと予算を登録すると、条件に合う物件を持つ出品者から提案が届きます。入居時の費用は
               <Link href="/costs" className="text-primary">
-                料金のめやす
+                初期費用のめやす
               </Link>
               を参照してください。
             </li>

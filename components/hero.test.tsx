@@ -32,7 +32,7 @@ describe('Hero search', () => {
     )
   })
 
-  it('keeps transport requests and available requests reachable from the first screen', () => {
+  it('keeps property requests and listings reachable from the first screen', () => {
     render(<Hero />)
     expect(
       screen.getByRole('link', { name: /希望条件を登録する/ }),
