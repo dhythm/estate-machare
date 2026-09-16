@@ -2,14 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Handshake, LayoutDashboard, Truck, Users } from 'lucide-react'
+import { Handshake, LayoutDashboard, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const adminMenus = [
   { href: '/admin', label: 'ダッシュボード', icon: LayoutDashboard },
   { href: '/admin/accounts', label: 'アカウント管理', icon: Users },
   { href: '/admin/deals', label: '取引管理', icon: Handshake },
-  { href: '/admin/transport', label: '引越し管理', icon: Truck },
 ]
 
 function isCurrent(pathname: string, href: string): boolean {

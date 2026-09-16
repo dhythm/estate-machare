@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import {
   AccountTable,
-  CarrierTable,
   OrderTable,
   RentalTable,
   ReviewTable,
@@ -127,25 +126,7 @@ describe('admin tables', () => {
     expect(screen.getByLabelText('評価 5')).toBeInTheDocument()
   })
 
-  it('renders carriers and accounts, and empty states', () => {
-    render(
-      <CarrierTable
-        items={[
-          {
-            id: 'demo-user',
-            name: '高橋運送',
-            kind: '法人',
-            prefecture: '秋田県',
-            vehicles: ['4tトラック'],
-            serviceAreas: ['秋田県', '山形県'],
-            createdAt: '2026-09-13T00:00:00.000Z',
-            updatedAt: '2026-09-13T00:00:00.000Z',
-          },
-        ]}
-      />,
-    )
-    expect(screen.getByText('高橋運送')).toBeInTheDocument()
-    expect(screen.getByText('4tトラック')).toBeInTheDocument()
+  it('renders accounts, and empty states', () => {
     render(
       <AccountTable
         items={[
@@ -155,7 +136,6 @@ describe('admin tables', () => {
             email: 'seller@example.com',
             role: 'user',
             listingCount: 6,
-            transportJobCount: 2,
             rentalCount: 0,
             status: 'suspended',
             note: '規約違反',

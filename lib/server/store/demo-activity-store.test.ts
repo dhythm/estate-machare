@@ -29,6 +29,13 @@ describe.each(stores)('$name store with demo activity', ({ store }) => {
     expect((await store.rentals.list()).length).toBeGreaterThan(0)
     expect((await store.reviews.list()).length).toBeGreaterThan(0)
     expect((await store.notifications.list()).length).toBeGreaterThan(0)
+    expect(await store.transportJobs.list()).toEqual([])
+    expect(await store.carrierProfiles.list()).toEqual([])
+    expect(
+      (await store.submissions.list()).every(
+        (item) => item.kind === 'listingInquiry',
+      ),
+    ).toBe(true)
     const events = await store.dealEvents.list()
     expect(events[0]?.createdAt.localeCompare(events.at(-1)!.createdAt)).toBe(1)
     await store.reset()

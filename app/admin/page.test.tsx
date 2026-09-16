@@ -7,13 +7,10 @@ vi.mock('next/navigation', () => ({ usePathname: () => '/admin' }))
 vi.mock('@/lib/server/admin-overview', () => ({
   getAdminCounts: vi.fn(async () => ({
     pendingListings: 2,
-    pendingTransportJobs: 3,
     requestedRentals: 4,
     activeRentals: 1,
     requestedOrders: 5,
-    haulingJobs: 2,
     openThreads: 6,
-    carriers: 8,
   })),
   listRecentActivity: vi.fn(async () => [
     {
@@ -51,17 +48,13 @@ describe('AdminDashboardPage', () => {
     expect(
       screen.getByRole('heading', { name: '審査を待っている案件' }),
     ).toBeInTheDocument()
-    expect(screen.getByLabelText('審査待ち 5 件')).toBeInTheDocument()
+    expect(screen.getByLabelText('審査待ち 2 件')).toBeInTheDocument()
     for (const path of [
       '/admin/deals',
       '/admin/deals/orders',
       '/admin/deals/rentals',
       '/admin/deals/inquiries',
       '/admin/deals/reviews',
-      '/admin/transport',
-      '/admin/transport/applications',
-      '/admin/transport/inquiries',
-      '/admin/transport/carriers',
       '/admin/accounts',
     ]) {
       expect(
@@ -72,10 +65,11 @@ describe('AdminDashboardPage', () => {
     }
   })
 
-  it('shows order and haul metrics, recent activity, and recent reviews', async () => {
+  it('shows property transaction metrics, recent activity, and recent reviews', async () => {
     render(await AdminDashboardPage())
     expect(screen.getByText('承諾待ちの注文')).toBeInTheDocument()
-    expect(screen.getByText('運搬中の案件')).toBeInTheDocument()
+    expect(screen.queryByText('運搬中の案件')).not.toBeInTheDocument()
+    expect(screen.queryByText('引越し管理')).not.toBeInTheDocument()
     const activity = screen.getByRole('region', { name: '直近の取引の動き' })
     expect(
       within(activity).getByRole('link', { name: /クボタ 45馬力/ }),

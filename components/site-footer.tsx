@@ -12,15 +12,6 @@ const groups = [
     ],
   },
   {
-    title: '新生活をつなぐ',
-    links: [
-      { label: '引越しを依頼する', href: '/transport/new' },
-      { label: '引越しの仕事を探す', href: '/transport' },
-      { label: '引越しパートナー登録', href: '/transport/register' },
-      { label: '引越し料金のめやす', href: '/transport/pricing' },
-    ],
-  },
-  {
     title: 'サポート',
     links: [
       { label: 'はじめての方へ', href: '/guide' },
@@ -50,7 +41,7 @@ export function SiteFooter() {
               ひとつの場所から、次の暮らしがはじまる。
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-8">
             {groups.map((group) => (
               <div key={group.title}>
                 <h3 className="text-xs font-bold text-[#e1c5ab]">

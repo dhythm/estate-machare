@@ -7,23 +7,19 @@ import {
   threadStatusLabels,
   type Listing,
   type ThreadStatus,
-  type TransportJob,
 } from '@/lib/data'
 import type { AuthenticatedUser } from './auth/accounts'
-import { recordDealEvent } from './deal-events'
 import { notify } from './notifications'
 import { getStore, type Message, type Submission } from './store'
 
-type ThreadTarget =
-  | { kind: 'listing'; listing: Listing }
-  | { kind: 'transportJob'; job: TransportJob }
+type ThreadTarget = { kind: 'listing'; listing: Listing }
 
 type ThreadRole = 'sender' | 'owner' | 'admin'
 
 export type Thread = {
   submission: Submission
   status: ThreadStatus
-  /** Missing when the listing or job was deleted after the thread opened. */
+  /** Missing when the listing was deleted after the thread opened. */
   target?: ThreadTarget
   messages: Message[]
   role: ThreadRole
@@ -48,20 +44,17 @@ async function loadTarget(
     const listing = await store.listings.get(submission.targetId)
     return listing ? { kind: 'listing', listing } : undefined
   }
-  const job = await store.transportJobs.get(submission.targetId)
-  return job ? { kind: 'transportJob', job } : undefined
+  return undefined
 }
 
 function ownerOf(target: ThreadTarget | undefined): string | undefined {
   if (!target) return undefined
-  return target.kind === 'listing'
-    ? target.listing.ownerUserId
-    : target.job.ownerUserId
+  return target.listing.ownerUserId
 }
 
 function targetLabel(target: ThreadTarget | undefined): string | undefined {
   if (!target) return undefined
-  return target.kind === 'listing' ? target.listing.name : target.job.item
+  return target.listing.name
 }
 
 function kindLabel(submission: Submission): string {
@@ -156,7 +149,7 @@ export async function addMessage(
   return { ok: true, value: message }
 }
 
-/** The target's owner (or an admin) drives the status; accepting an application books the job. */
+/** The target's owner (or an admin) drives the status. */
 export async function updateThreadStatus(
   threadId: string,
   user: AuthenticatedUser,
@@ -177,23 +170,6 @@ export async function updateThreadStatus(
       body: targetLabel(target),
       href: `/account/threads/${threadId}`,
     })
-  if (
-    status === 'agreed' &&
-    target?.kind === 'transportJob' &&
-    target.job.status === '募集中'
-  ) {
-    await store.transportJobs.update(target.job.id, {
-      status: '調整中',
-      updatedAt: new Date().toISOString(),
-    })
-    await recordDealEvent({
-      dealKind: 'transportJob',
-      dealId: target.job.id,
-      status: '調整中',
-      actorUserId: user.id,
-      note: '応募を成約',
-    })
-  }
   return { ok: true, value: updated }
 }
 

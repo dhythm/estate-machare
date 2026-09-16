@@ -14,7 +14,7 @@ const jobById = new Map(allJobs.map((job) => [job.id, job]))
 const userIds = new Set(configuredAccounts().map((account) => account.id))
 
 describe('demoActivity', () => {
-  it('uses property and moving language in visible activity content', () => {
+  it('uses only property language in visible activity content', () => {
     const copy = [
       ...demoActivity.notifications.flatMap((item) => [item.title, item.body]),
       ...demoActivity.messages.map((item) => item.body),
@@ -22,7 +22,7 @@ describe('demoActivity', () => {
       ...demoActivity.reviews.map((item) => item.comment),
     ].join(' ')
     expect(copy).not.toMatch(
-      /農機|農業|トラクター|コンバイン|田植機|耕運機|クボタ|ヤンマー|ロータリー|キャビン|フォークリフト|機体|6条/,
+      /引越|引っ越|運搬|搬入|搬出|農機|農業|トラクター|コンバイン|田植機|耕運機|クボタ|ヤンマー|ロータリー|キャビン|フォークリフト|機体|6条/,
     )
   })
 
@@ -107,20 +107,21 @@ describe('demoActivity', () => {
     expect(stamps).toEqual([...stamps].sort().reverse())
   })
 
-  it('gives the hauling job an agreed carrier and the dashboard something to show', () => {
-    const hauling = demoActivity.transportJobs.filter(
-      (job) => job.status === '運搬中',
-    )
-    expect(hauling.length).toBeGreaterThan(0)
-    for (const job of hauling)
-      expect(
-        demoActivity.submissions.some(
-          (submission) =>
-            submission.kind === 'transportApplication' &&
-            submission.targetId === job.id &&
-            submission.status === 'agreed',
-        ),
-      ).toBe(true)
+  it('seeds only property transactions and keeps dashboards useful', () => {
+    expect(transportJobs).toEqual([])
+    expect(demoActivity.transportJobs).toEqual([])
+    expect(demoActivity.carrierProfiles).toEqual([])
+    expect(
+      demoActivity.submissions.every((item) => item.kind === 'listingInquiry'),
+    ).toBe(true)
+    expect(
+      demoActivity.dealEvents.every((item) => item.dealKind !== 'transportJob'),
+    ).toBe(true)
+    expect(
+      demoActivity.notifications.every(
+        (item) => !item.href.startsWith('/transport'),
+      ),
+    ).toBe(true)
     expect(
       demoActivity.orders.filter((order) => order.status === 'requested')
         .length,

@@ -89,19 +89,6 @@ describe('notification triggers', () => {
     ])
   })
 
-  it('tells the job owner about applications', async () => {
-    await acceptSubmission(
-      'transportApplication',
-      {
-        name: '利用者デモ',
-        vehicle: '2tトラック',
-        availableDate: '2026-10-03',
-      },
-      { targetId: 'tj-01', userId: 'demo-user' },
-    )
-    expect(await titles('demo-seller')).toEqual(['応募が届きました'])
-  })
-
   it('follows a rental through request, approval, and conversion', async () => {
     const created = await requestRental(
       (await getListing('trc-001'))!,
@@ -147,16 +134,8 @@ describe('notification triggers', () => {
       'demo-seller',
     )
     await applyModeration('listing', listing.id, { status: 'approved' })
-    await applyModeration('transportJob', 'tj-01', {
-      status: 'rejected',
-      note: '区間が不明瞭',
-    })
     const items = await listNotifications('demo-seller')
-    expect(items.map((n) => n.title)).toEqual([
-      '運搬依頼が却下されました',
-      '掲載が承認されました',
-    ])
-    expect(items[0].body).toContain('区間が不明瞭')
-    expect(items[1].href).toBe(`/listings/${listing.id}`)
+    expect(items.map((n) => n.title)).toEqual(['掲載が承認されました'])
+    expect(items[0].href).toBe(`/listings/${listing.id}`)
   })
 })

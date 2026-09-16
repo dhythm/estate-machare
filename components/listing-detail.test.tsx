@@ -6,7 +6,7 @@ import { getListing } from '@/lib/server/listings'
 import { buildModes } from '@/lib/server/listing-detail'
 
 describe('ListingDetail', () => {
-  it('preserves the selected equipment when starting a transport request', async () => {
+  it('offers property inquiries without moving services', async () => {
     const listing = (await getListing('trc-001'))!
     render(
       <ListingDetail
@@ -19,8 +19,8 @@ describe('ListingDetail', () => {
     )
 
     expect(
-      screen.getByRole('link', { name: '引越しを相談する' }),
-    ).toHaveAttribute('href', '/transport/new?listingId=trc-001')
+      screen.queryByRole('link', { name: '引越しを相談する' }),
+    ).not.toBeInTheDocument()
   })
 
   it('exposes the selected transaction and retains purchase and question destinations', async () => {

@@ -44,10 +44,3 @@ export const dealTabs = [
   { href: '/admin/deals/inquiries', label: '問い合わせ' },
   { href: '/admin/deals/reviews', label: 'レビュー' },
 ]
-
-export const transportTabs = [
-  { href: '/admin/transport', label: '引越し依頼' },
-  { href: '/admin/transport/applications', label: '応募' },
-  { href: '/admin/transport/inquiries', label: '質問' },
-  { href: '/admin/transport/carriers', label: '引越しパートナー' },
-]

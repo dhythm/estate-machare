@@ -2,16 +2,19 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Check, ClipboardCheck, Search, SearchX, Truck, X } from 'lucide-react'
+import {
+  Check,
+  ClipboardCheck,
+  Search,
+  SearchX,
+  Building2,
+  X,
+} from 'lucide-react'
 import { Badge } from '@/components/badge'
 import { FormAlert } from '@/components/forms/fields'
 import { Button } from '@/components/ui/button'
 import { ListingStatusButton } from '@/components/listings/listing-status-button'
-import {
-  formatYen,
-  type ModerationQueue,
-  type ModerationQueueFilter,
-} from '@/lib/data'
+import { type ModerationQueue, type ModerationQueueFilter } from '@/lib/data'
 
 const filters: { id: ModerationQueueFilter; label: string }[] = [
   { id: 'all', label: 'すべて' },
@@ -35,7 +38,7 @@ export function AdminQueue({
   kind,
   initialQueue,
 }: {
-  kind: 'listing' | 'transportJob'
+  kind: 'listing'
   initialQueue: ModerationQueue
 }) {
   const [status, setStatus] = useState<ModerationQueueFilter>('all')
@@ -44,7 +47,7 @@ export function AdminQueue({
   const [pendingId, setPendingId] = useState<string>()
   const [loading, setLoading] = useState(false)
   const [query, setQuery] = useState('')
-  const title = kind === 'listing' ? '掲載' : '引越し依頼'
+  const title = '掲載'
   const normalizedQuery = query.trim().toLocaleLowerCase('ja-JP')
 
   const load = async (nextStatus: ModerationQueueFilter) => {
@@ -63,7 +66,7 @@ export function AdminQueue({
   }
 
   const decide = async (
-    kind: 'listing' | 'transportJob',
+    kind: 'listing',
     id: string,
     decision: 'approved' | 'rejected',
     note: string,
@@ -152,30 +155,6 @@ export function AdminQueue({
             }))}
           onDecide={(id, decision, note) =>
             decide('listing', id, decision, note)
-          }
-        />
-      )}
-
-      {kind === 'transportJob' && (
-        <QueueSection
-          title="引越し依頼"
-          empty="該当なし"
-          pendingId={pendingId}
-          items={pendingFirst(queue.transportJobs)
-            .filter((job) =>
-              `${job.id} ${job.item} ${job.from} ${job.to} ${job.status}`
-                .toLocaleLowerCase('ja-JP')
-                .includes(normalizedQuery),
-            )
-            .map((job) => ({
-              id: job.id,
-              title: job.item,
-              meta: `${job.from} → ${job.to}・${formatYen(job.reward)}・${job.status}`,
-              status: job.moderationStatus ?? 'approved',
-              note: job.moderationNote,
-            }))}
-          onDecide={(id, decision, note) =>
-            decide('transportJob', id, decision, note)
           }
         />
       )}
@@ -290,7 +269,7 @@ function QueueItem({
           )}
           {!item.image && (
             <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary">
-              <Truck className="size-6" aria-hidden="true" />
+              <Building2 className="size-6" aria-hidden="true" />
             </span>
           )}
           <div className="min-w-0">

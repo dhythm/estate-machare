@@ -7,7 +7,6 @@ import {
   Inbox,
   MessageSquare,
   Plus,
-  Truck,
 } from 'lucide-react'
 import { AccountNavigation } from './account-navigation'
 import { AccountActivity } from './account-activity'
@@ -21,9 +20,7 @@ import {
 } from '@/lib/data'
 import type { AccountOverview } from '@/lib/server/account'
 import type { Submission } from '@/lib/server/store/types'
-import { CompleteJobButton } from './complete-job-button'
 import { RentalActions } from './rental-actions'
-import { StartHaulButton } from './start-haul-button'
 import { ListingStatusButton } from '@/components/listings/listing-status-button'
 import { ReviewForm } from '@/components/reviews/review-form'
 import { StarRating } from '@/components/reviews/star-rating'
@@ -214,17 +211,6 @@ function OrderList({
               status={order.status}
               party={party}
             />
-            {party === 'buyer' &&
-              listing &&
-              (order.status === 'delivered' ||
-                order.status === 'completed') && (
-                <Link
-                  href={`/transport/new?listingId=${listing.id}`}
-                  className="text-sm font-medium text-primary hover:underline"
-                >
-                  引越しを依頼する
-                </Link>
-              )}
           </div>
           {party === 'buyer' &&
             order.status === 'completed' &&
@@ -284,14 +270,6 @@ function RentalList({
               購入価格 {formatYen(rental.purchasePrice)}（充当後）
             </p>
           )}
-          {rental.status === 'converted' && listing && party === 'renter' && (
-            <Link
-              href={`/transport/new?listingId=${listing.id}`}
-              className="mt-2 inline-block text-sm font-medium text-primary hover:underline"
-            >
-              引越しを依頼する
-            </Link>
-          )}
           <div className="mt-4 border-t border-border pt-4">
             <RentalActions
               rentalId={rental.id}
@@ -334,7 +312,7 @@ export function AccountOverviewView({
       icon: MessageSquare,
     },
     {
-      label: '未対応の問い合わせ・応募',
+      label: '未対応の問い合わせ',
       value: overview.summary.openInquiries,
       href: '#activity',
       icon: Inbox,
@@ -384,7 +362,7 @@ export function AccountOverviewView({
         </ul>
       </section>
       <div className="grid items-start gap-7 lg:grid-cols-[205px_minmax(0,1fr)] lg:gap-9">
-        <AccountNavigation isCarrier={Boolean(overview.carrier)} />
+        <AccountNavigation />
         <div className="flex min-w-0 flex-col gap-10">
           <AccountActivity overview={overview} />
           <Section
@@ -500,11 +478,7 @@ export function AccountOverviewView({
                     className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card px-5 py-4 text-sm"
                   >
                     <Badge variant="outline">
-                      {deal.kind === 'order'
-                        ? '注文'
-                        : deal.kind === 'rental'
-                          ? '賃貸'
-                          : '引越し'}
+                      {deal.kind === 'order' ? '注文' : '賃貸'}
                     </Badge>
                     <Link
                       href={`/account/deals/${deal.kind}/${deal.id}`}
@@ -577,181 +551,6 @@ export function AccountOverviewView({
           </Section>
 
           <Section
-            id="transport"
-            title="自分の引越し依頼"
-            count={overview.transportJobs.length}
-            action={
-              <Link
-                href="/transport/new"
-                className={cn(
-                  buttonVariants({ variant: 'outline', size: 'sm' }),
-                  'gap-1.5',
-                )}
-              >
-                <Plus className="size-3.5" aria-hidden="true" />
-                引越しを依頼
-              </Link>
-            }
-          >
-            {overview.transportJobs.length === 0 ? (
-              <Empty label="まだありません" />
-            ) : (
-              <ul className="flex flex-col gap-4">
-                {overview.transportJobs.map(
-                  ({ job, applications, inquiries }) => (
-                    <li
-                      key={job.id}
-                      className="rounded-2xl border border-border bg-card p-5"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Link
-                            href={`/transport/${job.id}`}
-                            className="font-semibold text-foreground hover:text-primary hover:underline"
-                          >
-                            {job.item}
-                          </Link>
-                          <ModerationBadge status={job.moderationStatus} />
-                          <Badge variant="muted">{job.status}</Badge>
-                        </div>
-                        <span className="text-sm text-muted-foreground">
-                          {job.from} → {job.to}・{formatYen(job.reward)}
-                        </span>
-                      </div>
-                      <div className="mt-3 flex items-center gap-3">
-                        <Link
-                          href={`/transport/${job.id}/edit`}
-                          className="text-xs font-medium text-primary hover:underline"
-                        >
-                          編集
-                        </Link>
-                        {job.status !== '完了' && (
-                          <CompleteJobButton jobId={job.id} />
-                        )}
-                      </div>
-                      <IncomingList
-                        items={inquiries}
-                        empty=""
-                        render={(inquiry) => (
-                          <div className="flex flex-col gap-1">
-                            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                              <span className="shrink-0 text-muted-foreground">
-                                {receivedAt(inquiry)}
-                              </span>
-                              <Badge variant="outline">質問</Badge>
-                              <span className="shrink-0 font-medium">
-                                {text(inquiry.payload.name)}
-                              </span>
-                              <span className="text-foreground">
-                                {text(inquiry.payload.message)}
-                              </span>
-                            </div>
-                            <ThreadMeta
-                              submission={inquiry}
-                              replyCount={getReplyCount(inquiry)}
-                              unread={unread.has(inquiry.id)}
-                            />
-                          </div>
-                        )}
-                      />
-                      <IncomingList
-                        items={applications}
-                        empty="応募はまだありません"
-                        render={(application) => (
-                          <div className="flex flex-col gap-1">
-                            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                              <span className="shrink-0 text-muted-foreground">
-                                {receivedAt(application)}
-                              </span>
-                              <span className="shrink-0 font-medium">
-                                {text(application.payload.name)}
-                              </span>
-                              <span className="text-muted-foreground">
-                                {text(application.payload.vehicle)}
-                                {text(application.payload.availableDate) &&
-                                  `・${text(application.payload.availableDate)}`}
-                              </span>
-                              <span className="text-foreground">
-                                {text(application.payload.message)}
-                              </span>
-                            </div>
-                            <ThreadMeta
-                              submission={application}
-                              replyCount={getReplyCount(application)}
-                              unread={unread.has(application.id)}
-                            />
-                          </div>
-                        )}
-                      />
-                    </li>
-                  ),
-                )}
-              </ul>
-            )}
-          </Section>
-
-          {overview.carrier && (
-            <Section id="carrier" title="引越しパートナープロフィール">
-              <div className="rounded-2xl border border-border bg-card p-5 text-sm">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-medium text-foreground">
-                    {overview.carrier.profile.name}
-                  </span>
-                  <Badge variant="muted">{overview.carrier.profile.kind}</Badge>
-                  <span className="text-muted-foreground">
-                    拠点 {overview.carrier.profile.prefecture}
-                  </span>
-                  <Link
-                    href="/transport/register"
-                    className="ml-auto text-xs font-medium text-primary hover:underline"
-                  >
-                    プロフィールを編集
-                  </Link>
-                </div>
-                <p className="mt-2 text-muted-foreground">
-                  車両: {overview.carrier.profile.vehicles.join('・')}
-                  ／対応地域: {overview.carrier.profile.serviceAreas.join('・')}
-                </p>
-                <h3 className="mt-4 text-sm font-medium text-foreground">
-                  対応地域の募集中案件
-                </h3>
-                {overview.carrier.matchingJobs.length === 0 ? (
-                  <p className="mt-1 text-muted-foreground">該当なし</p>
-                ) : (
-                  <ul className="mt-2 flex flex-col gap-1">
-                    {overview.carrier.matchingJobs.map((job) => (
-                      <li key={job.id} className="flex flex-wrap gap-2">
-                        <Link
-                          href={`/transport/${job.id}`}
-                          className="font-semibold text-foreground hover:text-primary hover:underline"
-                        >
-                          {job.item}
-                        </Link>
-                        <span className="text-muted-foreground">
-                          {job.from} → {job.to}・{formatYen(job.reward)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </Section>
-          )}
-
-          {!overview.carrier && (
-            <Link
-              href="/transport/register"
-              className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-muted/40 px-5 py-5 text-sm font-semibold text-primary"
-            >
-              <span className="flex items-center gap-3">
-                <Truck className="size-5" aria-hidden="true" />
-                引越しパートナーとして登録する
-              </span>
-              <ArrowUpRight className="size-4" aria-hidden="true" />
-            </Link>
-          )}
-
-          <Section
             id="sent"
             title="送った問い合わせ"
             count={overview.sentInquiries.length}
@@ -776,100 +575,6 @@ export function AccountOverviewView({
                       ) : (
                         <span className="text-muted-foreground">
                           削除された物件
-                        </span>
-                      )}
-                      <span className="text-muted-foreground">
-                        {receivedAt(submission)}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-foreground">
-                      {text(submission.payload.message)}
-                    </p>
-                    <div className="mt-2">
-                      <ThreadMeta
-                        submission={submission}
-                        replyCount={getReplyCount(submission)}
-                        unread={unread.has(submission.id)}
-                      />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Section>
-
-          <Section title="送った応募" count={overview.sentApplications.length}>
-            {overview.sentApplications.length === 0 ? (
-              <Empty label="まだありません" />
-            ) : (
-              <ul className="flex flex-col gap-3">
-                {overview.sentApplications.map(({ submission, job }) => (
-                  <li
-                    key={submission.id}
-                    className="rounded-2xl border border-border bg-card p-5 text-sm sm:p-6"
-                  >
-                    <div className="flex flex-wrap items-center gap-2">
-                      {job ? (
-                        <Link
-                          href={`/transport/${job.id}`}
-                          className="font-semibold text-foreground hover:text-primary hover:underline"
-                        >
-                          {job.item}
-                        </Link>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          削除された案件
-                        </span>
-                      )}
-                      {job && <Badge variant="muted">{job.status}</Badge>}
-                      <span className="text-muted-foreground">
-                        {receivedAt(submission)}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-muted-foreground">
-                      {text(submission.payload.vehicle)}・
-                      {text(submission.payload.availableDate)}
-                    </p>
-                    {submission.status === 'agreed' &&
-                      job?.status === '調整中' && (
-                        <div className="mt-2">
-                          <StartHaulButton jobId={job.id} />
-                        </div>
-                      )}
-                    <div className="mt-2">
-                      <ThreadMeta
-                        submission={submission}
-                        replyCount={getReplyCount(submission)}
-                        unread={unread.has(submission.id)}
-                      />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Section>
-
-          <Section title="送った質問" count={overview.sentJobInquiries.length}>
-            {overview.sentJobInquiries.length === 0 ? (
-              <Empty label="まだありません" />
-            ) : (
-              <ul className="flex flex-col gap-3">
-                {overview.sentJobInquiries.map(({ submission, job }) => (
-                  <li
-                    key={submission.id}
-                    className="rounded-2xl border border-border bg-card p-5 text-sm sm:p-6"
-                  >
-                    <div className="flex flex-wrap items-center gap-2">
-                      {job ? (
-                        <Link
-                          href={`/transport/${job.id}`}
-                          className="font-semibold text-foreground hover:text-primary hover:underline"
-                        >
-                          {job.item}
-                        </Link>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          削除された案件
                         </span>
                       )}
                       <span className="text-muted-foreground">

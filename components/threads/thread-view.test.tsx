@@ -146,7 +146,7 @@ describe('ThreadView', () => {
     expect(refresh).toHaveBeenCalled()
   })
 
-  it('offers a transport request once an inquiry is agreed', () => {
+  it('does not offer moving services after an inquiry is agreed', () => {
     render(
       <ThreadView
         thread={{ ...thread, status: 'agreed' }}
@@ -154,8 +154,8 @@ describe('ThreadView', () => {
       />,
     )
     expect(
-      screen.getByRole('link', { name: '引越しを依頼する' }),
-    ).toHaveAttribute('href', '/transport/new?listingId=trc-001')
+      screen.queryByRole('link', { name: '引越しを依頼する' }),
+    ).not.toBeInTheDocument()
   })
 
   it('shows the review form to the sender of an agreed inquiry', () => {

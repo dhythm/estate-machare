@@ -157,19 +157,13 @@ export const threadStatuses = [
 /** Progress of an inquiry or application thread; unset means `new`. */
 export type ThreadStatus = (typeof threadStatuses)[number]
 
-const threadKinds = [
-  'listingInquiry',
-  'transportApplication',
-  'transportInquiry',
-] as const
+const threadKinds = ['listingInquiry'] as const
 
 /** Submission kinds that open a conversation between sender and target owner. */
 export type ThreadKind = (typeof threadKinds)[number]
 
 export const threadKindLabels: Record<ThreadKind, string> = {
   listingInquiry: '問い合わせ',
-  transportApplication: '応募',
-  transportInquiry: '質問',
 }
 
 export function isThreadKind(kind: string): kind is ThreadKind {
@@ -205,7 +199,6 @@ export type ModerationQueueFilter = ModerationStatus | 'all'
 
 export type ModerationQueue = {
   listings: Listing[]
-  transportJobs: TransportJob[]
 }
 
 export type ListingPage = {

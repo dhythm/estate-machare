@@ -4,10 +4,8 @@ import {
   getAdminCounts,
   listAccountSummaries,
   listAllRentals,
-  listCarriers,
   listRecentActivity,
   listThreadSummaries,
-  listTransportApplications,
 } from './admin-overview'
 import { getListing } from './listings'
 import { requestRental } from './rentals'
@@ -16,7 +14,6 @@ import { acceptSubmission } from './submissions'
 import { addMessage } from './threads'
 import { createListing } from './listings'
 import { setAccountStatus } from './auth/account-status'
-import { upsertCarrierProfile } from './carriers'
 import { requestOrder } from './orders'
 import { demoSeller, demoUser } from '@/test/mock-auth'
 
@@ -35,18 +32,6 @@ async function seedActivity() {
     { targetId: 'trc-001', userId: 'demo-user' },
   )
   await addMessage(inquiry.id, demoSeller, '在庫あります')
-  await acceptSubmission(
-    'transportApplication',
-    { name: '利用者デモ', vehicle: '2tトラック', availableDate: '2026-10-03' },
-    { targetId: 'tj-01', userId: 'demo-user' },
-  )
-  await upsertCarrierProfile(demoUser, {
-    name: '高橋運送',
-    kind: '法人',
-    prefecture: '秋田県',
-    vehicles: ['4tトラック'],
-    serviceAreas: ['秋田県'],
-  })
   await acceptSubmission('contact', { message: 'hello' })
   await requestRental((await getListing('trc-001'))!, demoUser, {
     startDate: '2026-10-01',
@@ -82,13 +67,10 @@ describe('getAdminCounts', () => {
     await requestOrder((await getListing('cmb-002'))!, demoUser, {})
     expect(await getAdminCounts()).toEqual({
       pendingListings: 1,
-      pendingTransportJobs: 0,
       requestedRentals: 1,
       activeRentals: 0,
       requestedOrders: 1,
-      haulingJobs: 0,
-      openThreads: 2,
-      carriers: 1,
+      openThreads: 1,
     })
   })
 })
@@ -136,16 +118,6 @@ describe('lists', () => {
       status: 'new',
       replyCount: 1,
     })
-    expect(await listThreadSummaries('transportApplication')).toHaveLength(1)
-  })
-
-  it('lists applications with the job and carriers from registrations', async () => {
-    await seedActivity()
-    const applications = await listTransportApplications()
-    expect(applications[0].targetName).toContain('引越し')
-    const carriers = await listCarriers()
-    expect(carriers).toHaveLength(1)
-    expect(carriers[0].name).toBe('高橋運送')
   })
 
   it('summarizes accounts with their activity', async () => {

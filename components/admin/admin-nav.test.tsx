@@ -12,7 +12,7 @@ describe('AdminNav', () => {
     usePathname.mockReturnValue('/admin/deals/rentals')
     render(<AdminNav />)
     expect(screen.getAllByRole('link').map((link) => link.textContent)).toEqual(
-      ['ダッシュボード', 'アカウント管理', '取引管理', '引越し管理'],
+      ['ダッシュボード', 'アカウント管理', '取引管理'],
     )
     expect(screen.getByRole('link', { name: '取引管理' })).toHaveAttribute(
       'aria-current',

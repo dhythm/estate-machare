@@ -44,20 +44,17 @@ describe('AdminDataTable', () => {
   it('keeps the search available when no rows match', async () => {
     render(
       <AdminDataTable
-        title="引越しパートナー"
+        title="掲載者"
         headers={['名前']}
-        rows={[{ key: 'one', searchText: '高橋運送', cells: ['高橋運送'] }]}
+        rows={[{ key: 'one', searchText: '高橋不動産', cells: ['高橋不動産'] }]}
       />,
     )
     await userEvent
       .setup()
-      .type(
-        screen.getByRole('searchbox', { name: '引越しパートナーを検索' }),
-        '東京',
-      )
+      .type(screen.getByRole('searchbox', { name: '掲載者を検索' }), '東京')
     expect(screen.getByText('該当なし')).toBeInTheDocument()
     expect(
-      screen.getByRole('searchbox', { name: '引越しパートナーを検索' }),
+      screen.getByRole('searchbox', { name: '掲載者を検索' }),
     ).toBeInTheDocument()
   })
 })

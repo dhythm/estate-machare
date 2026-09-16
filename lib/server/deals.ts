@@ -6,7 +6,6 @@ import {
   threadStatusLabels,
   isThreadKind,
   type Listing,
-  type TransportJob,
 } from '@/lib/data'
 import { rentalStatusLabels } from '@/lib/rent-to-own'
 import { configuredAccounts, type AuthenticatedUser } from './auth/accounts'
@@ -20,7 +19,7 @@ import {
 } from './store'
 
 export type DealSummary = {
-  kind: DealKind
+  kind: Extract<DealKind, 'order' | 'rental'>
   id: string
   title: string
   href: string
@@ -46,7 +45,7 @@ export type DealView = {
   events: DealEventView[]
   relatedThreads: { id: string; label: string; statusLabel: string }[]
   relatedDeals: {
-    kind: DealKind
+    kind: Extract<DealKind, 'order' | 'rental'>
     id: string
     title: string
     statusLabel: string
@@ -56,11 +55,6 @@ export type DealView = {
 export type DealResult<T> =
   { ok: true; value: T } | { ok: false; reason: 'not_found' | 'forbidden' }
 
-const jobStatusLabels: Record<string, string> = {
-  approved: '承認',
-  rejected: '却下',
-}
-
 function statusLabel(kind: DealKind, status: string): string {
   if (kind === 'order')
     return orderStatusLabels[status as keyof typeof orderStatusLabels] ?? status
@@ -68,7 +62,7 @@ function statusLabel(kind: DealKind, status: string): string {
     return (
       rentalStatusLabels[status as keyof typeof rentalStatusLabels] ?? status
     )
-  return jobStatusLabels[status] ?? status
+  return status
 }
 
 function accountName(userId: string | undefined): string {
@@ -77,16 +71,6 @@ function accountName(userId: string | undefined): string {
     configuredAccounts().find((account) => account.id === userId)?.name ??
     userId
   )
-}
-
-async function agreedCarrierOf(jobId: string): Promise<string | undefined> {
-  const submissions = await getStore().submissions.list()
-  return submissions.find(
-    (submission) =>
-      submission.kind === 'transportApplication' &&
-      submission.targetId === jobId &&
-      submission.status === 'agreed',
-  )?.userId
 }
 
 type Loaded =
@@ -101,11 +85,6 @@ type Loaded =
       rental: Rental
       listing?: Listing
       parties: [string, string | undefined]
-    }
-  | {
-      kind: 'transportJob'
-      job: TransportJob
-      parties: [string | undefined, string | undefined]
     }
 
 async function load(kind: DealKind, id: string): Promise<Loaded | undefined> {
@@ -132,9 +111,7 @@ async function load(kind: DealKind, id: string): Promise<Loaded | undefined> {
       parties: [rental.renterUserId, listing?.ownerUserId],
     }
   }
-  const job = await store.transportJobs.get(id)
-  if (!job) return undefined
-  return { kind, job, parties: [job.ownerUserId, await agreedCarrierOf(id)] }
+  return undefined
 }
 
 function summarize(loaded: Loaded, viewerId: string): DealSummary {
@@ -160,45 +137,25 @@ function summarize(loaded: Loaded, viewerId: string): DealSummary {
       updatedAt: order.updatedAt,
     }
   }
-  if (loaded.kind === 'rental') {
-    const { rental, listing } = loaded
-    const isRenter = rental.renterUserId === viewerId
-    return {
-      kind: 'rental',
-      id: rental.id,
-      title: listing?.name ?? '削除された物件',
-      href: `/listings/${rental.listingId}`,
-      amount: rental.purchasePrice ?? rental.rentTotal,
-      status: rental.status,
-      statusLabel: rentalStatusLabels[rental.status],
-      role: isRenter
-        ? '申込者'
-        : listing?.ownerUserId === viewerId
-          ? '所有者'
-          : '運営',
-      counterpart: accountName(
-        isRenter ? listing?.ownerUserId : rental.renterUserId,
-      ),
-      updatedAt: rental.updatedAt,
-    }
-  }
-  const { job, parties } = loaded
-  const isOwner = job.ownerUserId === viewerId
+  const { rental, listing } = loaded
+  const isRenter = rental.renterUserId === viewerId
   return {
-    kind: 'transportJob',
-    id: job.id,
-    title: job.item,
-    href: `/transport/${job.id}`,
-    amount: job.reward,
-    status: job.status,
-    statusLabel: job.status,
-    role: isOwner
-      ? '依頼者'
-      : parties[1] === viewerId
-        ? '引越しパートナー'
+    kind: 'rental',
+    id: rental.id,
+    title: listing?.name ?? '削除された物件',
+    href: `/listings/${rental.listingId}`,
+    amount: rental.purchasePrice ?? rental.rentTotal,
+    status: rental.status,
+    statusLabel: rentalStatusLabels[rental.status],
+    role: isRenter
+      ? '申込者'
+      : listing?.ownerUserId === viewerId
+        ? '所有者'
         : '運営',
-    counterpart: accountName(isOwner ? parties[1] : job.ownerUserId),
-    updatedAt: job.updatedAt ?? job.createdAt ?? '',
+    counterpart: accountName(
+      isRenter ? listing?.ownerUserId : rental.renterUserId,
+    ),
+    updatedAt: rental.updatedAt,
   }
 }
 
@@ -227,11 +184,7 @@ export async function getDeal(
     return { ok: false, reason: 'forbidden' }
   const store = getStore()
   const targetId =
-    loaded.kind === 'transportJob'
-      ? loaded.job.id
-      : loaded.kind === 'order'
-        ? loaded.order.listingId
-        : loaded.rental.listingId
+    loaded.kind === 'order' ? loaded.order.listingId : loaded.rental.listingId
   const [events, submissions, orders, rentals] = await Promise.all([
     listDealEvents(kind, id),
     store.submissions.list(),
@@ -288,26 +241,15 @@ export async function getDeal(
   }
 }
 
-/** Every order, rental, and job the user takes part in, newest change first. */
+/** Every order and rental the user takes part in, newest change first. */
 export async function listDealsForUser(userId: string): Promise<DealSummary[]> {
   const store = getStore()
-  const [orders, rentals, jobs, listings, submissions] = await Promise.all([
+  const [orders, rentals, listings] = await Promise.all([
     store.orders.list(),
     store.rentals.list(),
-    store.transportJobs.list(),
     store.listings.list(),
-    store.submissions.list(),
   ])
   const listingById = new Map(listings.map((listing) => [listing.id, listing]))
-  const carrierByJob = new Map(
-    submissions
-      .filter(
-        (submission) =>
-          submission.kind === 'transportApplication' &&
-          submission.status === 'agreed',
-      )
-      .map((submission) => [submission.targetId, submission.userId]),
-  )
   const deals: DealSummary[] = []
   for (const order of orders)
     if (order.buyerUserId === userId || order.sellerUserId === userId)
@@ -333,16 +275,6 @@ export async function listDealsForUser(userId: string): Promise<DealSummary[]> {
             listing,
             parties: [rental.renterUserId, listing?.ownerUserId],
           },
-          userId,
-        ),
-      )
-  }
-  for (const job of jobs) {
-    const carrier = carrierByJob.get(job.id)
-    if (job.ownerUserId === userId || carrier === userId)
-      deals.push(
-        summarize(
-          { kind: 'transportJob', job, parties: [job.ownerUserId, carrier] },
           userId,
         ),
       )

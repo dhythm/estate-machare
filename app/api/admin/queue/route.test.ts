@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { GET, POST } from './route'
 import { POST as createListing } from '../../listings/route'
-import { POST as createJob } from '../../transport/jobs/route'
 import { resetStore } from '@/lib/server/store'
 
 const auth = vi.hoisted(() => vi.fn())
@@ -109,31 +108,16 @@ describe('/api/admin/queue', () => {
     ).toEqual([])
   })
 
-  it('rejects a pending transport job', async () => {
-    const created = await createJob(
-      new Request('http://localhost/api/transport/jobs', {
-        method: 'POST',
-        body: JSON.stringify({
-          item: '審査中コンバイン',
-          from: '秋田県 大仙市',
-          to: '山形県 天童市',
-          distanceKm: '120',
-          weight: '約2.4t',
-          desiredDate: '相談',
-          reward: '38000',
-          contactEmail: 'owner@example.com',
-        }),
-      }),
-    )
-    const { id } = (await created.json()) as { id: string }
-    const rejected = await adminPost({
-      kind: 'transportJob',
-      id,
-      status: 'rejected',
-      note: '区間が不明瞭',
-    })
-    expect(rejected.status).toBe(200)
-    expect((await rejected.json()).moderationStatus).toBe('rejected')
+  it('rejects the retired transport moderation kind', async () => {
+    expect(
+      (
+        await adminPost({
+          kind: 'transportJob',
+          id: 'tj-01',
+          status: 'approved',
+        })
+      ).status,
+    ).toBe(400)
   })
 
   it('validates the filter and the decision body', async () => {

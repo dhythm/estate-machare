@@ -6,7 +6,6 @@ import { requestOrder, updateOrderStatus } from './orders'
 import { requestRental, updateRentalStatus } from './rentals'
 import { resetStore } from './store'
 import { acceptSubmission } from './submissions'
-import { updateThreadStatus } from './threads'
 import { demoAdmin, demoSeller, demoUser } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
@@ -80,28 +79,6 @@ describe('getDeal', () => {
       rentalId,
     ])
   })
-
-  it('exposes a transport job to its owner and the agreed carrier', async () => {
-    const { id: threadId } = await acceptSubmission(
-      'transportApplication',
-      {
-        name: '利用者デモ',
-        vehicle: '2tトラック',
-        availableDate: '2026-10-03',
-      },
-      { targetId: 'tj-01', userId: 'demo-user' },
-    )
-    expect((await getDeal('transportJob', 'tj-01', demoUser)).ok).toBe(false)
-    await updateThreadStatus(threadId, demoSeller, 'agreed')
-    const asCarrier = await getDeal('transportJob', 'tj-01', demoUser)
-    expect(asCarrier.ok && asCarrier.value.summary).toMatchObject({
-      title: expect.stringContaining('引越し'),
-      href: '/transport/tj-01',
-      status: '調整中',
-      role: '引越しパートナー',
-      amount: 38_000,
-    })
-  })
 })
 
 describe('listDealsForUser', () => {
@@ -115,12 +92,7 @@ describe('listDealsForUser', () => {
     const mine = await listDealsForUser('demo-user')
     expect(mine.map((d) => d.kind)).toEqual(['rental', 'order'])
     const seller = await listDealsForUser('demo-seller')
-    expect(seller.map((d) => d.kind).sort()).toEqual([
-      'order',
-      'rental',
-      'transportJob',
-      'transportJob',
-    ])
+    expect(seller.map((d) => d.kind).sort()).toEqual(['order', 'rental'])
     expect(await listDealsForUser('nobody')).toEqual([])
   })
 })

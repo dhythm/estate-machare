@@ -4,7 +4,7 @@ import {
   isListingSort,
   type ListingFilter,
 } from '@/lib/data'
-import { prefectureNames } from '@/lib/transport-fee'
+import { prefectureNames } from '@/lib/prefectures'
 
 export type ListingSearchState = {
   filter: ListingFilter & { keyword: string }

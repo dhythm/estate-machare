@@ -1,6 +1,5 @@
 import 'server-only'
 
-import { isThreadKind } from '@/lib/data'
 import { getStore, type Submission } from './store'
 
 const readId = (threadId: string, userId: string) => `${threadId}:${userId}`
@@ -18,7 +17,7 @@ export async function markThreadRead(
 }
 
 function isThread(submission: Submission): boolean {
-  return isThreadKind(submission.kind)
+  return submission.kind === 'listingInquiry'
 }
 
 /**
@@ -27,16 +26,14 @@ function isThread(submission: Submission): boolean {
  */
 export async function unreadThreadIds(userId: string): Promise<string[]> {
   const store = getStore()
-  const [submissions, messages, reads, listings, jobs] = await Promise.all([
+  const [submissions, messages, reads, listings] = await Promise.all([
     store.submissions.list(),
     store.messages.list(),
     store.threadReads.list(),
     store.listings.list(),
-    store.transportJobs.list(),
   ])
   const ownerOf = new Map<string, string | undefined>()
   for (const listing of listings) ownerOf.set(listing.id, listing.ownerUserId)
-  for (const job of jobs) ownerOf.set(job.id, job.ownerUserId)
   const readAtOf = new Map(
     reads
       .filter((read) => read.userId === userId)

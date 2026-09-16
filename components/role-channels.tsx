@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import { ArrowUpRight, Tag, Truck } from 'lucide-react'
+import { ArrowUpRight, Tag } from 'lucide-react'
 
 export function RoleChannels() {
   return (
-    <section className="mx-auto grid max-w-[1280px] gap-5 px-5 pb-20 pt-4 sm:px-8 md:grid-cols-2">
+    <section className="mx-auto grid max-w-[1280px] gap-5 px-5 pb-20 pt-4 sm:px-8">
       <Link
         href="/listings/new"
         className="group flex items-start gap-5 rounded-xl border border-border bg-card p-7 transition-colors hover:border-primary/50 sm:p-8"
@@ -21,27 +21,6 @@ export function RoleChannels() {
           </p>
           <span className="mt-5 inline-flex items-center gap-3 text-sm font-bold text-primary">
             物件を掲載する
-            <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </span>
-        </div>
-      </Link>
-      <Link
-        href="/transport/register"
-        className="group flex items-start gap-5 rounded-xl border border-border bg-card p-7 transition-colors hover:border-primary/50 sm:p-8"
-      >
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
-          <Truck className="size-5" />
-        </span>
-        <div className="flex-1">
-          <p className="eyebrow">FOR MOVING PARTNERS</p>
-          <h2 className="mt-2 text-lg font-bold">
-            新生活のはじまりを、支える。
-          </h2>
-          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-            対応エリアと車両を登録して、引越しの仕事を。
-          </p>
-          <span className="mt-5 inline-flex items-center gap-3 text-sm font-bold text-primary">
-            引越しパートナーとして登録
             <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </span>
         </div>

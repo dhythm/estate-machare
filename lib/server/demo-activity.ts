@@ -20,7 +20,7 @@ import type {
 
 /**
  * What the marketplace looks like after a few months of use: purchases,
- * rentals, threads, hauls, and reviews between the demo accounts and the
+ * rentals, threads, and reviews between the demo accounts and the
  * personas. Loaded on top of the sample listings unless `DEMO_ACTIVITY=off`.
  */
 export type DemoActivity = {
@@ -90,71 +90,7 @@ const listings: Listing[] = generateListings(6, 101).map((listing, index) => ({
   updatedAt: at('09-13 09:10'),
 }))
 
-const transportJobs: TransportJob[] = [
-  {
-    id: 'tj-101',
-    item: 'ふたり暮らしの引越し',
-    from: '新潟県 長岡市',
-    to: '新潟県 新潟市',
-    distanceKm: 60,
-    weight: '2tトラック1台分',
-    desiredDate: '9/13 午前',
-    reward: 18_000,
-    status: '運搬中',
-    ownerUserId: 'demo-seller',
-    createdAt: at('09-08 09:00'),
-    updatedAt: at('09-13 08:05'),
-    moderationStatus: 'approved',
-    moderatedAt: at('09-08 09:30'),
-  },
-  {
-    id: 'tj-102',
-    item: '新居への家具配送',
-    from: '富山県 砺波市',
-    to: '長野県 飯山市',
-    distanceKm: 130,
-    weight: '家具5点',
-    desiredDate: '9/20 終日',
-    reward: 32_000,
-    status: '調整中',
-    ownerUserId: 'ito-farm',
-    createdAt: at('09-05 14:00'),
-    updatedAt: at('09-11 17:30'),
-    moderationStatus: 'approved',
-    moderatedAt: at('09-05 14:20'),
-  },
-  {
-    id: 'tj-103',
-    item: '段ボールとデスクの配送',
-    from: '群馬県 前橋市',
-    to: '埼玉県 深谷市',
-    distanceKm: 45,
-    weight: '段ボール10箱・デスク',
-    desiredDate: '相談',
-    reward: 7_000,
-    status: '募集中',
-    ownerUserId: 'kato',
-    createdAt: at('09-13 07:45'),
-    updatedAt: at('09-13 07:45'),
-    moderationStatus: 'pending',
-  },
-  {
-    id: 'tj-104',
-    item: '単身引越し・家具家電一式',
-    from: '新潟県 南魚沼市',
-    to: '群馬県 高崎市',
-    distanceKm: 140,
-    weight: '単身・家具家電あり',
-    desiredDate: '7/5 午前',
-    reward: 28_000,
-    status: '完了',
-    ownerUserId: 'nakamura-farm',
-    createdAt: at('06-28 10:00'),
-    updatedAt: at('07-05 15:40'),
-    moderationStatus: 'approved',
-    moderatedAt: at('06-28 10:30'),
-  },
-]
+const transportJobs: TransportJob[] = []
 
 function rental(
   input: Omit<Rental, 'days' | 'rentTotal' | 'createdAt' | 'updatedAt'> & {
@@ -291,7 +227,7 @@ const orders: Order[] = [
     sellerUserId: 'tokachi-agri',
     price: 21_000_000,
     status: 'requested',
-    message: '入居時の引越しもこちらで相談する予定です。',
+    message: '引き渡し時期と契約条件を相談したいです。',
     createdAt: at('09-11 21:00'),
     updatedAt: at('09-11 21:00'),
   },
@@ -396,85 +332,6 @@ const submissions: Submission[] = [
     },
   },
   {
-    id: 's-105',
-    kind: 'transportApplication',
-    targetId: 'tj-101',
-    userId: 'okada',
-    receivedAt: at('09-08 12:00'),
-    payload: {
-      name: '岡田さん',
-      email: 'okada@example.com',
-      vehicle: '2tトラック',
-      availableDate: '2026-09-13',
-      message: '当日午前に伺えます。',
-    },
-    status: 'agreed',
-  },
-  {
-    id: 's-106',
-    kind: 'transportApplication',
-    targetId: 'tj-01',
-    userId: 'hokuriku-unso',
-    receivedAt: at('09-13 09:55'),
-    payload: {
-      name: '北陸運送',
-      email: 'hokuriku-unso@example.com',
-      vehicle: '4tトラック',
-      availableDate: '2026-09-28',
-      message: '大仙から天童は定期便のルートです。',
-    },
-  },
-  {
-    id: 's-107',
-    kind: 'transportApplication',
-    targetId: 'tj-05',
-    userId: 'demo-user',
-    receivedAt: at('09-12 16:45'),
-    payload: {
-      name: '利用者デモ',
-      email: 'user@example.com',
-      vehicle: '2tトラック',
-      availableDate: '2026-10-12',
-    },
-  },
-  {
-    id: 's-108',
-    kind: 'transportInquiry',
-    targetId: 'tj-02',
-    userId: 'yamamoto-transport',
-    receivedAt: at('09-10 13:10'),
-    payload: { message: '搬出元にエレベーターはありますか？' },
-    status: 'in_progress',
-  },
-  {
-    id: 's-109',
-    kind: 'transportApplication',
-    targetId: 'tj-102',
-    userId: 'hokuriku-unso',
-    receivedAt: at('09-06 09:00'),
-    payload: {
-      name: '北陸運送',
-      email: 'hokuriku-unso@example.com',
-      vehicle: '4tトラック',
-      availableDate: '2026-09-20',
-    },
-    status: 'agreed',
-  },
-  {
-    id: 's-110',
-    kind: 'transportApplication',
-    targetId: 'tj-104',
-    userId: 'yamamoto-transport',
-    receivedAt: at('06-29 10:00'),
-    payload: {
-      name: '山本トランスポート',
-      email: 'yamamoto-transport@example.com',
-      vehicle: 'トレーラー',
-      availableDate: '2026-07-05',
-    },
-    status: 'agreed',
-  },
-  {
     id: 's-111',
     kind: 'listingInquiry',
     targetId: 'trc-006',
@@ -488,15 +345,6 @@ const submissions: Submission[] = [
     },
     status: 'declined',
   },
-  {
-    id: 's-112',
-    kind: 'transportInquiry',
-    targetId: 'tj-01',
-    userId: 'demo-user',
-    receivedAt: at('09-12 09:00'),
-    payload: { message: '希望日の前日搬入でも大丈夫ですか？' },
-    status: 'in_progress',
-  },
 ]
 
 const messages: Message[] = [
@@ -508,25 +356,11 @@ const messages: Message[] = [
     createdAt: at('09-12 08:30'),
   },
   {
-    id: 'm-102',
-    threadId: 's-112',
-    senderUserId: 'demo-seller',
-    body: '前日の搬入で問題ありません。新居の鍵は当日お渡しします。',
-    createdAt: at('09-12 12:10'),
-  },
-  {
     id: 'm-103',
     threadId: 's-103',
     senderUserId: 'kobayashi-engei',
     body: 'ありがとうございます。9月中の内見日程をご相談ください。',
     createdAt: at('09-06 18:00'),
-  },
-  {
-    id: 'm-104',
-    threadId: 's-108',
-    senderUserId: 'demo-seller',
-    body: '搬出元にはエレベーターがあります。大型家具の寸法もお知らせします。',
-    createdAt: at('09-10 15:00'),
   },
 ]
 
@@ -573,7 +407,8 @@ const reviews: Review[] = [
     sourceKind: 'order',
     sourceId: 'o-105',
     rating: 4,
-    comment: '条件に納得できました。引越しの手配まで相談に乗ってもらえました。',
+    comment:
+      '条件に納得できました。契約条件まで丁寧に相談に乗ってもらえました。',
     createdAt: at('07-04 19:30'),
   },
   {
@@ -590,50 +425,7 @@ const reviews: Review[] = [
   },
 ]
 
-const carrierProfiles: CarrierProfile[] = [
-  {
-    id: 'demo-user',
-    name: '利用者デモ',
-    kind: '個人',
-    prefecture: '新潟県',
-    vehicles: ['2tトラック'],
-    serviceAreas: ['新潟県', '長野県', '富山県'],
-    note: '週末中心に対応できます。',
-    createdAt: at('08-15 10:00'),
-    updatedAt: at('08-15 10:00'),
-  },
-  {
-    id: 'okada',
-    name: '岡田さん',
-    kind: '個人',
-    prefecture: '新潟県',
-    vehicles: ['軽トラック', '2tトラック'],
-    serviceAreas: ['新潟県'],
-    createdAt: at('07-10 09:00'),
-    updatedAt: at('07-10 09:00'),
-  },
-  {
-    id: 'hokuriku-unso',
-    name: '北陸運送',
-    kind: '法人',
-    prefecture: '石川県',
-    vehicles: ['4tトラック', 'トレーラー'],
-    serviceAreas: ['石川県', '富山県', '福井県', '新潟県', '秋田県', '山形県'],
-    note: '北陸〜東北の定期便あり。',
-    createdAt: at('05-12 11:00'),
-    updatedAt: at('08-01 11:00'),
-  },
-  {
-    id: 'yamamoto-transport',
-    name: '山本トランスポート',
-    kind: '法人',
-    prefecture: '北海道',
-    vehicles: ['4tトラック', 'トレーラー'],
-    serviceAreas: ['北海道', '新潟県', '群馬県'],
-    createdAt: at('04-20 09:00'),
-    updatedAt: at('04-20 09:00'),
-  },
-]
+const carrierProfiles: CarrierProfile[] = []
 
 function listingName(id: string): string {
   return (
@@ -651,15 +443,6 @@ const notifications: Notification[] = [
     body: listingName('trc-001'),
     href: '/account/threads/s-101',
     createdAt: at('09-13 10:05'),
-  },
-  {
-    id: 'n-102',
-    userId: 'demo-seller',
-    kind: 'application',
-    title: '応募が届きました',
-    body: 'ふたり暮らしの引越し',
-    href: '/account/threads/s-106',
-    createdAt: at('09-13 09:55'),
   },
   {
     id: 'n-103',
@@ -680,15 +463,6 @@ const notifications: Notification[] = [
     createdAt: at('09-13 08:50'),
   },
   {
-    id: 'n-105',
-    userId: 'demo-seller',
-    kind: 'application',
-    title: '引越しが始まりました',
-    body: 'ふたり暮らしの引越し',
-    href: '/transport/tj-101',
-    createdAt: at('09-13 08:05'),
-  },
-  {
     id: 'n-106',
     userId: 'demo-seller',
     kind: 'rental',
@@ -699,16 +473,6 @@ const notifications: Notification[] = [
     readAt: at('09-12 21:00'),
   },
   {
-    id: 'n-107',
-    userId: 'demo-seller',
-    kind: 'application',
-    title: '案件への質問が届きました',
-    body: '単身引越し・家具家電一式',
-    href: '/account/threads/s-108',
-    createdAt: at('09-10 13:10'),
-    readAt: at('09-10 14:55'),
-  },
-  {
     id: 'n-108',
     userId: 'demo-user',
     kind: 'reply',
@@ -716,15 +480,6 @@ const notifications: Notification[] = [
     body: listingName('cmb-002'),
     href: '/account/threads/s-102',
     createdAt: at('09-12 08:30'),
-  },
-  {
-    id: 'n-109',
-    userId: 'demo-user',
-    kind: 'reply',
-    title: '返信が届きました',
-    body: 'ふたり暮らしの引越し',
-    href: '/account/threads/s-112',
-    createdAt: at('09-12 12:10'),
   },
   {
     id: 'n-110',
@@ -778,9 +533,6 @@ const notifications: Notification[] = [
 
 const threadReads: ThreadRead[] = [
   { threadId: 's-102', userId: 'demo-seller', readAt: at('09-12 08:30') },
-  { threadId: 's-112', userId: 'demo-seller', readAt: at('09-12 12:10') },
-  { threadId: 's-108', userId: 'demo-seller', readAt: at('09-10 15:00') },
-  { threadId: 's-105', userId: 'demo-seller', readAt: at('09-09 18:00') },
   { threadId: 's-103', userId: 'kobayashi-engei', readAt: at('09-06 18:00') },
 ].map((read) => ({ id: `${read.threadId}:${read.userId}`, ...read }))
 
@@ -811,7 +563,7 @@ const eventSeeds: EventSeed[] = [
     'requested',
     'demo-user',
     '09-11 21:00',
-    '入居時の引越しもこちらで相談する予定です。',
+    '引き渡し時期と契約条件を相談したいです。',
   ],
   ['order', 'o-103', 'requested', 'ito-farm', '09-09 10:00'],
   ['order', 'o-103', 'accepted', 'kobayashi-engei', '09-10 09:15'],
@@ -905,19 +657,6 @@ const eventSeeds: EventSeed[] = [
   ],
   ['rental', 'r-108', 'active', 'demo-seller', '06-10 09:00'],
   ['rental', 'r-108', 'completed', 'demo-seller', '06-13 11:00'],
-  ['transportJob', 'tj-101', '募集中', 'demo-seller', '09-08 09:00'],
-  ['transportJob', 'tj-101', 'approved', undefined, '09-08 09:30'],
-  ['transportJob', 'tj-101', '調整中', 'demo-seller', '09-09 18:00'],
-  ['transportJob', 'tj-101', '運搬中', 'okada', '09-13 08:05'],
-  ['transportJob', 'tj-102', '募集中', 'ito-farm', '09-05 14:00'],
-  ['transportJob', 'tj-102', 'approved', undefined, '09-05 14:20'],
-  ['transportJob', 'tj-102', '調整中', 'ito-farm', '09-11 17:30'],
-  ['transportJob', 'tj-103', '募集中', 'kato', '09-13 07:45'],
-  ['transportJob', 'tj-104', '募集中', 'nakamura-farm', '06-28 10:00'],
-  ['transportJob', 'tj-104', 'approved', undefined, '06-28 10:30'],
-  ['transportJob', 'tj-104', '調整中', 'nakamura-farm', '06-30 09:00'],
-  ['transportJob', 'tj-104', '運搬中', 'yamamoto-transport', '07-05 08:00'],
-  ['transportJob', 'tj-104', '完了', 'nakamura-farm', '07-05 15:40'],
 ]
 
 const dealEvents: DealEvent[] = eventSeeds

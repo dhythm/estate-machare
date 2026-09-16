@@ -8,7 +8,6 @@ import { BrandLogo } from '@/components/brand-logo'
 
 const links = [
   { href: '/listings', label: '物件を探す' },
-  { href: '/transport', label: '引越しサポート' },
   { href: '/guide', label: 'はじめての方へ' },
 ]
 

@@ -35,16 +35,8 @@ describe('submissions', () => {
       { message: 'y' },
       { targetId: 'trc-006' },
     )
-    await acceptSubmission(
-      'transportApplication',
-      { message: 'z' },
-      { targetId: 'tj-01' },
-    )
     expect(await listSubmissions('listingInquiry', 'trc-001')).toHaveLength(1)
     expect(await listSubmissions('listingInquiry')).toHaveLength(2)
-    expect(await listSubmissions('transportApplication', 'tj-01')).toHaveLength(
-      1,
-    )
   })
 
   it('records the sender and lists submissions by user', async () => {

@@ -4,7 +4,7 @@ import { formatYen, threadStatusLabels } from '@/lib/data'
 import { rentalStatusLabels } from '@/lib/rent-to-own'
 import type { AccountSummary, ThreadSummary } from '@/lib/server/admin-overview'
 import type { RentalWithListing } from '@/lib/server/rentals'
-import type { CarrierProfile, Review } from '@/lib/server/store/types'
+import type { Review } from '@/lib/server/store/types'
 import { StarRating } from '@/components/reviews/star-rating'
 import {
   OrderCancelButton,
@@ -87,11 +87,7 @@ export function ThreadTable({ items }: { items: ThreadSummary[] }) {
         cells: [
           thread.targetId && !thread.targetName.startsWith('（') ? (
             <Link
-              href={
-                thread.kind === 'listingInquiry'
-                  ? `/listings/${thread.targetId}`
-                  : `/transport/${thread.targetId}`
-              }
+              href={`/listings/${thread.targetId}`}
               className="font-semibold text-foreground decoration-primary/40 underline-offset-4 hover:text-primary hover:underline"
             >
               {thread.targetName}
@@ -126,41 +122,6 @@ export function ThreadTable({ items }: { items: ThreadSummary[] }) {
   )
 }
 
-export function CarrierTable({ items }: { items: CarrierProfile[] }) {
-  return (
-    <AdminDataTable
-      title="引越しパートナー"
-      headers={[
-        '引越しパートナー',
-        '区分',
-        '拠点',
-        '車両',
-        '対応地域',
-        '更新日',
-      ]}
-      rows={items.map((carrier) => ({
-        key: carrier.id,
-        searchText: `${carrier.id} ${carrier.name} ${carrier.kind} ${carrier.prefecture} ${carrier.vehicles.join(' ')} ${carrier.serviceAreas.join(' ')}`,
-        cells: [
-          <div key="identity" className="min-w-40 space-y-1">
-            <p className="font-semibold text-foreground">{carrier.name}</p>
-            <code className="text-xs text-muted-foreground">{carrier.id}</code>
-          </div>,
-          carrier.kind,
-          carrier.prefecture,
-          <span key="vehicle" className="block min-w-32 whitespace-normal">
-            {carrier.vehicles.join('・')}
-          </span>,
-          <span key="area" className="block min-w-32 whitespace-normal">
-            {carrier.serviceAreas.join('・')}
-          </span>,
-          when(carrier.updatedAt),
-        ],
-      }))}
-    />
-  )
-}
-
 const roleLabels = { admin: '運営', user: '一般' } as const
 
 export function AccountTable({
@@ -173,15 +134,7 @@ export function AccountTable({
   return (
     <AdminDataTable
       title="アカウント"
-      headers={[
-        'アカウント',
-        '役割',
-        '掲載',
-        '引越し依頼',
-        '賃貸',
-        '状態',
-        '操作',
-      ]}
+      headers={['アカウント', '役割', '掲載', '賃貸', '状態', '操作']}
       rows={items.map((account) => ({
         key: account.id,
         searchText: `${account.id} ${account.name} ${account.email} ${roleLabels[account.role]} ${account.status === 'suspended' ? '停止中' : '有効'} ${account.note ?? ''}`,
@@ -200,7 +153,6 @@ export function AccountTable({
             {roleLabels[account.role]}
           </Badge>,
           String(account.listingCount),
-          String(account.transportJobCount),
           String(account.rentalCount),
           <span key="status" className="flex flex-col gap-1">
             <Badge

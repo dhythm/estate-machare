@@ -26,7 +26,6 @@ import { ListingCard } from '@/components/listing-card'
 import { RentToOwnSimulator } from '@/components/rent-to-own/rent-to-own-simulator'
 import { RentalRequestForm } from '@/components/rent-to-own/rental-request-form'
 import { OrderRequestForm } from '@/components/orders/order-request-form'
-import { TransportEstimate } from '@/components/transport/transport-estimate'
 import { StarRating } from '@/components/reviews/star-rating'
 import type { Review } from '@/lib/server/store/types'
 import type { DateRange, RentToOwnTerms } from '@/lib/rent-to-own'
@@ -307,21 +306,6 @@ export function ListingDetail({
                   掲載者に質問する
                 </Link>
               </div>
-            </div>
-            <div className="border-t border-border bg-muted/35 p-5 sm:px-6">
-              {!listing.property && (
-                <TransportEstimate
-                  category={listing.category}
-                  fromPrefecture={listing.prefecture}
-                />
-              )}
-              <Link
-                href={`/transport/new?listingId=${encodeURIComponent(listing.id)}`}
-                className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
-              >
-                引越しを相談する
-                <ArrowRight className="size-3.5" />
-              </Link>
             </div>
           </div>
           <p className="mt-4 flex items-start gap-2 px-2 text-xs leading-6 text-muted-foreground">

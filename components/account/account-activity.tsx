@@ -13,21 +13,9 @@ export function AccountActivity({ overview }: { overview: AccountOverview }) {
         received: true,
       })),
     ),
-    ...overview.transportJobs.flatMap(({ job, applications }) =>
-      applications.map((submission) => ({
-        submission,
-        title: job.item,
-        received: true,
-      })),
-    ),
     ...overview.sentInquiries.map(({ submission, listing }) => ({
       submission,
       title: listing?.name ?? '削除された物件',
-      received: false,
-    })),
-    ...overview.sentApplications.map(({ submission, job }) => ({
-      submission,
-      title: job?.item ?? '削除された案件',
       received: false,
     })),
   ]
@@ -111,9 +99,7 @@ export function AccountActivity({ overview }: { overview: AccountOverview }) {
                       </Badge>
                     </span>
                     <span className="mt-1 block truncate text-xs text-muted-foreground">
-                      {submission.kind === 'listingInquiry'
-                        ? '物件の問い合わせ'
-                        : '引越しへの応募'}
+                      物件の問い合わせ
                       {typeof submission.payload.name === 'string' &&
                         ` · ${submission.payload.name}`}
                     </span>

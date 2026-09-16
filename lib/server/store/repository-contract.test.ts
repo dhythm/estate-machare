@@ -95,7 +95,7 @@ describe.each(stores)('$name store', { timeout: 20_000 }, ({ store }) => {
       'cmb-002',
       'rpl-003',
     ])
-    expect((await store.transportJobs.list())[0].id).toBe('tj-01')
+    expect(await store.transportJobs.list()).toEqual([])
     expect(await store.submissions.list()).toEqual([])
   })
 

@@ -27,7 +27,7 @@ type Persona = { id: string; name: string }
 
 /**
  * Cast of the sample data: the sellers behind the seeded listings, plus
- * buyers and carriers who trade with them. They sign in with one shared
+ * buyers and renters who trade with them. They sign in with one shared
  * password (`DEMO_PERSONA_PASSWORD`, `dev-persona` outside production).
  */
 const personas: Persona[] = [
@@ -44,8 +44,8 @@ const personas: Persona[] = [
   { id: 'suzuki', name: '鈴木さん' },
   { id: 'ito-farm', name: '伊藤住まい' },
   { id: 'kato', name: '加藤さん' },
-  { id: 'hokuriku-unso', name: '北陸運送' },
-  { id: 'yamamoto-transport', name: '山本トランスポート' },
+  { id: 'hokuriku-unso', name: '北陸住まい' },
+  { id: 'yamamoto-transport', name: '山本不動産' },
   { id: 'okada', name: '岡田さん' },
 ]
 

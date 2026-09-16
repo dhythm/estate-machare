@@ -3,7 +3,6 @@ import { GET, PATCH } from './route'
 import { POST as reply } from './messages/route'
 import { resetStore } from '@/lib/server/store'
 import { acceptSubmission } from '@/lib/server/submissions'
-import { getTransportJob } from '@/lib/server/transport'
 import { demoAdmin, demoSeller, demoUser, signInAs } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
@@ -22,20 +21,6 @@ async function openInquiry() {
       'listingInquiry',
       { mode: 'rent', name: '利用者デモ', message: '借りたい' },
       { targetId: 'trc-001', userId: 'demo-user' },
-    )
-  ).id
-}
-
-async function openApplication() {
-  return (
-    await acceptSubmission(
-      'transportApplication',
-      {
-        name: '利用者デモ',
-        vehicle: '2tトラック',
-        availableDate: '2026-10-03',
-      },
-      { targetId: 'tj-01', userId: 'demo-user' },
     )
   ).id
 }
@@ -99,15 +84,14 @@ describe('GET /api/threads/[id]', () => {
 })
 
 describe('PATCH /api/threads/[id]', () => {
-  it('lets the owner set the status and books the job on agreement', async () => {
-    const id = await openApplication()
+  it('lets the owner and admins set the inquiry status', async () => {
+    const id = await openInquiry()
     expect((await patch(id, { status: 'agreed' })).status).toBe(403)
     signInAs(demoSeller)
     expect((await patch(id, { status: 'done' })).status).toBe(400)
     const response = await patch(id, { status: 'agreed' })
     expect(response.status).toBe(200)
     expect((await response.json()).status).toBe('agreed')
-    expect((await getTransportJob('tj-01'))?.status).toBe('調整中')
     signInAs(demoAdmin)
     expect((await patch(id, { status: 'declined' })).status).toBe(200)
     signInAs(null)

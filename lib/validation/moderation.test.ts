@@ -23,6 +23,12 @@ describe('validateModerationInput', () => {
     })
   })
 
+  it('rejects removed moving services', () => {
+    expect(validateModerationInput({ ...valid, kind: 'transportJob' }).ok).toBe(
+      false,
+    )
+  })
+
   it('rejects unknown kinds and decisions', () => {
     const result = validateModerationInput({
       kind: 'contact',

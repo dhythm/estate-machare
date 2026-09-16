@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowUpRight, Search, MoveRight } from 'lucide-react'
+import { ArrowUpRight, Search } from 'lucide-react'
 import { categories, type DealFilter } from '@/lib/data'
 import { cn } from '@/lib/utils'
 
@@ -132,13 +132,6 @@ export function Hero() {
       </div>
       <div className="mx-auto mt-6 flex max-w-[1160px] flex-wrap items-center justify-between gap-4 px-1 text-xs text-muted-foreground">
         <p>暮らしに合う物件を、自分らしい選び方で。</p>
-        <Link
-          href="/transport/new"
-          className="inline-flex items-center gap-3 hover:text-primary"
-        >
-          新居への引越しを相談
-          <MoveRight className="size-4" />
-        </Link>
       </div>
     </section>
   )

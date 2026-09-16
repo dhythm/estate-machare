@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Repeat2, ShoppingCart, Tag, Truck } from 'lucide-react'
+import { Repeat2, ShoppingCart, Tag } from 'lucide-react'
 import { PageIntro, PageShell } from '@/components/page-shell'
 import { Badge } from '@/components/badge'
 
@@ -28,13 +28,6 @@ const roles = [
     href: '/listings?deal=sale',
     action: '販売中の物件を探す',
   },
-  {
-    icon: Truck,
-    title: '引越す',
-    body: '新しい住まいへの引越しや家具配送を相談。荷物量・区間・希望日を登録して、対応できるパートナーを探します。',
-    href: '/transport',
-    action: '引越し案件を見る',
-  },
 ]
 
 const searchSteps = [
@@ -47,8 +40,8 @@ const searchSteps = [
     body: '掲載者へ問い合わせ。内見希望日や入居時期をメッセージで調整します。',
   },
   {
-    title: '新生活の準備へ',
-    body: '条件を確認し、引越し先が決まったら家具配送や引越しも相談できます。',
+    title: '契約条件を確認する',
+    body: '価格や入居時期、契約条件を掲載者と確認し、合意内容をやり取りに残します。',
   },
 ]
 
@@ -64,7 +57,7 @@ export default function GuidePage() {
 
         <section className="mt-10">
           <h2 className="font-display text-xl font-bold text-foreground">
-            4つの使い方
+            3つの使い方
           </h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {roles.map(({ icon: Icon, title, body, href, action }) => (
@@ -135,19 +128,11 @@ export default function GuidePage() {
               <strong className="text-foreground">
                 やり取りをひとつの場所に。
               </strong>
-              問い合わせ・応募・返信をマイページで確認できます。現在はコンセプト検証版のため、実際の取引・決済は行われません。
+              問い合わせ・返信をマイページで確認できます。現在はコンセプト検証版のため、実際の取引・決済は行われません。
             </li>
             <li>
               <strong className="text-foreground">状態の記録。</strong>
               所在地・築年・間取り・面積を掲載時に登録し、詳細ページで確認できます。
-            </li>
-            <li>
-              <strong className="text-foreground">引越しもまとめて。</strong>
-              入居先への家具配送や引越しを相談できます。料金は
-              <Link href="/transport/pricing" className="text-primary">
-                料金のめやす
-              </Link>
-              を参照してください。
             </li>
           </ul>
           <p className="mt-6 text-sm text-muted-foreground">

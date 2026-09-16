@@ -7,7 +7,6 @@ import {
   ClipboardCheck,
   Handshake,
   MessageSquare,
-  Truck,
   Users,
 } from 'lucide-react'
 import { AdminSection } from '@/components/admin/admin-section'
@@ -38,16 +37,6 @@ const workspaces = [
     ],
   },
   {
-    title: '引越し管理',
-    icon: Truck,
-    links: [
-      { label: '引越し依頼の審査', href: '/admin/transport' },
-      { label: '引越しへの応募', href: '/admin/transport/applications' },
-      { label: '案件への質問', href: '/admin/transport/inquiries' },
-      { label: '引越しパートナー', href: '/admin/transport/carriers' },
-    ],
-  },
-  {
     title: 'アカウント管理',
     icon: Users,
     links: [{ label: 'アカウントと利用状況', href: '/admin/accounts' }],
@@ -60,7 +49,7 @@ export default async function AdminDashboardPage() {
     listRecentActivity(8),
     listRecentReviews(5),
   ])
-  const pendingCount = counts.pendingListings + counts.pendingTransportJobs
+  const pendingCount = counts.pendingListings
   const metrics = [
     {
       label: '承諾待ちの注文',
@@ -75,27 +64,10 @@ export default async function AdminDashboardPage() {
       links: [{ label: '申込一覧', href: '/admin/deals/rentals' }],
     },
     {
-      label: '運搬中の案件',
-      value: counts.haulingJobs,
-      icon: Truck,
-      links: [{ label: '引越し依頼', href: '/admin/transport' }],
-    },
-    {
       label: '未対応のやり取り',
       value: counts.openThreads,
       icon: MessageSquare,
-      links: [
-        { label: '問い合わせ', href: '/admin/deals/inquiries' },
-        { label: '引越しへの応募', href: '/admin/transport/applications' },
-      ],
-    },
-    {
-      label: '登録済みの引越しパートナー',
-      value: counts.carriers,
-      icon: Truck,
-      links: [
-        { label: '引越しパートナー一覧', href: '/admin/transport/carriers' },
-      ],
+      links: [{ label: '問い合わせ', href: '/admin/deals/inquiries' }],
     },
   ]
 
@@ -130,17 +102,12 @@ export default async function AdminDashboardPage() {
               </span>
             </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 xl:w-[52%]">
+          <div className="grid gap-3 xl:w-[52%]">
             {[
               {
                 label: '審査待ちの掲載',
                 value: counts.pendingListings,
                 href: '/admin/deals',
-              },
-              {
-                label: '審査待ちの引越し依頼',
-                value: counts.pendingTransportJobs,
-                href: '/admin/transport',
               },
             ].map((item) => (
               <Link
@@ -172,7 +139,7 @@ export default async function AdminDashboardPage() {
         </div>
       </section>
 
-      <ul className="mt-5 grid gap-4 sm:grid-cols-3">
+      <ul className="mt-5 grid gap-4 sm:grid-cols-2">
         {metrics.map((metric) => (
           <li
             key={metric.label}
@@ -226,11 +193,7 @@ export default async function AdminDashboardPage() {
                   className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm"
                 >
                   <Badge variant="outline">
-                    {item.kind === 'order'
-                      ? '注文'
-                      : item.kind === 'rental'
-                        ? '賃貸'
-                        : '引越し'}
+                    {item.kind === 'order' ? '注文' : '賃貸'}
                   </Badge>
                   <Link
                     href={item.href}
@@ -306,7 +269,7 @@ export default async function AdminDashboardPage() {
           </h2>
           <span className="h-px flex-1 bg-border" />
         </div>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           {workspaces.map((workspace) => (
             <div
               key={workspace.title}

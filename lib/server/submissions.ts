@@ -1,11 +1,18 @@
 import 'server-only'
 
 import { randomUUID } from 'node:crypto'
-import { getStore, type Submission, type SubmissionKind } from './store'
+import {
+  getStore,
+  type Submission,
+  type SubmissionKind as StoredSubmissionKind,
+} from './store'
 import { notify } from './notifications'
 import { deleteMessagesFor } from './threads'
 
-export type { SubmissionKind }
+export type SubmissionKind = Extract<
+  StoredSubmissionKind,
+  'contact' | 'listingInquiry'
+>
 
 export type Receipt = {
   id: string
@@ -13,7 +20,7 @@ export type Receipt = {
 }
 
 export type SubmissionOptions = {
-  /** Listing or transport job the submission refers to. */
+  /** Listing the submission refers to. */
   targetId?: string
   /** Signed-in sender, when the form requires login. */
   userId?: string
@@ -51,20 +58,6 @@ async function notifyTargetOwner(submission: Submission): Promise<void> {
       body: listing.name,
       href: `/account/threads/${submission.id}`,
     })
-  } else if (
-    submission.kind === 'transportApplication' ||
-    submission.kind === 'transportInquiry'
-  ) {
-    const job = await store.transportJobs.get(submission.targetId)
-    if (!job?.ownerUserId) return
-    const isApplication = submission.kind === 'transportApplication'
-    await notify({
-      userId: job.ownerUserId,
-      kind: isApplication ? 'application' : 'inquiry',
-      title: isApplication ? '応募が届きました' : '案件への質問が届きました',
-      body: job.item,
-      href: `/account/threads/${submission.id}`,
-    })
   }
 }
 
@@ -84,7 +77,11 @@ export async function listSubmissionsByUser(
   userId: string,
 ): Promise<Submission[]> {
   const submissions = await getStore().submissions.list()
-  return submissions.filter((submission) => submission.userId === userId)
+  return submissions.filter(
+    (submission) =>
+      submission.userId === userId &&
+      (submission.kind === 'listingInquiry' || submission.kind === 'contact'),
+  )
 }
 
 export async function deleteSubmissionsFor(targetId: string): Promise<void> {

@@ -35,5 +35,7 @@ export async function listDealEvents(
 export async function listRecentDealEvents(
   limit: number,
 ): Promise<DealEvent[]> {
-  return (await getStore().dealEvents.list()).slice(0, limit)
+  return (await getStore().dealEvents.list())
+    .filter((event) => event.dealKind !== 'transportJob')
+    .slice(0, limit)
 }

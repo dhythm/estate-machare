@@ -23,7 +23,7 @@ describe('store selection', { timeout: 20_000 }, () => {
     vi.stubEnv('PGLITE_DATA_DIR', 'memory://')
     const store = getStore()
     expect(store.kind).toBe('pglite')
-    expect((await store.transportJobs.list()).length).toBeGreaterThanOrEqual(10)
+    expect(await store.transportJobs.list()).toEqual([])
   })
 
   it('rejects unknown store names', () => {

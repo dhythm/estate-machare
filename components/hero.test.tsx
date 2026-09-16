@@ -30,11 +30,11 @@ describe('Hero search', () => {
     expect(new FormData(form as HTMLFormElement).get('deal')).toBe('sale')
   })
 
-  it('links to listing creation and moving support', () => {
+  it('links to listing creation without moving support', () => {
     render(<Hero />)
     expect(
-      screen.getByRole('link', { name: /新居への引越しを相談/ }),
-    ).toHaveAttribute('href', '/transport/new')
+      screen.queryByRole('link', { name: /引越し/ }),
+    ).not.toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: /売りたい・貸したい/ }),
     ).toHaveAttribute('href', '/listings/new')

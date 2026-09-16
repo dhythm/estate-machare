@@ -3,12 +3,13 @@
 import { useState, type FormEvent } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, MessageSquare, Truck } from 'lucide-react'
+import { ArrowUpRight, MessageSquare } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/badge'
 import { FormAlert, TextareaField } from '@/components/forms/fields'
 import { SubmitButton } from '@/components/forms/submit-button'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import {
   formatYen,
   threadStatusLabels,
@@ -20,7 +21,6 @@ import { validateMessage } from '@/lib/validation/thread'
 import { ReviewForm } from '@/components/reviews/review-form'
 import { StarRating } from '@/components/reviews/star-rating'
 import type { Review } from '@/lib/server/store/types'
-import { cn } from '@/lib/utils'
 
 const inquiryModeLabels: Record<string, string> = {
   buy: '購入したい',
@@ -42,7 +42,7 @@ function TargetCard({ target }: { target: Thread['target'] }) {
   if (!target)
     return (
       <p className="text-sm text-muted-foreground">
-        対象の物件・案件は削除されました。
+        対象の物件は削除されました。
       </p>
     )
   if (target.kind === 'listing') {
@@ -102,44 +102,10 @@ function TargetCard({ target }: { target: Thread['target'] }) {
       </div>
     )
   }
-  const { job } = target
-  return (
-    <div className="text-sm">
-      <span className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/5 text-primary">
-        <Truck className="size-6" aria-hidden="true" />
-      </span>
-      <div className="flex flex-wrap items-center gap-2">
-        <Link
-          href={`/transport/${job.id}`}
-          className="font-semibold text-foreground hover:text-primary"
-        >
-          {job.item}
-        </Link>
-        <Badge variant="muted">{job.status}</Badge>
-      </div>
-      <div className="mt-5 space-y-3 border-y border-border py-4">
-        <p className="flex gap-3">
-          <span className="text-xs text-muted-foreground">集荷</span>
-          {job.from}
-        </p>
-        <p className="flex gap-3">
-          <span className="text-xs text-muted-foreground">届け先</span>
-          {job.to}
-        </p>
-      </div>
-      <p className="mt-4 flex justify-between gap-3">
-        <span className="text-xs text-muted-foreground">引越し報酬</span>
-        <span className="font-semibold tabular-nums">
-          {formatYen(job.reward)}
-        </span>
-      </p>
-    </div>
-  )
 }
 
 function OpeningMessage({ thread }: { thread: Thread }) {
   const { payload } = thread.submission
-  const isInquiry = thread.submission.kind === 'listingInquiry'
   return (
     <div className="rounded-2xl border border-border bg-card p-4 text-sm sm:p-5">
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -147,18 +113,12 @@ function OpeningMessage({ thread }: { thread: Thread }) {
           {text(payload.name)}
         </span>
         <span>{when(thread.submission.receivedAt)}</span>
-        {isInquiry && text(payload.mode) && (
+        {text(payload.mode) && (
           <Badge variant="outline">
             {inquiryModeLabels[text(payload.mode)] ?? text(payload.mode)}
           </Badge>
         )}
-        {!isInquiry && (
-          <span>
-            {text(payload.vehicle)}
-            {text(payload.availableDate) && `・${text(payload.availableDate)}`}
-          </span>
-        )}
-        {isInquiry && text(payload.preferredDate) && (
+        {text(payload.preferredDate) && (
           <span>希望日 {text(payload.preferredDate)}</span>
         )}
       </div>
@@ -267,7 +227,7 @@ export function ThreadView({
           <p className="min-w-0 font-medium leading-relaxed">
             {thread.target?.kind === 'listing'
               ? thread.target.listing.name
-              : thread.target?.job.item}
+              : ''}
           </p>
           <Link
             href="#transaction-title"
@@ -373,17 +333,6 @@ export function ThreadView({
               </div>
             </div>
           )}
-          {thread.status === 'agreed' &&
-            thread.target?.kind === 'listing' &&
-            thread.role !== 'admin' && (
-              <Link
-                href={`/transport/new?listingId=${thread.target.listing.id}`}
-                className={cn(buttonVariants(), 'mt-5 h-10 w-full')}
-              >
-                <Truck className="size-4" aria-hidden="true" />
-                引越しを依頼する
-              </Link>
-            )}
         </section>
         {review && (
           <section

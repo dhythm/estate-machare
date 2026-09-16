@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import type { Listing, TransportJob } from '@/lib/data'
+import type { Listing } from '@/lib/data'
 import type { AccountOverview } from '@/lib/server/account'
 import { AccountOverviewView } from './account-overview'
 
@@ -31,18 +31,6 @@ const listing = (
   tags: [],
   ...extra,
 })
-
-const job: TransportJob = {
-  id: 'tj-01',
-  item: 'コンバイン',
-  from: '秋田県 大仙市',
-  to: '山形県 天童市',
-  distanceKm: 120,
-  weight: '約2.4t',
-  desiredDate: '9/28',
-  reward: 38_000,
-  status: '募集中',
-}
 
 const overview: AccountOverview = {
   listings: [
@@ -77,7 +65,6 @@ const overview: AccountOverview = {
       inquiries: [],
     },
   ],
-  transportJobs: [{ job, applications: [], inquiries: [] }],
   sentInquiries: [
     {
       submission: {
@@ -89,33 +76,6 @@ const overview: AccountOverview = {
         payload: { mode: 'buy', message: '買いたい' },
       },
       listing: listing('trc-001', 'クボタ 45馬力'),
-    },
-  ],
-  sentApplications: [
-    {
-      submission: {
-        id: 'a-1',
-        kind: 'transportApplication',
-        targetId: 'tj-09',
-        userId: 'me',
-        receivedAt: '2026-09-13T03:00:00.000Z',
-        payload: { vehicle: '2tトラック', availableDate: '2026-10-03' },
-        status: 'agreed',
-      },
-      job: { ...job, id: 'tj-09', item: '受託した田植機', status: '調整中' },
-    },
-  ],
-  sentJobInquiries: [
-    {
-      submission: {
-        id: 'q-1',
-        kind: 'transportInquiry',
-        targetId: 'tj-01',
-        userId: 'me',
-        receivedAt: '2026-09-13T04:00:00.000Z',
-        payload: { message: '積載方法は？' },
-      },
-      job,
     },
   ],
   replyCounts: { 'i-1': 2 },
@@ -166,33 +126,8 @@ const overview: AccountOverview = {
       counterpart: '掲載者デモ',
       updatedAt: '2026-09-13T00:00:00.000Z',
     },
-    {
-      kind: 'transportJob',
-      id: 'tj-01',
-      title: 'コンバイン',
-      href: '/transport/tj-01',
-      amount: 38_000,
-      status: '募集中',
-      statusLabel: '募集中',
-      role: '依頼者',
-      counterpart: '未定',
-      updatedAt: '',
-    },
   ],
   unreadThreadIds: ['i-1'],
-  carrier: {
-    profile: {
-      id: 'me',
-      name: '高橋運送',
-      kind: '法人',
-      prefecture: '秋田県',
-      vehicles: ['2tトラック'],
-      serviceAreas: ['秋田県', '山形県'],
-      createdAt: '2026-09-13T00:00:00.000Z',
-      updatedAt: '2026-09-13T00:00:00.000Z',
-    },
-    matchingJobs: [job],
-  },
   summary: {
     unreadThreads: 1,
     openInquiries: 2,
@@ -263,6 +198,11 @@ describe('AccountOverviewView', () => {
         }}
       />,
     )
+    expect(
+      screen
+        .getAllByRole('link')
+        .some((link) => link.getAttribute('href')?.includes('transport')),
+    ).toBe(false)
     const navigation = screen.getByRole('navigation', { name: '取引メニュー' })
     expect(
       within(navigation).getByRole('link', { name: '掲載管理' }),
@@ -270,9 +210,6 @@ describe('AccountOverviewView', () => {
     expect(
       within(navigation).getByRole('link', { name: '賃貸管理' }),
     ).toHaveAttribute('href', '#rentals')
-    expect(
-      within(navigation).getByRole('link', { name: '引越し管理' }),
-    ).toHaveAttribute('href', '#transport')
     expect(
       within(navigation).getByRole('link', { name: '送信したやり取り' }),
     ).toHaveAttribute('href', '#sent')
@@ -339,28 +276,9 @@ describe('AccountOverviewView', () => {
     expect(within(mine).getByText('未読')).toBeInTheDocument()
     const summary = screen.getByRole('region', { name: '概要' })
     expect(within(summary).getByText('未読のやり取り')).toBeInTheDocument()
-    expect(
-      within(summary).getByText('未対応の問い合わせ・応募'),
-    ).toBeInTheDocument()
+    expect(within(summary).getByText('未対応の問い合わせ')).toBeInTheDocument()
     expect(within(summary).getAllByText('1件')).toHaveLength(3)
     expect(within(summary).getByText('2件')).toBeInTheDocument()
-    const carrier = screen.getByRole('region', {
-      name: '引越しパートナープロフィール',
-    })
-    expect(within(carrier).getByText('高橋運送')).toBeInTheDocument()
-    expect(
-      within(carrier).getByRole('link', { name: 'プロフィールを編集' }),
-    ).toHaveAttribute('href', '/transport/register')
-    expect(
-      within(carrier).getByRole('link', { name: 'コンバイン' }),
-    ).toHaveAttribute('href', '/transport/tj-01')
-    expect(within(mine).getByText('未対応')).toBeInTheDocument()
-    const jobs = screen.getByRole('region', { name: '自分の引越し依頼' })
-    expect(within(jobs).getByText('コンバイン')).toBeInTheDocument()
-    expect(within(jobs).getByText('応募はまだありません')).toBeInTheDocument()
-    expect(
-      within(jobs).getByRole('button', { name: '完了にする' }),
-    ).toBeInTheDocument()
     const sent = screen.getByRole('region', { name: '送った問い合わせ' })
     expect(
       within(sent).getByRole('link', { name: 'クボタ 45馬力' }),
@@ -369,13 +287,6 @@ describe('AccountOverviewView', () => {
     expect(
       within(sent).getByRole('link', { name: 'やり取りを開く' }),
     ).toHaveAttribute('href', '/account/threads/i-2')
-    const applications = screen.getByRole('region', { name: '送った応募' })
-    expect(within(applications).getByText('受託した田植機')).toBeInTheDocument()
-    expect(
-      within(applications).getByRole('button', { name: '引越しを開始' }),
-    ).toBeInTheDocument()
-    const questions = screen.getByRole('region', { name: '送った質問' })
-    expect(within(questions).getByText('積載方法は？')).toBeInTheDocument()
     const bought = screen.getByRole('region', { name: '買った物件' })
     expect(within(bought).getByText('ジョンディア 90馬力')).toBeInTheDocument()
     expect(within(bought).getByText('引き渡し済み')).toBeInTheDocument()
@@ -383,8 +294,8 @@ describe('AccountOverviewView', () => {
       within(bought).getByRole('button', { name: '受け取りを確認' }),
     ).toBeInTheDocument()
     expect(
-      within(bought).getByRole('link', { name: '引越しを依頼する' }),
-    ).toHaveAttribute('href', '/transport/new?listingId=trc-006')
+      within(bought).queryByRole('link', { name: '引越しを依頼する' }),
+    ).not.toBeInTheDocument()
     const history = screen.getByRole('region', { name: '取引の履歴' })
     expect(
       within(history).getByRole('link', { name: /ジョンディア 90馬力/ }),
@@ -398,8 +309,8 @@ describe('AccountOverviewView', () => {
     const renting = screen.getByRole('region', { name: '借りている物件' })
     expect(within(renting).getByText('購入に切替')).toBeInTheDocument()
     expect(
-      within(renting).getByRole('link', { name: '引越しを依頼する' }),
-    ).toHaveAttribute('href', '/transport/new?listingId=trc-001')
+      within(renting).queryByRole('link', { name: '引越しを依頼する' }),
+    ).not.toBeInTheDocument()
     expect(
       within(renting).getByRole('button', { name: 'レビューを送る' }),
     ).toBeInTheDocument()

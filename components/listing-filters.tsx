@@ -10,7 +10,7 @@ import {
   type DealFilter,
   type ListingFilter,
 } from '@/lib/data'
-import { prefectureNames } from '@/lib/transport-fee'
+import { prefectureNames } from '@/lib/prefectures'
 
 const dealFilters: { id: DealFilter; label: string }[] = [
   { id: 'all', label: 'すべて' },
