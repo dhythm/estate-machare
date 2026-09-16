@@ -12,7 +12,7 @@ beforeEach(() => resetStore())
 
 const listing: ListingSubmission = {
   images: [],
-  name: '審査用トラクター',
+  name: '審査用のマンション',
   category: 'マンション',
   zoning: '第一種住居地域',
   layout: '3LDK',

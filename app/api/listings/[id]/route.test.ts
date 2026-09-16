@@ -55,7 +55,7 @@ describe('GET /api/listings/[id]', () => {
       new Request('http://localhost/api/listings', {
         method: 'POST',
         body: JSON.stringify({
-          name: '審査中トラクター',
+          name: '審査中のマンション',
           category: 'マンション',
           zoning: '第一種住居地域',
           layout: '3LDK',

@@ -31,7 +31,7 @@ describe('validateAgentProfile', () => {
         'serviceAreas',
       ])
     expect(
-      validateAgentProfile({ ...valid, handledCategories: ['トラクター'] }).ok,
+      validateAgentProfile({ ...valid, handledCategories: ['別荘'] }).ok,
     ).toBe(false)
     expect(
       validateAgentProfile({ ...valid, serviceAreas: ['どこか'] }).ok,

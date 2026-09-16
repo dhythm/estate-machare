@@ -40,7 +40,7 @@ describe('/api/agents/profile', () => {
       handledCategories: ['マンション'],
     })
     expect(
-      (await put({ ...profile, handledCategories: ['トラクター'] })).status,
+      (await put({ ...profile, handledCategories: ['別荘'] })).status,
     ).toBe(400)
     signInAs(null)
     expect((await GET()).status).toBe(401)

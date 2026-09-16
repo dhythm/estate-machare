@@ -50,7 +50,7 @@ const request: PropertyRequest = {
 const overview: AccountOverview = {
   listings: [
     {
-      listing: listing('l-1', '公開中のトラクター'),
+      listing: listing('l-1', '公開中のマンション'),
       inquiries: [
         {
           id: 'i-1',
@@ -68,13 +68,13 @@ const overview: AccountOverview = {
       ],
     },
     {
-      listing: listing('l-2', '審査中のコンバイン', {
+      listing: listing('l-2', '審査中の戸建', {
         moderationStatus: 'pending',
       }),
       inquiries: [],
     },
     {
-      listing: listing('l-3', '取り下げ中の田植機', {
+      listing: listing('l-3', '取り下げ中の土地', {
         withdrawnAt: '2026-09-13T00:00:00.000Z',
       }),
       inquiries: [],
@@ -157,7 +157,7 @@ const overview: AccountOverview = {
           createdAt: '2026-09-13T00:00:00.000Z',
           updatedAt: '2026-09-13T00:00:00.000Z',
         },
-        listing: listing('l-1', '公開中のトラクター'),
+        listing: listing('l-1', '公開中のマンション'),
       },
     ],
   },
@@ -253,7 +253,7 @@ const overview: AccountOverview = {
           createdAt: '2026-09-13T00:00:00.000Z',
           updatedAt: '2026-09-13T00:00:00.000Z',
         },
-        listing: listing('l-1', '公開中のトラクター'),
+        listing: listing('l-1', '公開中のマンション'),
       },
     ],
   },
@@ -337,7 +337,7 @@ describe('AccountOverviewView', () => {
   it('lists owned rows with status and what came in', () => {
     render(<AccountOverviewView overview={overview} />)
     const mine = screen.getByRole('region', { name: '自分の出品' })
-    expect(within(mine).getByText('公開中のトラクター')).toBeInTheDocument()
+    expect(within(mine).getByText('公開中のマンション')).toBeInTheDocument()
     expect(within(mine).getByText('審査待ち')).toBeInTheDocument()
     expect(within(mine).getByText('取り下げ中')).toBeInTheDocument()
     expect(

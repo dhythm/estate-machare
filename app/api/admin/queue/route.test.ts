@@ -26,7 +26,7 @@ afterEach(() => {
 })
 
 const listingBody = {
-  name: '審査中トラクター',
+  name: '審査中のマンション',
   category: 'マンション',
   zoning: '第一種住居地域',
   layout: '3LDK',
