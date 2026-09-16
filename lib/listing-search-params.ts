@@ -1,6 +1,7 @@
 import {
   isCategory,
   isDealFilter,
+  isLayout,
   isListingSort,
   type ListingFilter,
 } from '@/lib/data'
@@ -47,6 +48,7 @@ export function readListingRefinements(
   source: ParamSource,
 ): Omit<ListingFilter, 'category' | 'deal' | 'keyword'> {
   const prefecture = readValue(source, 'prefecture')
+  const layout = readValue(source, 'layout')
   const sort = readValue(source, 'sort')
   const from = readDate(readValue(source, 'from'))
   const to = readDate(readValue(source, 'to'))
@@ -54,6 +56,7 @@ export function readListingRefinements(
   const refinements: Omit<ListingFilter, 'category' | 'deal' | 'keyword'> = {}
   if (prefecture && prefectureNames.includes(prefecture))
     refinements.prefecture = prefecture
+  if (layout && isLayout(layout)) refinements.layout = layout
   const priceMin = readYen(readValue(source, 'priceMin'))
   const priceMax = readYen(readValue(source, 'priceMax'))
   if (priceMin !== undefined) refinements.priceMin = priceMin
@@ -69,6 +72,7 @@ export function readListingRefinements(
 /** True when a refinement key is present but unusable (for the API's 400). */
 export function hasInvalidRefinement(source: ParamSource): boolean {
   const prefecture = readValue(source, 'prefecture')
+  const layout = readValue(source, 'layout')
   const sort = readValue(source, 'sort')
   const from = readValue(source, 'from')
   const to = readValue(source, 'to')
@@ -77,6 +81,7 @@ export function hasInvalidRefinement(source: ParamSource): boolean {
     return value !== undefined && value !== '' && readYen(value) === undefined
   }
   if (prefecture && !prefectureNames.includes(prefecture)) return true
+  if (layout && !isLayout(layout)) return true
   if (sort && !isListingSort(sort)) return true
   if (badPrice('priceMin') || badPrice('priceMax')) return true
   if (
@@ -110,6 +115,7 @@ export function parseListingSearchParams(
 export function refinementEntries(filter: ListingFilter): [string, string][] {
   const entries: [string, string][] = []
   if (filter.prefecture) entries.push(['prefecture', filter.prefecture])
+  if (filter.layout) entries.push(['layout', filter.layout])
   if (filter.priceMin !== undefined)
     entries.push(['priceMin', String(filter.priceMin)])
   if (filter.priceMax !== undefined)

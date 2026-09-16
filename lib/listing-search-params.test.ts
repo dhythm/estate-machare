@@ -1,8 +1,33 @@
 import { describe, expect, it } from 'vitest'
 import {
   buildListingSearchParams,
+  hasInvalidRefinement,
   parseListingSearchParams,
 } from './listing-search-params'
+
+describe('layout refinement', () => {
+  it('reads a known layout and drops an unknown one', () => {
+    expect(
+      parseListingSearchParams(new URLSearchParams('layout=2LDK')).filter
+        .layout,
+    ).toBe('2LDK')
+    expect(
+      parseListingSearchParams(new URLSearchParams('layout=5LDK')).filter
+        .layout,
+    ).toBeUndefined()
+  })
+
+  it('rejects an unknown layout for the API and round-trips a known one', () => {
+    expect(hasInvalidRefinement(new URLSearchParams('layout=5LDK'))).toBe(true)
+    expect(hasInvalidRefinement(new URLSearchParams('layout=2LDK'))).toBe(false)
+    expect(
+      buildListingSearchParams(
+        { category: 'すべて', deal: 'rent', keyword: '', layout: '2LDK' },
+        1,
+      ),
+    ).toBe('deal=rent&layout=2LDK')
+  })
+})
 
 describe('parseListingSearchParams', () => {
   it('falls back to defaults for missing or invalid values', () => {

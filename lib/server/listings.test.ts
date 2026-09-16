@@ -192,6 +192,16 @@ describe('listing refinements', () => {
     ).toBe(true)
   })
 
+  it('filters by layout', async () => {
+    const twoRooms = await searchListings({
+      category: 'すべて',
+      deal: 'all',
+      layout: '2LDK',
+    })
+    expect(twoRooms.length).toBeGreaterThan(0)
+    expect(twoRooms.every((listing) => listing.layout === '2LDK')).toBe(true)
+  })
+
   it('sorts by price with unpriced listings last', async () => {
     const asc = await searchListings({
       category: 'すべて',

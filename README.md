@@ -176,4 +176,4 @@ TanStack Query の初期データとキャッシュの構成は [公式 SSR ガ�
 
 GitHub Actions は PR と `main` への push で動作します。lint / format / typecheck / knip / test:coverage / test:pglite / build の 7 ジョブを並列実行し、ひとつが失敗しても他の結果を収集します。同じブランチの古い実行はキャンセルします。
 
-各ジョブは `pnpm install --frozen-lockfile` で依存を固定し、テストのカバレッジを artifact に保存します。Dependabot が npm と GitHub Actions の更新 PR を作成します。
+各ジョブは `pnpm install --frozen-lockfile` で依存を固定し、テストのカバレッジを artifact に保存します。コンセプト検証版のため、依存の自動更新（Dependabot）は設定していません。
