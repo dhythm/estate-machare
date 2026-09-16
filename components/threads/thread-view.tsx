@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { propertyImage } from '@/lib/property-image'
 import { ArrowUpRight, MessageSquare, Handshake } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/badge'
@@ -50,7 +51,7 @@ function TargetCard({ target }: { target: Thread['target'] }) {
       <div className="text-sm">
         <div className="mb-5 flex justify-center rounded-xl bg-muted/60 p-4">
           <Image
-            src={listing.image}
+            src={propertyImage(listing.image)}
             alt=""
             width={240}
             height={150}

@@ -96,7 +96,7 @@ export function ListingBrowser({
           <ArrowUpRight className="size-4" />
         </Link>
       </div>
-      <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
+      <div className="rounded-lg border border-border bg-card p-5 sm:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <form
             role="search"

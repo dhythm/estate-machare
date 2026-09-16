@@ -9,10 +9,10 @@ export async function RequestPreview() {
 
   return (
     <section className="mx-auto max-w-[1280px] px-5 py-10 sm:px-8 sm:pb-16">
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         <div className="grid gap-8 p-8 lg:grid-cols-[0.8fr_1.2fr] lg:p-10">
           <div className="flex flex-col">
-            <span className="flex size-11 items-center justify-center rounded-xl bg-accent/15 text-accent-foreground">
+            <span className="flex size-11 items-center justify-center rounded-md bg-accent/15 text-accent-foreground">
               <Handshake className="size-5" />
             </span>
             <p className="eyebrow mt-5">PROPERTY REQUESTS</p>
@@ -36,7 +36,7 @@ export async function RequestPreview() {
               <li key={request.id}>
                 <Link
                   href={`/requests/${request.id}`}
-                  className="flex items-center gap-4 rounded-xl border border-border bg-background p-5 transition-colors hover:border-primary/40"
+                  className="flex items-center gap-4 rounded-md border border-border bg-background p-5 transition-colors hover:border-primary/40"
                 >
                   <span className="hidden size-10 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary sm:flex">
                     <MapPin className="size-4" />

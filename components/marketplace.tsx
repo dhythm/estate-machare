@@ -34,12 +34,12 @@ export function Marketplace({ initialPage }: { initialPage: ListingPage }) {
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="eyebrow mb-3">THE MARKETPLACE</p>
+          <p className="eyebrow mb-3">EXPLORE PROPERTIES</p>
           <h2 className="text-balance font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            次の住まいを、見つけよう。
+            暮らしの舞台を、見つける。
           </h2>
           <p className="mt-2 leading-relaxed text-muted-foreground">
-            暮らしに合う一件を、あなたに合う持ち方で。
+            街、広さ、住まい方。あなたの大切にしたい条件から。
           </p>
         </div>
         <DealFilterToggle value={deal} onChange={setDeal} />

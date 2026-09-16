@@ -306,7 +306,7 @@ describe('listing CRUD', () => {
     expect(created.id).toMatch(/^[0-9a-f-]{36}$/)
     expect(created).toMatchObject({
       name: submission.name,
-      image: '/properties/apartment.svg',
+      image: '/properties/apartment.webp',
       moderationStatus: 'pending',
       ownerUserId: 'demo-seller',
       seller: { name: 'テスト不動産', kind: '宅建業者', rating: 0, reviews: 0 },
@@ -383,7 +383,7 @@ describe('listing CRUD', () => {
       ),
     ).toBe(true)
     const withoutPictures = await createListing(submission, 'demo-seller')
-    expect(withoutPictures.image).toBe('/properties/apartment.svg')
+    expect(withoutPictures.image).toBe('/properties/apartment.webp')
     expect(withoutPictures.images).toEqual([])
   })
 

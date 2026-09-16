@@ -22,7 +22,7 @@ const templates: Template[] = [
   {
     prefix: 'apt',
     category: 'マンション',
-    image: '/properties/apartment.svg',
+    image: '/properties/apartment.webp',
     names: [
       'シティタワー',
       'グランコート',
@@ -59,7 +59,7 @@ const templates: Template[] = [
   {
     prefix: 'hse',
     category: '戸建',
-    image: '/properties/house.svg',
+    image: '/properties/house.webp',
     names: [
       '南向き中古戸建',
       '新築分譲住宅',
@@ -94,7 +94,7 @@ const templates: Template[] = [
   {
     prefix: 'lnd',
     category: '土地',
-    image: '/properties/land.svg',
+    image: '/properties/land.webp',
     names: ['売地（整形地）', '建築条件なし売地', '角地の売地', '分譲区画'],
     zonings: [
       '第一種低層住居専用地域',
@@ -116,7 +116,7 @@ const templates: Template[] = [
   {
     prefix: 'cml',
     category: '事業用',
-    image: '/properties/commercial.svg',
+    image: '/properties/office.webp',
     names: ['1階路面店舗', '事務所区画', '倉庫付事業用物件', 'ビル1棟'],
     zonings: ['近隣商業地域', '商業地域', '準工業地域', '準住居地域'],
     layouts: ['1R', '1K'],

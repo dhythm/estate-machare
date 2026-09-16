@@ -6,6 +6,40 @@ import { getListing } from '@/lib/server/listings'
 import { buildModes } from '@/lib/server/listing-detail'
 
 describe('ListingDetail', () => {
+  it('refreshes saved demo artwork while retaining uploaded gallery pictures', async () => {
+    const listing = (await getListing('apt-001'))!
+    const uploaded = 'data:image/jpeg;base64,/9j/4AAQ'
+    render(
+      <ListingDetail
+        listing={{
+          ...listing,
+          images: ['/properties/apartment.svg', uploaded],
+        }}
+        modes={buildModes(listing)}
+        related={[]}
+        booked={[]}
+        viewer={{ signedIn: false, isOwner: false }}
+      />,
+    )
+
+    expect(
+      decodeURIComponent(
+        screen.getByRole('img', { name: listing.name }).getAttribute('src')!,
+      ),
+    ).toContain('/properties/apartment.webp')
+    await userEvent
+      .setup()
+      .click(screen.getByRole('button', { name: '写真 2' }))
+    expect(screen.getByRole('img', { name: listing.name })).toHaveAttribute(
+      'src',
+      uploaded,
+    )
+    expect(screen.getByRole('button', { name: '写真 2' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+  })
+
   it('carries the listing over when starting a property request', async () => {
     const listing = (await getListing('apt-001'))!
     render(

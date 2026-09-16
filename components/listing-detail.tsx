@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { propertyImage } from '@/lib/property-image'
 import Link from 'next/link'
 import {
   MapPin,
@@ -113,9 +114,9 @@ export function ListingDetail({
 
       <div className="mt-7 grid items-start gap-7 lg:grid-cols-[minmax(0,1.5fr)_minmax(350px,1fr)] lg:gap-x-9">
         <section aria-label="物件の写真と仕様" className="min-w-0">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted">
+          <div className="relative aspect-[1.4] overflow-hidden rounded-lg bg-muted">
             <Image
-              src={mainPicture || '/placeholder.svg'}
+              src={propertyImage(mainPicture)}
               alt={listing.name}
               fill
               loading="eager"
@@ -161,7 +162,7 @@ export function ListingDetail({
                     )}
                   >
                     <Image
-                      src={picture}
+                      src={propertyImage(picture)}
                       alt=""
                       fill
                       sizes="80px"
@@ -172,7 +173,7 @@ export function ListingDetail({
               ))}
             </ul>
           )}
-          <dl className="mt-5 grid grid-cols-2 overflow-hidden rounded-2xl border border-border bg-card sm:grid-cols-4">
+          <dl className="mt-5 grid grid-cols-2 overflow-hidden rounded-lg border border-border bg-card sm:grid-cols-4">
             <Spec
               icon={<Ruler className="size-4" />}
               label="間取り・専有面積"
@@ -204,13 +205,13 @@ export function ListingDetail({
           className="min-w-0 lg:sticky lg:top-36 xl:top-24 lg:row-span-2"
           aria-label="利用方法と申し込み"
         >
-          <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
             <div className="border-b border-border px-5 py-5 sm:px-6">
               <h2 className="text-sm font-semibold text-foreground">
                 利用方法を選ぶ
               </h2>
               <div
-                className="mt-4 flex gap-1 rounded-xl bg-muted p-1"
+                className="mt-4 flex gap-1 rounded-lg bg-muted p-1"
                 role="group"
                 aria-label="利用方法"
               >
@@ -250,7 +251,7 @@ export function ListingDetail({
                 {active.desc}
               </p>
               {active.note && (
-                <div className="mt-4 flex gap-2 rounded-xl bg-secondary p-3 text-xs leading-6 text-secondary-foreground">
+                <div className="mt-4 flex gap-2 rounded-lg bg-secondary p-3 text-xs leading-6 text-secondary-foreground">
                   <CircleCheckBig className="mt-1 size-4 shrink-0 text-primary" />
                   <span>{active.note}</span>
                 </div>
@@ -350,7 +351,7 @@ export function ListingDetail({
             <h2 className="font-display text-xl font-bold text-foreground">
               出品者
             </h2>
-            <div className="mt-4 flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-card p-5">
+            <div className="mt-4 flex flex-wrap items-center gap-4 rounded-lg border border-border bg-card p-5">
               <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-secondary font-display text-lg font-bold text-primary">
                 {listing.seller.name.charAt(0)}
               </span>

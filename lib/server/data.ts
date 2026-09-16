@@ -16,7 +16,7 @@ const curatedListings: Listing[] = [
     walkMinutes: 6,
     prefecture: '東京都',
     city: '世田谷区',
-    image: '/properties/apartment.svg',
+    image: '/properties/apartment.webp',
     summary:
       '南向き角住戸の3LDK。管理体制がよく、共用部も清潔です。まず借りて住み心地を確かめてから購入に切り替えられます。',
     deals: ['sale', 'rent'],
@@ -49,7 +49,7 @@ const curatedListings: Listing[] = [
     walkMinutes: 11,
     prefecture: '神奈川県',
     city: '横浜市港北区',
-    image: '/properties/house.svg',
+    image: '/properties/house.webp',
     summary:
       'ビルトインガレージ付き。外壁と屋根は塗装済みで、点検記録をそのままお渡しします。定期借家での貸し出しにも対応します。',
     deals: ['sale', 'rent'],
@@ -77,7 +77,7 @@ const curatedListings: Listing[] = [
     walkMinutes: 4,
     prefecture: '大阪府',
     city: '大阪市北区',
-    image: '/properties/apartment.svg',
+    image: '/properties/apartment.webp',
     summary:
       '単身・二人暮らし向けの1LDK。駅まで平坦で、周辺に商店街と病院があります。',
     deals: ['rent'],
@@ -100,7 +100,7 @@ const curatedListings: Listing[] = [
     walkMinutes: 14,
     prefecture: '埼玉県',
     city: 'さいたま市浦和区',
-    image: '/properties/land.svg',
+    image: '/properties/land.webp',
     summary:
       '測量済みの整形地で、境界も明示できます。建築条件はありません。上下水道は前面道路に敷設済みです。',
     deals: ['sale'],
@@ -122,7 +122,7 @@ const curatedListings: Listing[] = [
     walkMinutes: 3,
     prefecture: '福岡県',
     city: '福岡市中央区',
-    image: '/properties/commercial.svg',
+    image: '/properties/shop.webp',
     summary:
       '視認性の高い路面区画です。内装は居抜きのままお引き渡しできます。用途のご相談は早めにお願いします。',
     deals: ['rent'],
@@ -152,7 +152,7 @@ const curatedListings: Listing[] = [
     walkMinutes: 8,
     prefecture: '愛知県',
     city: '名古屋市千種区',
-    image: '/properties/apartment.svg',
+    image: '/properties/apartment.webp',
     summary:
       '室内はフルリノベーション済み。設備の保証書一式をお渡しします。管理費・修繕積立金の履歴も開示できます。',
     deals: ['sale', 'rent'],

@@ -23,26 +23,19 @@ export function BrandLogo({
         <rect
           width="40"
           height="40"
-          rx="12"
-          fill={inverse ? '#E3B778' : '#173A4F'}
+          rx="2"
+          fill={inverse ? '#e1c5ab' : '#203a43'}
         />
         <path
-          d="M11 31V15.5L20 9l9 6.5V31"
-          stroke={inverse ? '#173A4F' : '#E3B778'}
-          strokeWidth="3"
+          d="M9 18 20 9l11 9v13H9V18Z M17 31V20h6v11"
+          stroke={inverse ? '#203a43' : '#e1c5ab'}
+          strokeWidth="3.2"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M17 31v-7h6v7"
-          stroke={inverse ? '#173A4F' : '#E3B778'}
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M8 31h24"
-          stroke={inverse ? '#173A4F' : '#E3B778'}
+          d="M6 35h28"
+          stroke={inverse ? '#203a43' : '#e1c5ab'}
           strokeWidth="2"
           strokeLinecap="round"
         />
@@ -58,7 +51,7 @@ export function BrandLogo({
               inverse ? 'text-white/65' : 'text-muted-foreground',
             )}
           >
-            不動産と、次の可能性を。
+            住まいと、次の可能性を。
           </span>
         </span>
       )}

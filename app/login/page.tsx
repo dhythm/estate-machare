@@ -21,10 +21,10 @@ export default async function LoginPage({
   return (
     <PageShell>
       <div className="mx-auto grid max-w-6xl gap-0 px-5 py-10 sm:px-8 sm:py-16 md:grid-cols-2">
-        <div className="relative hidden min-h-[540px] overflow-hidden rounded-l-2xl bg-primary md:block">
+        <div className="relative hidden min-h-[540px] overflow-hidden rounded-l-lg bg-primary md:block">
           <Image
-            src="/brand-city.svg"
-            alt="夕暮れの街並みに並ぶ住宅とマンション"
+            src="/estate-hero.webp"
+            alt="自然光が差し込む住まい"
             fill
             sizes="50vw"
             className="object-cover object-[65%_center]"
@@ -32,7 +32,7 @@ export default async function LoginPage({
           <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/20 to-transparent" />
           <div className="absolute bottom-12 left-10 right-10 text-white">
             <p className="text-[10px] tracking-[0.2em] text-accent">
-              THE NEXT CHAPTER, AT HOME.
+              ROOM FOR YOUR NEXT CHAPTER.
             </p>
             <h2 className="mt-5 font-display text-4xl font-bold leading-relaxed">
               次の住まい。
@@ -40,11 +40,11 @@ export default async function LoginPage({
               次のつながり。
             </h2>
             <p className="mt-5 text-sm leading-7 text-white/75">
-              あなたの住まい探しの、つづきへ。
+              あなたらしい暮らしの、つづきへ。
             </p>
           </div>
         </div>
-        <div className="flex flex-col justify-center rounded-2xl border border-border bg-card p-7 sm:p-12 md:rounded-l-none lg:p-16">
+        <div className="flex flex-col justify-center rounded-lg border border-border bg-card p-7 sm:p-12 md:rounded-l-none lg:p-16">
           <p className="eyebrow">WELCOME BACK</p>
           <h1 className="mt-4 font-display text-3xl font-bold">ログイン</h1>
           <div className="mt-9">

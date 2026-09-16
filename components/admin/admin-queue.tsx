@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { propertyImage } from '@/lib/property-image'
 import {
   Check,
   ClipboardCheck,
@@ -287,7 +288,7 @@ function QueueItem({
           {item.image && (
             <span className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-border bg-muted sm:size-24">
               <Image
-                src={item.image}
+                src={propertyImage(item.image)}
                 alt=""
                 fill
                 sizes="96px"

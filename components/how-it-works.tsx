@@ -1,21 +1,21 @@
 import Link from 'next/link'
-import { ArrowRight, Check, CalendarDays, Home, Repeat2 } from 'lucide-react'
+import { ArrowUpRight, Search, MessagesSquare, KeyRound } from 'lucide-react'
 
 const steps = [
   {
-    icon: CalendarDays,
-    title: '必要な期間、借りる',
-    desc: '入居したい期間を選んで、申し込む。',
+    icon: Search,
+    title: '理想の条件で、探す',
+    desc: 'エリアや物件種別、予算から気になる場所を。',
   },
   {
-    icon: Home,
-    title: '実際に住んで、確かめる',
-    desc: '日当たりも、通勤も、周辺の様子も。住んで判断。',
+    icon: MessagesSquare,
+    title: '気になることを、相談',
+    desc: '内見の希望や入居時期を、掲載者と直接やりとり。',
   },
   {
-    icon: Check,
-    title: '気に入ったら、その一件を',
-    desc: '出品条件に応じて賃料を購入価格に充当。',
+    icon: KeyRound,
+    title: '納得して、次の暮らしへ',
+    desc: '条件を確かめて、契約・引き渡しへ進みます。',
   },
 ]
 
@@ -23,56 +23,53 @@ export function HowItWorks() {
   return (
     <section
       id="how"
-      className="mx-auto max-w-[1280px] scroll-mt-32 px-5 py-12 sm:px-8 sm:py-16"
+      className="mx-auto max-w-[1280px] px-5 py-12 sm:px-8 sm:py-16"
     >
-      <div className="relative overflow-hidden rounded-2xl bg-secondary p-7 sm:p-10 lg:grid lg:grid-cols-[1fr_1.1fr] lg:gap-16 lg:p-14">
+      <div className="grid gap-10 border-y border-border py-12 lg:grid-cols-[0.8fr_1.4fr] lg:gap-16">
         <div>
-          <p className="eyebrow text-primary/70">A NEW WAY TO OWN</p>
-          <h2 className="mt-5 font-display text-3xl font-bold leading-relaxed tracking-tight text-primary sm:text-4xl">
-            大きな買い物に、
+          <p className="eyebrow">YOUR NEXT CHAPTER</p>
+          <h2 className="mt-4 font-display text-3xl font-medium leading-relaxed">
+            見つける、その先も。
             <br />
-            小さなお試しを。
+            ひとつずつ、安心して。
           </h2>
-          <p className="mt-5 max-w-sm text-sm leading-7 text-primary/75">
-            暮らしに合うかは、住んでみてから。
-            <br />
-            賃貸から購入へ、納得できる選び方。
-          </p>
           <Link
-            href="/listings?deal=purchaseOption"
-            className="mt-7 inline-flex items-center gap-3 rounded-full bg-primary px-6 py-3.5 text-sm font-bold text-white hover:bg-primary/85"
+            href="/guide"
+            className="mt-6 inline-flex items-center gap-4 border-b border-primary/30 pb-2 text-xs font-medium"
           >
-            買取オプション付きの物件
-            <ArrowRight className="size-4" />
-          </Link>
-          <Link
-            href="/guide#purchase-option"
-            className="mt-4 flex w-fit items-center gap-2 text-xs text-primary underline underline-offset-4"
-          >
-            しくみと充当条件を見る
-            <Repeat2 className="size-3" />
+            ご利用の流れ
+            <ArrowUpRight className="size-4" />
           </Link>
         </div>
-        <ol className="mt-10 divide-y divide-primary/15 lg:mt-0">
+        <ol className="grid gap-7 sm:grid-cols-3">
           {steps.map(({ icon: Icon, title, desc }, index) => (
-            <li key={title} className="flex gap-5 py-6 first:pt-0 last:pb-0">
-              <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-primary/20 text-primary">
-                <Icon className="size-5" />
+            <li key={title} className="border-t border-primary/25 pt-5">
+              <span className="flex items-center justify-between text-[11px] tracking-widest text-muted-foreground">
+                0{index + 1}
+                <Icon className="size-5 text-primary" />
               </span>
-              <div>
-                <p className="text-[10px] font-bold tracking-widest text-primary/60">
-                  STEP 0{index + 1}
-                </p>
-                <h3 className="mt-1.5 text-base font-bold text-primary">
-                  {title}
-                </h3>
-                <p className="mt-2 text-xs leading-relaxed text-primary/75">
-                  {desc}
-                </p>
-              </div>
+              <h3 className="mt-8 text-sm font-bold">{title}</h3>
+              <p className="mt-3 text-xs leading-7 text-muted-foreground">
+                {desc}
+              </p>
             </li>
           ))}
         </ol>
+      </div>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4 text-sm">
+        <Link
+          href="/listings?deal=purchaseOption"
+          className="inline-flex items-center gap-3 font-medium text-primary hover:underline"
+        >
+          買取オプション付きの物件
+          <ArrowUpRight className="size-4" />
+        </Link>
+        <Link
+          href="/guide#purchase-option"
+          className="text-xs text-muted-foreground underline underline-offset-4"
+        >
+          しくみと充当条件を見る
+        </Link>
       </div>
     </section>
   )

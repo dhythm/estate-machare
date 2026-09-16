@@ -4,16 +4,16 @@ import { BrandLogo } from '@/components/brand-logo'
 
 const groups = [
   {
-    title: '物件をつなぐ',
+    title: '住まいを探す',
     links: [
-      { label: '物件を買う', href: '/listings?deal=sale' },
-      { label: '借りる', href: '/listings?deal=rent' },
+      { label: '売買物件を探す', href: '/listings?deal=sale' },
+      { label: '賃貸物件を探す', href: '/listings?deal=rent' },
       { label: '借りてから買う', href: '/listings?deal=purchaseOption' },
-      { label: '物件を出品する', href: '/listings/new' },
+      { label: '物件を掲載する', href: '/listings/new' },
     ],
   },
   {
-    title: '人と物件をつなぐ',
+    title: '人と住まいを探す',
     links: [
       { label: '希望条件を登録する', href: '/requests/new' },
       { label: '物件リクエストを探す', href: '/requests' },
@@ -35,7 +35,7 @@ const groups = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#173a4f] text-white">
+    <footer className="bg-[#203a43] text-white">
       <div className="mx-auto max-w-[1360px] px-5 pb-8 pt-14 sm:px-8 lg:px-10">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_2fr]">
           <div>
@@ -43,18 +43,18 @@ export function SiteFooter() {
               <BrandLogo inverse />
             </Link>
             <p className="mt-7 font-display text-2xl font-bold leading-relaxed">
-              不動産と、次の可能性を。
+              住まいと、次の可能性を。
             </p>
             <p className="mt-4 max-w-xs text-xs leading-7 text-white/65">
-              所有する人、必要とする人、仲介する人。
+              住まう人、貸す人、つなぐ人。
               <br />
-              ひとつの物件から、次の暮らしをつないでいく。
+              ひとつの場所から、次の暮らしがはじまる。
             </p>
           </div>
           <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3">
             {groups.map((group) => (
               <div key={group.title}>
-                <h3 className="text-xs font-bold text-[#e3b778]">
+                <h3 className="text-xs font-bold text-[#e1c5ab]">
                   {group.title}
                 </h3>
                 <ul className="mt-5 space-y-3.5">

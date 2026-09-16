@@ -17,10 +17,10 @@ import { getStore } from './store'
 import { deleteSubmissionsFor } from './submissions'
 
 const imageByCategory: Record<string, string> = {
-  マンション: '/properties/apartment.svg',
-  戸建: '/properties/house.svg',
-  土地: '/properties/land.svg',
-  事業用: '/properties/commercial.svg',
+  マンション: '/properties/apartment.webp',
+  戸建: '/properties/house.webp',
+  土地: '/properties/land.webp',
+  事業用: '/properties/office.webp',
 }
 
 /** Lists carry only the thumbnail; the detail page loads the full pictures. */

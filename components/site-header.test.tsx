@@ -24,7 +24,7 @@ describe('SiteHeader', () => {
     }
     expect(
       screen
-        .getAllByRole('link', { name: '出品する' })
+        .getAllByRole('link', { name: '物件を掲載' })
         .every((link) => link.getAttribute('href') === '/listings/new'),
     ).toBe(true)
   })

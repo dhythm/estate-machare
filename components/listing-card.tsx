@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { propertyImage } from '@/lib/property-image'
 import Link from 'next/link'
 import { MapPin, Star, ArrowUpRight, Repeat2 } from 'lucide-react'
 import { type Listing, formatArea, formatYen } from '@/lib/data'
@@ -9,11 +10,11 @@ export function ListingCard({ listing }: { listing: Listing }) {
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-[box-shadow,transform] duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_-18px_rgba(23,58,79,0.3)]"
+      className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card transition-[box-shadow,transform] duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_-18px_rgba(23,58,79,0.3)]"
     >
-      <div className="relative aspect-[1.55] overflow-hidden bg-muted">
+      <div className="relative aspect-[1.4] overflow-hidden bg-muted">
         <Image
-          src={listing.image || '/placeholder.svg'}
+          src={propertyImage(listing.image)}
           alt={listing.name}
           fill
           sizes="(min-width: 1280px) 390px, (min-width: 1024px) 31vw, (min-width: 640px) 45vw, 95vw"

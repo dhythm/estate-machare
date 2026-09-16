@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { propertyImage } from '@/lib/property-image'
 import {
   ArrowUpRight,
   CalendarDays,
@@ -413,7 +414,7 @@ export function AccountOverviewView({
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex min-w-0 items-center gap-4">
                         <Image
-                          src={listing.image}
+                          src={propertyImage(listing.image)}
                           alt=""
                           width={72}
                           height={72}

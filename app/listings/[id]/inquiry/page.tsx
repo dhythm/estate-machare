@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import { propertyImage } from '@/lib/property-image'
 import { notFound } from 'next/navigation'
 import { LoginPrompt } from '@/components/auth/login-prompt'
 import { PageShell } from '@/components/page-shell'
@@ -50,7 +51,7 @@ export default async function InquiryPage({
         <div className="mt-6 flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
           <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-muted">
             <Image
-              src={listing.image}
+              src={propertyImage(listing.image)}
               alt={listing.name}
               fill
               sizes="80px"

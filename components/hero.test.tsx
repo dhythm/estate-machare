@@ -13,18 +13,18 @@ describe('Hero search', () => {
     expect(form).toHaveAttribute('method', 'get')
     await user.click(screen.getByRole('button', { name: '借りる' }))
     await user.selectOptions(
-      screen.getByRole('combobox', { name: 'カテゴリ' }),
+      screen.getByRole('combobox', { name: '物件種別' }),
       'マンション',
     )
     await user.type(
-      screen.getByRole('searchbox', { name: 'キーワード' }),
-      'クボタ',
+      screen.getByRole('searchbox', { name: 'エリア・キーワード' }),
+      '世田谷',
     )
     const data = new FormData(form as HTMLFormElement)
     expect(Object.fromEntries(data)).toEqual({
       deal: 'rent',
       category: 'マンション',
-      q: 'クボタ',
+      q: '世田谷',
     })
     await user.click(screen.getByRole('button', { name: '借りてから買う' }))
     expect(new FormData(form as HTMLFormElement).get('deal')).toBe(

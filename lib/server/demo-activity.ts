@@ -50,7 +50,7 @@ function at(stamp: string): string {
   return new Date(`2026-${date}T${time}:00+09:00`).toISOString()
 }
 
-const apartmentImage = '/properties/apartment.svg'
+const apartmentImage = '/properties/apartment.webp'
 
 const listings: Listing[] = [
   {
@@ -96,7 +96,7 @@ const listings: Listing[] = [
     walkMinutes: 12,
     prefecture: '宮城県',
     city: '仙台市青葉区',
-    image: '/properties/house.svg',
+    image: '/properties/house.webp',
     summary: '転勤に伴い手放します。引き渡しは年内を希望しています。',
     deals: ['sale'],
     salePrice: 38_200_000,
@@ -146,7 +146,7 @@ const listings: Listing[] = [
     walkMinutes: 15,
     prefecture: '東京都',
     city: '世田谷区',
-    image: '/properties/land.svg',
+    image: '/properties/land.webp',
     summary: '相続した土地です。測量済みで境界も明示できます。',
     deals: ['sale'],
     salePrice: 52_000_000,
@@ -172,7 +172,7 @@ const listings: Listing[] = [
     walkMinutes: 18,
     prefecture: '新潟県',
     city: '南魚沼市',
-    image: '/properties/house.svg',
+    image: '/properties/house.webp',
     summary: '住み替えのため売却します。庭は家庭菜園にも使えます。',
     deals: ['sale'],
     salePrice: 21_500_000,
@@ -203,7 +203,7 @@ const listings: Listing[] = [
     walkMinutes: 4,
     prefecture: '神奈川県',
     city: '横浜市港北区',
-    image: '/properties/commercial.svg',
+    image: '/properties/office.webp',
     summary:
       '事務所として貸し出し中の区画です。用途のご相談は早めにお願いします。',
     deals: ['rent'],
