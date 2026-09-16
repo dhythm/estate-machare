@@ -10,7 +10,7 @@ const valid = {
 }
 
 describe('validateListingInquiry', () => {
-  it('accepts a rental inquiry', () => {
+  it('accepts a lease inquiry', () => {
     const result = validateListingInquiry(valid)
     expect(result.ok).toBe(true)
     if (result.ok) expect(result.value.mode).toBe('rent')

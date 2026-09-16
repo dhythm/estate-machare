@@ -6,13 +6,13 @@ import {
   type ModerationQueue,
   type ModerationQueueFilter,
   type ModerationStatus,
-  type TransportJob,
+  type PropertyRequest,
 } from '@/lib/data'
 import { recordDealEvent } from './deal-events'
 import { notify } from './notifications'
 import { getStore } from './store'
 
-export type ModerationKind = 'listing' | 'transportJob'
+export type ModerationKind = 'listing' | 'propertyRequest'
 
 export type ModerationDecision = {
   status: Extract<ModerationStatus, 'approved' | 'rejected'>
@@ -32,13 +32,13 @@ export async function getModerationQueue(
   status: ModerationQueueFilter = 'pending',
 ): Promise<ModerationQueue> {
   const store = getStore()
-  const [listings, transportJobs] = await Promise.all([
+  const [listings, propertyRequests] = await Promise.all([
     store.listings.list(),
-    store.transportJobs.list(),
+    store.propertyRequests.list(),
   ])
   return {
     listings: listings.filter((listing) => matchesFilter(listing, status)),
-    transportJobs: transportJobs.filter((job) => matchesFilter(job, status)),
+    propertyRequests: propertyRequests.filter((request) => matchesFilter(request, status)),
   }
 }
 
@@ -46,7 +46,7 @@ export async function applyModeration(
   kind: ModerationKind,
   id: string,
   decision: ModerationDecision,
-): Promise<Listing | TransportJob | undefined> {
+): Promise<Listing | PropertyRequest | undefined> {
   const now = new Date().toISOString()
   const patch = {
     moderationStatus: decision.status,
@@ -58,17 +58,17 @@ export async function applyModeration(
   const updated =
     kind === 'listing'
       ? await store.listings.update(id, patch)
-      : await store.transportJobs.update(id, patch)
-  if (updated && kind === 'transportJob')
+      : await store.propertyRequests.update(id, patch)
+  if (updated && kind === 'propertyRequest')
     await recordDealEvent({
-      dealKind: 'transportJob',
+      dealKind: 'propertyRequest',
       dealId: id,
       status: decision.status,
       note: decision.note,
     })
   if (updated?.ownerUserId) {
-    const label = kind === 'listing' ? '出品' : '運搬依頼'
-    const name = 'name' in updated ? updated.name : updated.item
+    const label = kind === 'listing' ? '出品' : '物件リクエスト'
+    const name = 'name' in updated ? updated.name : updated.title
     await notify({
       userId: updated.ownerUserId,
       kind: 'moderation',

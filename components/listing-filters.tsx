@@ -10,13 +10,13 @@ import {
   type DealFilter,
   type ListingFilter,
 } from '@/lib/data'
-import { prefectureNames } from '@/lib/transport-fee'
+import { prefectureNames } from '@/lib/prefectures'
 
 const dealFilters: { id: DealFilter; label: string }[] = [
   { id: 'all', label: 'すべて' },
   { id: 'sale', label: '購入できる' },
   { id: 'rent', label: 'レンタルできる' },
-  { id: 'rentToOwn', label: 'レンタル購入可' },
+  { id: 'purchaseOption', label: 'レンタル購入可' },
 ]
 
 export function DealFilterToggle({
@@ -97,7 +97,7 @@ const emptyRefinements = {
 const controlClass =
   'h-11 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30'
 
-/** Prefecture, price range, sort, and rental dates; each change reports only its own keys. */
+/** Prefecture, price range, sort, and lease dates; each change reports only its own keys. */
 export function SearchRefinements({
   value,
   onChange,

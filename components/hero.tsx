@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils'
 const options = [
   { id: 'sale', label: '買う', icon: ShoppingBag },
   { id: 'rent', label: '借りる', icon: CalendarDays },
-  { id: 'rentToOwn', label: '借りてから買う', icon: Repeat2 },
+  { id: 'purchaseOption', label: '借りてから買う', icon: Repeat2 },
 ] as const
 
 export function Hero() {

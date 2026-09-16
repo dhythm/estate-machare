@@ -39,14 +39,14 @@ export function HowItWorks() {
             レンタルから購入へ、納得できる選び方。
           </p>
           <Link
-            href="/listings?deal=rentToOwn"
+            href="/listings?deal=purchaseOption"
             className="mt-7 inline-flex items-center gap-3 rounded-full bg-primary px-6 py-3.5 text-sm font-bold text-white hover:bg-primary/85"
           >
             レンタル購入できる農機具
             <ArrowRight className="size-4" />
           </Link>
           <Link
-            href="/guide#rent-to-own"
+            href="/guide#purchase-option"
             className="mt-4 flex w-fit items-center gap-2 text-xs text-primary underline underline-offset-4"
           >
             しくみと充当条件を見る

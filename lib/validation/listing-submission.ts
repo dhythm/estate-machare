@@ -1,9 +1,11 @@
-import { categories } from '@/lib/data'
+import { categories, layouts, zonings, type Layout, type Zoning } from '@/lib/data'
+import { leaseTypes, type LeaseType } from '@/lib/lease'
 import {
   asRecord,
   finish,
   invalidInput,
   readBoolean,
+  readDecimal,
   readInteger,
   requireChoice,
   requireEmail,
@@ -16,32 +18,40 @@ export const listingCategories = categories.filter(
   (category) => category !== 'すべて',
 )
 
-export const listingConditions = [
-  '未使用に近い',
-  '目立った傷なし',
-  '使用感あり',
-  '要整備',
-] as const
+/** Categories without rooms or a completion year: a layout and a built year
+ * are neither asked for nor kept. */
+export const landCategories = ['土地'] as const
 
-export const sellerKinds = ['個人農家', '法人', '農業法人', '販売店'] as const
+export function hasBuilding(category: string): boolean {
+  return !(landCategories as readonly string[]).includes(category)
+}
+
+export const sellerKinds = ['個人', '宅建業者', '管理会社', '法人'] as const
+
+export const maxDepositMonths = 12
 
 const listingDeals = ['sale', 'rent'] as const
 
 export type ListingSubmission = {
   name: string
   category: (typeof listingCategories)[number]
-  maker: string
-  year: number
-  hours: number
-  condition: (typeof listingConditions)[number]
+  zoning: Zoning
+  layout?: Layout
+  floorArea: number
+  builtYear?: number
+  nearestStation: string
+  walkMinutes: number
   prefecture: string
   city: string
   deals: (typeof listingDeals)[number][]
   salePrice?: number
-  rentPerDay?: number
-  rentToOwn: boolean
-  rentToOwnCreditRate?: number
-  rentToOwnCreditCap?: number
+  rentPerMonth?: number
+  depositMonths?: number
+  keyMoneyMonths?: number
+  leaseType?: LeaseType
+  purchaseOption: boolean
+  purchaseOptionCreditRate?: number
+  purchaseOptionCreditCap?: number
   /** Data URLs (jpeg / png / webp), largest side about 1200px. */
   images: string[]
   /** Small data URL of the first image for lists. */
@@ -120,35 +130,54 @@ export function validateListingSubmission(
   const deals = readDeals(errors, source)
   const canSell = deals.includes('sale')
   const canRent = deals.includes('rent')
-  const rentToOwn = readBoolean(source, 'rentToOwn')
-  if (rentToOwn && deals.length > 0 && !(canSell && canRent))
-    errors.rentToOwn = 'レンタル購入には販売とレンタルの両方が必要です。'
+  const purchaseOption = readBoolean(source, 'purchaseOption')
+  if (purchaseOption && deals.length > 0 && !(canSell && canRent))
+    errors.purchaseOption = '買取オプションには売買と賃貸の両方が必要です。'
+  const category = requireChoice(
+    errors,
+    source,
+    'category',
+    'カテゴリ',
+    listingCategories,
+  ) as ListingSubmission['category']
+  const withBuilding = category === undefined || hasBuilding(category)
 
   const value: ListingSubmission = {
-    name: requireText(errors, source, 'name', '農機具名', 80),
-    category: requireChoice(
+    name: requireText(errors, source, 'name', '物件名', 80),
+    category,
+    zoning: requireChoice(
       errors,
       source,
-      'category',
-      'カテゴリ',
-      listingCategories,
-    ) as ListingSubmission['category'],
-    maker: requireText(errors, source, 'maker', 'メーカー', 40),
-    year: readInteger(errors, source, 'year', '年式', {
-      min: 1980,
-      max: 2030,
-    }) as number,
-    hours: readInteger(errors, source, 'hours', '稼働時間', {
-      min: 0,
+      'zoning',
+      '用途地域',
+      zonings,
+    ) as Zoning,
+    layout: withBuilding
+      ? (requireChoice(errors, source, 'layout', '間取り', layouts) as Layout)
+      : undefined,
+    floorArea: readDecimal(errors, source, 'floorArea', '専有面積', {
+      min: 1,
       max: 100_000,
     }) as number,
-    condition: requireChoice(
+    builtYear: readInteger(
       errors,
       source,
-      'condition',
-      '状態',
-      listingConditions,
-    ) as ListingSubmission['condition'],
+      'builtYear',
+      '築年',
+      { min: 1900, max: 2100 },
+      withBuilding,
+    ),
+    nearestStation: requireText(
+      errors,
+      source,
+      'nearestStation',
+      '最寄駅',
+      60,
+    ),
+    walkMinutes: readInteger(errors, source, 'walkMinutes', '駅徒歩分', {
+      min: 0,
+      max: 60,
+    }) as number,
     prefecture: requireText(errors, source, 'prefecture', '都道府県', 10),
     city: requireText(errors, source, 'city', '市区町村', 40),
     deals,
@@ -160,27 +189,52 @@ export function validateListingSubmission(
       { min: 1, max: 1_000_000_000 },
       canSell,
     ),
-    rentPerDay: readInteger(
+    rentPerMonth: readInteger(
       errors,
       source,
-      'rentPerDay',
-      'レンタル料（1日）',
+      'rentPerMonth',
+      '月額賃料',
       { min: 1, max: 10_000_000 },
       canRent,
     ),
-    rentToOwn,
-    rentToOwnCreditRate: readInteger(
+    depositMonths: readInteger(
       errors,
       source,
-      'rentToOwnCreditRate',
+      'depositMonths',
+      '敷金（月数）',
+      { min: 0, max: maxDepositMonths },
+      canRent,
+    ),
+    keyMoneyMonths: readInteger(
+      errors,
+      source,
+      'keyMoneyMonths',
+      '礼金（月数）',
+      { min: 0, max: maxDepositMonths },
+      canRent,
+    ),
+    leaseType: canRent
+      ? (requireChoice(
+          errors,
+          source,
+          'leaseType',
+          '借家種別',
+          leaseTypes,
+        ) as LeaseType)
+      : undefined,
+    purchaseOption,
+    purchaseOptionCreditRate: readInteger(
+      errors,
+      source,
+      'purchaseOptionCreditRate',
       '充当率',
       { min: 1, max: 100 },
-      rentToOwn,
+      purchaseOption,
     ),
-    rentToOwnCreditCap: readInteger(
+    purchaseOptionCreditCap: readInteger(
       errors,
       source,
-      'rentToOwnCreditCap',
+      'purchaseOptionCreditCap',
       '充当上限',
       { min: 1, max: 1_000_000_000 },
       false,
@@ -199,10 +253,19 @@ export function validateListingSubmission(
     contactEmail: requireEmail(errors, source, 'contactEmail'),
   }
   if (!canSell) value.salePrice = undefined
-  if (!canRent) value.rentPerDay = undefined
-  if (!rentToOwn) {
-    value.rentToOwnCreditRate = undefined
-    value.rentToOwnCreditCap = undefined
+  if (!canRent) {
+    value.rentPerMonth = undefined
+    value.depositMonths = undefined
+    value.keyMoneyMonths = undefined
+    value.leaseType = undefined
+  }
+  if (!withBuilding) {
+    value.layout = undefined
+    value.builtYear = undefined
+  }
+  if (!purchaseOption) {
+    value.purchaseOptionCreditRate = undefined
+    value.purchaseOptionCreditCap = undefined
   }
 
   return finish(errors, value)

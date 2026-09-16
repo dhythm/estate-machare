@@ -13,21 +13,21 @@ export function AccountActivity({ overview }: { overview: AccountOverview }) {
         received: true,
       })),
     ),
-    ...overview.transportJobs.flatMap(({ job, applications }) =>
+    ...overview.propertyRequests.flatMap(({ request, applications }) =>
       applications.map((submission) => ({
         submission,
-        title: job.item,
+        title: request.title,
         received: true,
       })),
     ),
     ...overview.sentInquiries.map(({ submission, listing }) => ({
       submission,
-      title: listing?.name ?? '削除された農機具',
+      title: listing?.name ?? '削除された物件',
       received: false,
     })),
-    ...overview.sentApplications.map(({ submission, job }) => ({
+    ...overview.sentApplications.map(({ submission, request }) => ({
       submission,
-      title: job?.item ?? '削除された案件',
+      title: request?.title ?? '削除されたリクエスト',
       received: false,
     })),
   ]
@@ -50,7 +50,7 @@ export function AccountActivity({ overview }: { overview: AccountOverview }) {
 
   return (
     <div id="activity" className="scroll-mt-28">
-      {overview.summary.requestedRentals > 0 && (
+      {overview.summary.requestedLeases > 0 && (
         <Link
           href="#lending"
           aria-label="レンタル申込を確認する"
@@ -58,7 +58,7 @@ export function AccountActivity({ overview }: { overview: AccountOverview }) {
         >
           <span>
             <span className="font-semibold">
-              {overview.summary.requestedRentals}件のレンタル申込
+              {overview.summary.requestedLeases}件のレンタル申込
             </span>
             が承認を待っています
           </span>

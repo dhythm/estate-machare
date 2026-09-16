@@ -8,7 +8,7 @@ import {
 } from './notifications'
 import { getListing } from './listings'
 import { applyModeration } from './moderation'
-import { requestRental, updateRentalStatus } from './rentals'
+import { requestLease, updateLeaseStatus } from './leases'
 import { resetStore } from './store'
 import { acceptSubmission } from './submissions'
 import { addMessage, updateThreadStatus } from './threads'
@@ -32,7 +32,7 @@ describe('notifications service', () => {
     })
     await notify({
       userId: 'demo-user',
-      kind: 'rental',
+      kind: 'lease',
       title: 'レンタルが承認されました',
       body: 'クボタ',
       href: '/account',
@@ -85,9 +85,9 @@ describe('notification triggers', () => {
     ])
   })
 
-  it('tells the job owner about applications', async () => {
+  it('tells the request owner about applications', async () => {
     await acceptSubmission(
-      'transportApplication',
+      'requestProposal',
       {
         name: '利用者デモ',
         vehicle: '2tトラック',
@@ -98,8 +98,8 @@ describe('notification triggers', () => {
     expect(await titles('demo-seller')).toEqual(['応募が届きました'])
   })
 
-  it('follows a rental through request, approval, and conversion', async () => {
-    const created = await requestRental(
+  it('follows a lease through request, approval, and conversion', async () => {
+    const created = await requestLease(
       (await getListing('trc-001'))!,
       demoUser,
       {
@@ -109,11 +109,11 @@ describe('notification triggers', () => {
     )
     const id = created.ok ? created.value.id : ''
     expect(await titles('demo-seller')).toEqual(['レンタルの申込が届きました'])
-    await updateRentalStatus(id, demoSeller, 'active')
+    await updateLeaseStatus(id, demoSeller, 'active')
     expect(await titles('demo-user')).toEqual([
       'レンタルが「レンタル中」になりました',
     ])
-    await updateRentalStatus(id, demoUser, 'converted')
+    await updateLeaseStatus(id, demoUser, 'converted')
     expect(await titles('demo-seller')).toEqual([
       'レンタルが「購入に切替」になりました',
       'レンタルの申込が届きました',
@@ -133,7 +133,7 @@ describe('notification triggers', () => {
         city: '長岡市',
         deals: ['sale'],
         salePrice: 1_000_000,
-        rentToOwn: false,
+        purchaseOption: false,
         images: [],
         summary: '説明',
         sellerName: '出品者デモ',
@@ -143,7 +143,7 @@ describe('notification triggers', () => {
       'demo-seller',
     )
     await applyModeration('listing', listing.id, { status: 'approved' })
-    await applyModeration('transportJob', 'tj-01', {
+    await applyModeration('propertyRequest', 'tj-01', {
       status: 'rejected',
       note: '区間が不明瞭',
     })

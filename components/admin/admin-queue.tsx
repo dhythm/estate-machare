@@ -35,7 +35,7 @@ export function AdminQueue({
   kind,
   initialQueue,
 }: {
-  kind: 'listing' | 'transportJob'
+  kind: 'listing' | 'propertyRequest'
   initialQueue: ModerationQueue
 }) {
   const [status, setStatus] = useState<ModerationQueueFilter>('all')
@@ -63,7 +63,7 @@ export function AdminQueue({
   }
 
   const decide = async (
-    kind: 'listing' | 'transportJob',
+    kind: 'listing' | 'propertyRequest',
     id: string,
     decision: 'approved' | 'rejected',
     note: string,
@@ -156,26 +156,26 @@ export function AdminQueue({
         />
       )}
 
-      {kind === 'transportJob' && (
+      {kind === 'propertyRequest' && (
         <QueueSection
           title="運搬依頼"
           empty="該当なし"
           pendingId={pendingId}
-          items={pendingFirst(queue.transportJobs)
-            .filter((job) =>
-              `${job.id} ${job.item} ${job.from} ${job.to} ${job.status}`
+          items={pendingFirst(queue.propertyRequests)
+            .filter((request) =>
+              `${request.id} ${request.title} ${request.prefecture} ${request.city} ${request.status}`
                 .toLocaleLowerCase('ja-JP')
                 .includes(normalizedQuery),
             )
-            .map((job) => ({
-              id: job.id,
-              title: job.item,
-              meta: `${job.from} → ${job.to}・${formatYen(job.reward)}・${job.status}`,
-              status: job.moderationStatus ?? 'approved',
-              note: job.moderationNote,
+            .map((request) => ({
+              id: request.id,
+              title: request.title,
+              meta: `${request.prefecture} ${request.city}・${request.category}・${formatYen(request.budget)}・${request.status}`,
+              status: request.moderationStatus ?? 'approved',
+              note: request.moderationNote,
             }))}
           onDecide={(id, decision, note) =>
-            decide('transportJob', id, decision, note)
+            decide('propertyRequest', id, decision, note)
           }
         />
       )}

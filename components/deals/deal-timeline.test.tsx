@@ -40,7 +40,7 @@ describe('DealTimeline', () => {
           ],
           relatedDeals: [
             {
-              kind: 'rental',
+              kind: 'lease',
               id: 'r-1',
               title: 'クボタ 45馬力',
               statusLabel: '購入に切替',
@@ -66,7 +66,7 @@ describe('DealTimeline', () => {
     )
     expect(screen.getByRole('link', { name: /レンタル/ })).toHaveAttribute(
       'href',
-      '/account/deals/rental/r-1',
+      '/account/deals/lease/r-1',
     )
   })
 })

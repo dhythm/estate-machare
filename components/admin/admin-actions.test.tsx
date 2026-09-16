@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { RentalCancelButton, ThreadCloseButton } from './admin-actions'
+import { LeaseCancelButton, ThreadCloseButton } from './admin-actions'
 
 const refresh = vi.hoisted(() => vi.fn())
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh }) }))
@@ -30,10 +30,10 @@ describe('admin actions', () => {
     expect(refresh).toHaveBeenCalled()
   })
 
-  it('cancels a rental', async () => {
+  it('cancels a lease', async () => {
     const fetchMock = vi.fn(async () => Response.json({ status: 'cancelled' }))
     vi.stubGlobal('fetch', fetchMock)
-    render(<RentalCancelButton rentalId="r-1" />)
+    render(<LeaseCancelButton leaseId="r-1" />)
     await userEvent
       .setup()
       .click(screen.getByRole('button', { name: '取り消す' }))

@@ -37,12 +37,12 @@ const existing = {
     city: '長岡市',
     deals: ['sale', 'rent'] as ('sale' | 'rent')[],
     salePrice: '18800000',
-    rentPerDay: '22000',
-    rentToOwn: true,
-    rentToOwnCreditRate: '50',
-    rentToOwnCreditCap: '5000000',
+    rentPerMonth: '22000',
+    purchaseOption: true,
+    purchaseOptionCreditRate: '50',
+    purchaseOptionCreditCap: '5000000',
     summary: 'キャビン付き',
-    sellerName: '中村ファーム',
+    sellerName: '中村不動産',
     sellerKind: '農業法人',
     contactEmail: 'seller@example.com',
   },
@@ -149,7 +149,7 @@ describe('ListingForm', () => {
     )
   })
 
-  it('asks for credit terms only when rent-to-own is enabled', async () => {
+  it('asks for credit terms only when purchase-option is enabled', async () => {
     const user = setup()
     expect(screen.queryByLabelText('充当率（%）')).toBeNull()
     await user.click(screen.getByLabelText('レンタル購入を受け付ける'))
@@ -210,7 +210,7 @@ describe('ListingForm', () => {
       name: 'クボタ トラクター',
       deals: ['sale', 'rent'],
       salePrice: '1500000',
-      rentToOwn: true,
+      purchaseOption: true,
       sellerName: 'テスト農園',
       sellerKind: '農業法人',
     })

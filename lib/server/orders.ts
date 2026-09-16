@@ -68,7 +68,7 @@ export async function requestOrder(
   })
   await notify({
     userId: listing.ownerUserId,
-    kind: 'rental',
+    kind: 'lease',
     title: '購入の申込が届きました',
     body: listing.name,
     href: '/account',
@@ -76,12 +76,12 @@ export async function requestOrder(
   return { ok: true, value: order }
 }
 
-/** A rent-to-own conversion: the buyer already has the machine, so it starts delivered. */
-export async function createOrderFromRental(input: {
+/** A purchase-option conversion: the buyer already has the machine, so it starts delivered. */
+export async function createOrderFromLease(input: {
   listing: Listing
   buyerUserId: string
   price: number
-  rentalId: string
+  leaseId: string
 }): Promise<Order | undefined> {
   if (!input.listing.ownerUserId) return undefined
   const now = new Date().toISOString()
@@ -92,7 +92,7 @@ export async function createOrderFromRental(input: {
     sellerUserId: input.listing.ownerUserId,
     price: input.price,
     status: 'delivered',
-    sourceRentalId: input.rentalId,
+    sourceLeaseId: input.leaseId,
     createdAt: now,
     updatedAt: now,
   })
@@ -165,7 +165,7 @@ export async function updateOrderStatus(
     recipients.map((userId) =>
       notify({
         userId,
-        kind: 'rental',
+        kind: 'lease',
         title: `購入が「${orderStatusLabels[status]}」になりました`,
         body: listing?.name,
         href: '/account',

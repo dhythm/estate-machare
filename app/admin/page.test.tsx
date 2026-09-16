@@ -7,13 +7,13 @@ vi.mock('next/navigation', () => ({ usePathname: () => '/admin' }))
 vi.mock('@/lib/server/admin-overview', () => ({
   getAdminCounts: vi.fn(async () => ({
     pendingListings: 2,
-    pendingTransportJobs: 3,
-    requestedRentals: 4,
-    activeRentals: 1,
+    pendingPropertyRequests: 3,
+    requestedLeases: 4,
+    activeLeases: 1,
     requestedOrders: 5,
-    haulingJobs: 2,
+    introducingRequests: 2,
     openThreads: 6,
-    carriers: 8,
+    agents: 8,
   })),
   listRecentActivity: vi.fn(async () => [
     {
@@ -55,13 +55,13 @@ describe('AdminDashboardPage', () => {
     for (const path of [
       '/admin/deals',
       '/admin/deals/orders',
-      '/admin/deals/rentals',
+      '/admin/deals/leases',
       '/admin/deals/inquiries',
       '/admin/deals/reviews',
       '/admin/transport',
       '/admin/transport/applications',
       '/admin/transport/inquiries',
-      '/admin/transport/carriers',
+      '/admin/transport/agents',
       '/admin/accounts',
     ]) {
       expect(

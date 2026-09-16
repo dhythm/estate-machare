@@ -11,10 +11,10 @@ describe('HomeStatus', () => {
         status={{
           unreadThreads: 2,
           openInquiries: 1,
-          requestedRentals: 0,
+          requestedLeases: 0,
           requestedOrders: 1,
           pendingListings: 3,
-          matchingJobs: 4,
+          matchingRequests: 4,
           unreadNotifications: 5,
         }}
       />,

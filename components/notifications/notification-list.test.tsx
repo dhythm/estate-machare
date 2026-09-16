@@ -34,7 +34,7 @@ const items = [
   {
     id: 'n-2',
     userId: 'demo-user',
-    kind: 'rental' as const,
+    kind: 'lease' as const,
     title: 'レンタルが「レンタル中」になりました',
     href: '/account',
     createdAt: '2026-09-13T05:00:00.000Z',

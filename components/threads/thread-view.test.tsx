@@ -39,9 +39,9 @@ const thread: Thread = {
       image: '/equipment/tractor.png',
       summary: '',
       deals: ['rent'],
-      rentPerDay: 22_000,
+      rentPerMonth: 22_000,
       seller: {
-        name: '中村ファーム',
+        name: '中村不動産',
         kind: '農業法人',
         rating: 4.8,
         reviews: 34,

@@ -6,14 +6,14 @@ import type { Store, StoreKind } from './types'
 
 export type {
   AccountStatus,
-  CarrierProfile,
+  AgentProfile,
   DealEvent,
   DealKind,
   Message,
   Notification,
   NotificationKind,
   Order,
-  Rental,
+  Lease,
   Review,
   ReviewSourceKind,
   Store,
@@ -26,7 +26,7 @@ export type {
  * - `memory` (default): volatile in-process store, for `pnpm dev` and mocks.
  * - `pglite`: embedded PostgreSQL at `PGLITE_DATA_DIR` (default
  *   `.data/pglite`, `memory://` for a volatile database).
- * `DEMO_ACTIVITY=off` seeds only the listings and jobs, without activity.
+ * `DEMO_ACTIVITY=off` seeds only the listings and requests, without activity.
  */
 function resolveStoreKind(): StoreKind {
   const value = process.env.DATA_STORE?.trim() || 'memory'

@@ -37,7 +37,7 @@ const roles = [
   },
 ]
 
-const rentToOwnSteps = [
+const purchaseOptionSteps = [
   {
     title: 'まず借りて試す',
     body: '「レンタル購入可」の農機具を短期レンタル。自分の圃場・作業に合うかを実機で確かめます。',
@@ -92,7 +92,7 @@ export default function GuidePage() {
           </div>
         </section>
 
-        <section id="rent-to-own" className="mt-12 scroll-mt-20">
+        <section id="purchase-option" className="mt-12 scroll-mt-20">
           <Badge variant="accent">
             <Repeat2 className="size-3.5" />
             レンタル購入
@@ -101,7 +101,7 @@ export default function GuidePage() {
             「借りて、良ければ買う」の流れ
           </h2>
           <ol className="mt-4 grid gap-4 md:grid-cols-3">
-            {rentToOwnSteps.map((step, index) => (
+            {purchaseOptionSteps.map((step, index) => (
               <li
                 key={step.title}
                 className="rounded-2xl border border-border bg-card p-5"
@@ -119,7 +119,7 @@ export default function GuidePage() {
             ))}
           </ol>
           <Link
-            href="/listings?deal=rentToOwn"
+            href="/listings?deal=purchaseOption"
             className="mt-4 inline-block text-sm font-medium text-primary"
           >
             レンタル購入できる農機具を探す →

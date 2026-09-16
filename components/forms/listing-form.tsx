@@ -4,10 +4,12 @@ import { useState } from 'react'
 import { X } from 'lucide-react'
 import { resizeDataUrl, resizeImage } from '@/lib/images'
 import { Button } from '@/components/ui/button'
+import { layouts, zonings } from '@/lib/data'
+import { leaseTypes } from '@/lib/lease'
 import {
+  hasBuilding,
   listingCategories,
   maxListingImages,
-  listingConditions,
   sellerKinds,
   validateListingSubmission,
 } from '@/lib/validation/listing-submission'
@@ -30,18 +32,23 @@ type Picture = { full: string; thumb?: string }
 type ListingFormValues = {
   name: string
   category: string
-  maker: string
-  year: string
-  hours: string
-  condition: string
+  zoning: string
+  layout: string
+  floorArea: string
+  builtYear: string
+  nearestStation: string
+  walkMinutes: string
   prefecture: string
   city: string
   deals: Deal[]
   salePrice: string
-  rentPerDay: string
-  rentToOwn: boolean
-  rentToOwnCreditRate: string
-  rentToOwnCreditCap: string
+  rentPerMonth: string
+  depositMonths: string
+  keyMoneyMonths: string
+  leaseType: string
+  purchaseOption: boolean
+  purchaseOptionCreditRate: string
+  purchaseOptionCreditCap: string
   summary: string
   sellerName: string
   sellerKind: string
@@ -74,18 +81,23 @@ export function ListingForm({
       ...(edit?.values ?? {
         name: '',
         category: '',
-        maker: '',
-        year: '',
-        hours: '',
-        condition: '',
+        zoning: '',
+        layout: '',
+        floorArea: '',
+        builtYear: '',
+        nearestStation: '',
+        walkMinutes: '',
         prefecture: '',
         city: '',
         deals: ['sale', 'rent'] as Deal[],
         salePrice: '',
-        rentPerDay: '',
-        rentToOwn: false,
-        rentToOwnCreditRate: '',
-        rentToOwnCreditCap: '',
+        rentPerMonth: '',
+        depositMonths: '',
+        keyMoneyMonths: '',
+        leaseType: '',
+        purchaseOption: false,
+        purchaseOptionCreditRate: '',
+        purchaseOptionCreditCap: '',
         summary: '',
         sellerName: contact?.name ?? '',
         sellerKind: '',
@@ -165,6 +177,7 @@ export function ListingForm({
 
   const canSell = form.values.deals.includes('sale')
   const canRent = form.values.deals.includes('rent')
+  const withBuilding = hasBuilding(form.values.category)
 
   const toggleDeal = (deal: Deal) => {
     const deals = canDeal(deal)
@@ -172,7 +185,7 @@ export function ListingForm({
       : [...form.values.deals, deal]
     form.setValue('deals', deals)
     if (!(deals.includes('sale') && deals.includes('rent')))
-      form.setValue('rentToOwn', false)
+      form.setValue('purchaseOption', false)
   }
   const canDeal = (deal: Deal) => form.values.deals.includes(deal)
 
@@ -187,11 +200,11 @@ export function ListingForm({
             ? [
                 {
                   href: `/listings/${edit.listingId}`,
-                  label: '農機具の詳細を見る',
+                  label: '物件の詳細を見る',
                 },
                 { href: '/account', label: 'マイページにもどる' },
               ]
-            : [{ href: '/listings', label: '出品中の農機具を見る' }]
+            : [{ href: '/listings', label: '出品中の物件を見る' }]
         }
       />
     )
@@ -207,12 +220,12 @@ export function ListingForm({
           className="mb-6 flex items-center gap-3 text-lg font-bold"
         >
           <span className="text-xs text-muted-foreground">01</span>
-          農機具の基本情報
+          物件の基本情報
         </h2>
         <TextField
           id="name"
-          label="農機具名"
-          placeholder="例: クボタ トラクター 45馬力 GLシリーズ"
+          label="物件名"
+          placeholder="例: シティタワー 世田谷区 3LDK"
           value={form.values.name}
           onChange={(e) => form.setValue('name', e.target.value)}
           error={form.errors.name}
@@ -226,38 +239,60 @@ export function ListingForm({
             onChange={(e) => form.setValue('category', e.target.value)}
             error={form.errors.category}
           />
-          <TextField
-            id="maker"
-            label="メーカー"
-            value={form.values.maker}
-            onChange={(e) => form.setValue('maker', e.target.value)}
-            error={form.errors.maker}
-          />
-          <TextField
-            id="year"
-            label="年式"
-            inputMode="numeric"
-            placeholder="例: 2019"
-            value={form.values.year}
-            onChange={(e) => form.setValue('year', e.target.value)}
-            error={form.errors.year}
-          />
-          <TextField
-            id="hours"
-            label="稼働時間"
-            inputMode="numeric"
-            placeholder="例: 620"
-            value={form.values.hours}
-            onChange={(e) => form.setValue('hours', e.target.value)}
-            error={form.errors.hours}
-          />
           <SelectField
-            id="condition"
-            label="状態"
-            options={listingConditions}
-            value={form.values.condition}
-            onChange={(e) => form.setValue('condition', e.target.value)}
-            error={form.errors.condition}
+            id="zoning"
+            label="用途地域"
+            options={zonings}
+            value={form.values.zoning}
+            onChange={(e) => form.setValue('zoning', e.target.value)}
+            error={form.errors.zoning}
+          />
+          {withBuilding && (
+            <SelectField
+              id="layout"
+              label="間取り"
+              options={layouts}
+              value={form.values.layout}
+              onChange={(e) => form.setValue('layout', e.target.value)}
+              error={form.errors.layout}
+            />
+          )}
+          <TextField
+            id="floorArea"
+            label="専有面積（㎡）"
+            inputMode="decimal"
+            placeholder="例: 74.2"
+            value={form.values.floorArea}
+            onChange={(e) => form.setValue('floorArea', e.target.value)}
+            error={form.errors.floorArea}
+          />
+          {withBuilding && (
+            <TextField
+              id="builtYear"
+              label="築年"
+              inputMode="numeric"
+              placeholder="例: 2019"
+              value={form.values.builtYear}
+              onChange={(e) => form.setValue('builtYear', e.target.value)}
+              error={form.errors.builtYear}
+            />
+          )}
+          <TextField
+            id="nearestStation"
+            label="最寄駅"
+            placeholder="例: 小田急線 経堂駅"
+            value={form.values.nearestStation}
+            onChange={(e) => form.setValue('nearestStation', e.target.value)}
+            error={form.errors.nearestStation}
+          />
+          <TextField
+            id="walkMinutes"
+            label="駅徒歩（分）"
+            inputMode="numeric"
+            placeholder="例: 6"
+            value={form.values.walkMinutes}
+            onChange={(e) => form.setValue('walkMinutes', e.target.value)}
+            error={form.errors.walkMinutes}
           />
           <div className="grid grid-cols-2 gap-3">
             <TextField
@@ -284,13 +319,13 @@ export function ListingForm({
         <div className="flex flex-wrap gap-6">
           <CheckboxField
             id="deal-sale"
-            label="販売する"
+            label="売買する"
             checked={canSell}
             onChange={() => toggleDeal('sale')}
           />
           <CheckboxField
             id="deal-rent"
-            label="レンタルする"
+            label="賃貸する"
             checked={canRent}
             onChange={() => toggleDeal('rent')}
           />
@@ -312,52 +347,84 @@ export function ListingForm({
           )}
           {canRent && (
             <TextField
-              id="rentPerDay"
-              label="レンタル料（1日）"
+              id="rentPerMonth"
+              label="月額賃料"
               inputMode="numeric"
               placeholder="円"
-              value={form.values.rentPerDay}
-              onChange={(e) => form.setValue('rentPerDay', e.target.value)}
-              error={form.errors.rentPerDay}
+              value={form.values.rentPerMonth}
+              onChange={(e) => form.setValue('rentPerMonth', e.target.value)}
+              error={form.errors.rentPerMonth}
+            />
+          )}
+          {canRent && (
+            <TextField
+              id="depositMonths"
+              label="敷金（月数）"
+              inputMode="numeric"
+              placeholder="例: 2"
+              value={form.values.depositMonths}
+              onChange={(e) => form.setValue('depositMonths', e.target.value)}
+              error={form.errors.depositMonths}
+            />
+          )}
+          {canRent && (
+            <TextField
+              id="keyMoneyMonths"
+              label="礼金（月数）"
+              inputMode="numeric"
+              placeholder="例: 1"
+              value={form.values.keyMoneyMonths}
+              onChange={(e) => form.setValue('keyMoneyMonths', e.target.value)}
+              error={form.errors.keyMoneyMonths}
+            />
+          )}
+          {canRent && (
+            <SelectField
+              id="leaseType"
+              label="借家種別"
+              options={leaseTypes}
+              value={form.values.leaseType}
+              onChange={(e) => form.setValue('leaseType', e.target.value)}
+              error={form.errors.leaseType}
             />
           )}
         </div>
         {canSell && canRent && (
           <CheckboxField
-            id="rentToOwn"
-            label="レンタル購入を受け付ける"
+            id="purchaseOption"
+            label="買取オプションを付ける"
             className="mt-4"
-            checked={form.values.rentToOwn}
+            checked={form.values.purchaseOption}
             onChange={(e) => {
-              form.setValue('rentToOwn', e.target.checked)
-              if (e.target.checked && !form.values.rentToOwnCreditRate)
-                form.setValue('rentToOwnCreditRate', '50')
+              form.setValue('purchaseOption', e.target.checked)
+              if (e.target.checked && !form.values.purchaseOptionCreditRate)
+                form.setValue('purchaseOptionCreditRate', '50')
             }}
-            error={form.errors.rentToOwn}
+            error={form.errors.purchaseOption}
           />
         )}
-        {canSell && canRent && form.values.rentToOwn && (
+        {canSell && canRent && form.values.purchaseOption && (
           <div className="mt-4 grid gap-5 sm:grid-cols-2">
             <TextField
-              id="rentToOwnCreditRate"
+              id="purchaseOptionCreditRate"
               label="充当率（%）"
               inputMode="numeric"
-              value={form.values.rentToOwnCreditRate}
+              value={form.values.purchaseOptionCreditRate}
               onChange={(e) =>
-                form.setValue('rentToOwnCreditRate', e.target.value)
+                form.setValue('purchaseOptionCreditRate', e.target.value)
               }
-              error={form.errors.rentToOwnCreditRate}
+              error={form.errors.purchaseOptionCreditRate}
             />
             <TextField
-              id="rentToOwnCreditCap"
+              id="purchaseOptionCreditCap"
               label="充当上限（円）"
               inputMode="numeric"
               placeholder="任意"
-              value={form.values.rentToOwnCreditCap}
+              value={form.values.purchaseOptionCreditCap}
               onChange={(e) =>
-                form.setValue('rentToOwnCreditCap', e.target.value)
+                form.setValue('purchaseOptionCreditCap', e.target.value)
               }
-              error={form.errors.rentToOwnCreditCap}
+              error={form.errors.purchaseOptionCreditCap}
             />
           </div>
         )}

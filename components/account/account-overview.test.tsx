@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import type { Listing, TransportJob } from '@/lib/data'
+import type { Listing, PropertyRequest } from '@/lib/data'
 import type { AccountOverview } from '@/lib/server/account'
 import { AccountOverviewView } from './account-overview'
 
@@ -32,7 +32,7 @@ const listing = (
   ...extra,
 })
 
-const job: TransportJob = {
+const request: PropertyRequest = {
   id: 'tj-01',
   item: 'コンバイン',
   from: '秋田県 大仙市',
@@ -77,7 +77,7 @@ const overview: AccountOverview = {
       inquiries: [],
     },
   ],
-  transportJobs: [{ job, applications: [], inquiries: [] }],
+  propertyRequests: [{ request, applications: [], inquiries: [] }],
   sentInquiries: [
     {
       submission: {
@@ -95,27 +95,27 @@ const overview: AccountOverview = {
     {
       submission: {
         id: 'a-1',
-        kind: 'transportApplication',
+        kind: 'requestProposal',
         targetId: 'tj-09',
         userId: 'me',
         receivedAt: '2026-09-13T03:00:00.000Z',
         payload: { vehicle: '2tトラック', availableDate: '2026-10-03' },
         status: 'agreed',
       },
-      job: { ...job, id: 'tj-09', item: '受託した田植機', status: '調整中' },
+      request: { ...request, id: 'tj-09', item: '受託した田植機', status: '調整中' },
     },
   ],
   sentJobInquiries: [
     {
       submission: {
         id: 'q-1',
-        kind: 'transportInquiry',
+        kind: 'requestInquiry',
         targetId: 'tj-01',
         userId: 'me',
         receivedAt: '2026-09-13T04:00:00.000Z',
         payload: { message: '積載方法は？' },
       },
-      job,
+      request,
     },
   ],
   replyCounts: { 'i-1': 2 },
@@ -167,7 +167,7 @@ const overview: AccountOverview = {
       updatedAt: '2026-09-13T00:00:00.000Z',
     },
     {
-      kind: 'transportJob',
+      kind: 'propertyRequest',
       id: 'tj-01',
       title: 'コンバイン',
       href: '/transport/tj-01',
@@ -180,7 +180,7 @@ const overview: AccountOverview = {
     },
   ],
   unreadThreadIds: ['i-1'],
-  carrier: {
+  agent: {
     profile: {
       id: 'me',
       name: '高橋運送',
@@ -191,26 +191,26 @@ const overview: AccountOverview = {
       createdAt: '2026-09-13T00:00:00.000Z',
       updatedAt: '2026-09-13T00:00:00.000Z',
     },
-    matchingJobs: [job],
+    matchingRequests: [request],
   },
   summary: {
     unreadThreads: 1,
     openInquiries: 2,
-    requestedRentals: 1,
+    requestedLeases: 1,
     requestedOrders: 1,
     pendingListings: 1,
   },
-  rentals: {
-    asRenter: [
+  leases: {
+    asTenant: [
       {
-        rental: {
+        lease: {
           id: 'r-1',
           listingId: 'trc-001',
-          renterUserId: 'me',
+          tenantUserId: 'me',
           startDate: '2026-10-01',
           endDate: '2026-10-07',
           days: 7,
-          rentPerDay: 22_000,
+          rentPerMonth: 22_000,
           rentTotal: 154_000,
           salePrice: 18_800_000,
           creditRate: 50,
@@ -219,19 +219,19 @@ const overview: AccountOverview = {
           createdAt: '2026-09-13T00:00:00.000Z',
           updatedAt: '2026-09-13T00:00:00.000Z',
         },
-        listing: listing('trc-001', 'クボタ 45馬力', { rentToOwn: true }),
+        listing: listing('trc-001', 'クボタ 45馬力', { purchaseOption: true }),
       },
     ],
     asOwner: [
       {
-        rental: {
+        lease: {
           id: 'r-2',
           listingId: 'l-1',
-          renterUserId: 'demo-user',
+          tenantUserId: 'demo-user',
           startDate: '2026-11-01',
           endDate: '2026-11-03',
           days: 3,
-          rentPerDay: 10_000,
+          rentPerMonth: 10_000,
           rentTotal: 30_000,
           status: 'requested',
           createdAt: '2026-09-13T00:00:00.000Z',
@@ -269,7 +269,7 @@ describe('AccountOverviewView', () => {
     ).toHaveAttribute('href', '#equipment')
     expect(
       within(navigation).getByRole('link', { name: 'レンタル管理' }),
-    ).toHaveAttribute('href', '#rentals')
+    ).toHaveAttribute('href', '#leases')
     expect(
       within(navigation).getByRole('link', { name: '運搬管理' }),
     ).toHaveAttribute('href', '#transport')
@@ -295,12 +295,12 @@ describe('AccountOverviewView', () => {
         overview={{
           ...overview,
           reviewedSources: {
-            'rental:r-1': {
+            'lease:r-1': {
               id: 'rv-1',
               listingId: 'trc-001',
               sellerUserId: 'demo-seller',
               reviewerUserId: 'me',
-              sourceKind: 'rental',
+              sourceKind: 'lease',
               sourceId: 'r-1',
               rating: 4,
               comment: '助かりました',
@@ -344,20 +344,20 @@ describe('AccountOverviewView', () => {
     ).toBeInTheDocument()
     expect(within(summary).getAllByText('1件')).toHaveLength(3)
     expect(within(summary).getByText('2件')).toBeInTheDocument()
-    const carrier = screen.getByRole('region', { name: '運搬者プロフィール' })
-    expect(within(carrier).getByText('高橋運送')).toBeInTheDocument()
+    const agent = screen.getByRole('region', { name: '運搬者プロフィール' })
+    expect(within(agent).getByText('高橋運送')).toBeInTheDocument()
     expect(
-      within(carrier).getByRole('link', { name: 'プロフィールを編集' }),
+      within(agent).getByRole('link', { name: 'プロフィールを編集' }),
     ).toHaveAttribute('href', '/transport/register')
     expect(
-      within(carrier).getByRole('link', { name: 'コンバイン' }),
+      within(agent).getByRole('link', { name: 'コンバイン' }),
     ).toHaveAttribute('href', '/transport/tj-01')
     expect(within(mine).getByText('未対応')).toBeInTheDocument()
-    const jobs = screen.getByRole('region', { name: '自分の運搬依頼' })
-    expect(within(jobs).getByText('コンバイン')).toBeInTheDocument()
-    expect(within(jobs).getByText('応募はまだありません')).toBeInTheDocument()
+    const requests = screen.getByRole('region', { name: '自分の運搬依頼' })
+    expect(within(requests).getByText('コンバイン')).toBeInTheDocument()
+    expect(within(requests).getByText('応募はまだありません')).toBeInTheDocument()
     expect(
-      within(jobs).getByRole('button', { name: '完了にする' }),
+      within(requests).getByRole('button', { name: '完了にする' }),
     ).toBeInTheDocument()
     const sent = screen.getByRole('region', { name: '送った問い合わせ' })
     expect(

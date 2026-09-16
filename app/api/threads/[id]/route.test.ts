@@ -3,7 +3,7 @@ import { GET, PATCH } from './route'
 import { POST as reply } from './messages/route'
 import { resetStore } from '@/lib/server/store'
 import { acceptSubmission } from '@/lib/server/submissions'
-import { getTransportJob } from '@/lib/server/transport'
+import { getPropertyRequest } from '@/lib/server/property-requests'
 import { demoAdmin, demoSeller, demoUser, signInAs } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
@@ -29,7 +29,7 @@ async function openInquiry() {
 async function openApplication() {
   return (
     await acceptSubmission(
-      'transportApplication',
+      'requestProposal',
       {
         name: '利用者デモ',
         vehicle: '2tトラック',
@@ -99,7 +99,7 @@ describe('GET /api/threads/[id]', () => {
 })
 
 describe('PATCH /api/threads/[id]', () => {
-  it('lets the owner set the status and books the job on agreement', async () => {
+  it('lets the owner set the status and books the request on agreement', async () => {
     const id = await openApplication()
     expect((await patch(id, { status: 'agreed' })).status).toBe(403)
     signInAs(demoSeller)
@@ -107,7 +107,7 @@ describe('PATCH /api/threads/[id]', () => {
     const response = await patch(id, { status: 'agreed' })
     expect(response.status).toBe(200)
     expect((await response.json()).status).toBe('agreed')
-    expect((await getTransportJob('tj-01'))?.status).toBe('調整中')
+    expect((await getPropertyRequest('tj-01'))?.status).toBe('調整中')
     signInAs(demoAdmin)
     expect((await patch(id, { status: 'declined' })).status).toBe(200)
     signInAs(null)

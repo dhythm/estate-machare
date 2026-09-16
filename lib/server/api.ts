@@ -28,8 +28,8 @@ export function conflict(error: string): Response {
   return Response.json({ error }, { status: 409 })
 }
 
-/** Map a rental service failure to its HTTP response. */
-export function rentalFailure(
+/** Map a lease service failure to its HTTP response. */
+export function leaseFailure(
   reason:
     | 'not_found'
     | 'forbidden'

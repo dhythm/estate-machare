@@ -48,7 +48,7 @@ describe('parseListingSearchParams', () => {
 })
 
 describe('refinements', () => {
-  it('reads prefecture, price range, sort, and rental dates', () => {
+  it('reads prefecture, price range, sort, and lease dates', () => {
     expect(
       parseListingSearchParams({
         prefecture: '新潟県',

@@ -36,13 +36,13 @@ describe('submissions', () => {
       { targetId: 'trc-006' },
     )
     await acceptSubmission(
-      'transportApplication',
+      'requestProposal',
       { message: 'z' },
       { targetId: 'tj-01' },
     )
     expect(await listSubmissions('listingInquiry', 'trc-001')).toHaveLength(1)
     expect(await listSubmissions('listingInquiry')).toHaveLength(2)
-    expect(await listSubmissions('transportApplication', 'tj-01')).toHaveLength(
+    expect(await listSubmissions('requestProposal', 'tj-01')).toHaveLength(
       1,
     )
   })

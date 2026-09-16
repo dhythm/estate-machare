@@ -27,10 +27,10 @@ describe('Hero search', () => {
       q: 'クボタ',
     })
     await user.click(screen.getByRole('button', { name: '借りてから買う' }))
-    expect(new FormData(form as HTMLFormElement).get('deal')).toBe('rentToOwn')
+    expect(new FormData(form as HTMLFormElement).get('deal')).toBe('purchaseOption')
   })
 
-  it('keeps transport requests and available jobs reachable from the first screen', () => {
+  it('keeps transport requests and available requests reachable from the first screen', () => {
     render(<Hero />)
     expect(
       screen.getByRole('link', { name: /運搬を依頼する/ }),

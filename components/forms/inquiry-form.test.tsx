@@ -20,8 +20,8 @@ const listing: Listing = {
   summary: '',
   deals: ['sale', 'rent'],
   salePrice: 18_800_000,
-  rentPerDay: 22_000,
-  seller: { name: '中村ファーム', kind: '農業法人', rating: 4.8, reviews: 34 },
+  rentPerMonth: 22_000,
+  seller: { name: '中村不動産', kind: '農業法人', rating: 4.8, reviews: 34 },
   tags: [],
 }
 

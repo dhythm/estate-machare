@@ -8,7 +8,7 @@ const groups = [
     links: [
       { label: '農機具を買う', href: '/listings?deal=sale' },
       { label: 'レンタルする', href: '/listings?deal=rent' },
-      { label: '借りてから買う', href: '/listings?deal=rentToOwn' },
+      { label: '借りてから買う', href: '/listings?deal=purchaseOption' },
       { label: '農機具を出品する', href: '/listings/new' },
     ],
   },

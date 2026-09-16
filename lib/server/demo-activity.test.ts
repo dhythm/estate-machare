@@ -1,49 +1,49 @@
 import { describe, expect, it, vi } from 'vitest'
-import { countRentalDays } from '@/lib/rent-to-own'
+import { countLeaseMonths } from '@/lib/lease'
 import { isThreadKind } from '@/lib/data'
 import { configuredAccounts } from './auth/accounts'
-import { listings, transportJobs } from './data'
+import { listings, propertyRequests } from './data'
 import { demoActivity } from './demo-activity'
 
 vi.mock('server-only', () => ({}))
 
 const allListings = [...listings, ...demoActivity.listings]
-const allJobs = [...transportJobs, ...demoActivity.transportJobs]
+const allJobs = [...propertyRequests, ...demoActivity.propertyRequests]
 const listingById = new Map(allListings.map((listing) => [listing.id, listing]))
-const jobById = new Map(allJobs.map((job) => [job.id, job]))
+const jobById = new Map(allJobs.map((request) => [request.id, request]))
 const userIds = new Set(configuredAccounts().map((account) => account.id))
 
 describe('demoActivity', () => {
-  it('references only known accounts, listings, and jobs', () => {
+  it('references only known accounts, listings, and requests', () => {
     const {
       orders,
-      rentals,
+      leases,
       submissions,
       messages,
       reviews,
-      carrierProfiles,
+      agentProfiles,
       notifications,
       threadReads,
       accountStatuses,
     } = demoActivity
     for (const listing of allListings)
       if (listing.ownerUserId) expect(userIds).toContain(listing.ownerUserId)
-    for (const job of allJobs)
-      if (job.ownerUserId) expect(userIds).toContain(job.ownerUserId)
+    for (const request of allJobs)
+      if (request.ownerUserId) expect(userIds).toContain(request.ownerUserId)
     for (const order of orders) {
       expect(userIds).toContain(order.buyerUserId)
       expect(listingById.get(order.listingId)?.ownerUserId).toBe(
         order.sellerUserId,
       )
     }
-    for (const rental of rentals) {
-      expect(userIds).toContain(rental.renterUserId)
-      const listing = listingById.get(rental.listingId)
-      expect(listing?.rentPerDay).toBe(rental.rentPerDay)
-      expect(rental.days).toBe(
-        countRentalDays(rental.startDate, rental.endDate),
+    for (const lease of leases) {
+      expect(userIds).toContain(lease.tenantUserId)
+      const listing = listingById.get(lease.listingId)
+      expect(listing?.rentPerMonth).toBe(lease.rentPerMonth)
+      expect(lease.days).toBe(
+        countLeaseMonths(lease.startDate, lease.endDate),
       )
-      expect(rental.rentTotal).toBe(rental.days * rental.rentPerDay)
+      expect(lease.rentTotal).toBe(lease.days * lease.rentPerMonth)
     }
     for (const submission of submissions) {
       expect(isThreadKind(submission.kind)).toBe(true)
@@ -70,23 +70,23 @@ describe('demoActivity', () => {
       const source =
         review.sourceKind === 'order'
           ? orders.find((order) => order.id === review.sourceId)
-          : rentals.find((rental) => rental.id === review.sourceId)
+          : leases.find((lease) => lease.id === review.sourceId)
       expect(source?.status).toBe('completed')
     }
-    for (const profile of carrierProfiles) expect(userIds).toContain(profile.id)
+    for (const profile of agentProfiles) expect(userIds).toContain(profile.id)
     for (const notification of notifications)
       expect(userIds).toContain(notification.userId)
     for (const status of accountStatuses) expect(userIds).toContain(status.id)
   })
 
   it('links every deal event to an existing deal, newest first', () => {
-    const { dealEvents, orders, rentals } = demoActivity
+    const { dealEvents, orders, leases } = demoActivity
     for (const event of dealEvents) {
       const exists =
         event.dealKind === 'order'
           ? orders.some((order) => order.id === event.dealId)
-          : event.dealKind === 'rental'
-            ? rentals.some((rental) => rental.id === event.dealId)
+          : event.dealKind === 'lease'
+            ? leases.some((lease) => lease.id === event.dealId)
             : jobById.has(event.dealId)
       expect(exists).toBe(true)
     }
@@ -94,17 +94,17 @@ describe('demoActivity', () => {
     expect(stamps).toEqual([...stamps].sort().reverse())
   })
 
-  it('gives the hauling job an agreed carrier and the dashboard something to show', () => {
-    const hauling = demoActivity.transportJobs.filter(
-      (job) => job.status === '運搬中',
+  it('gives the hauling request an agreed agent and the dashboard something to show', () => {
+    const hauling = demoActivity.propertyRequests.filter(
+      (request) => request.status === '運搬中',
     )
     expect(hauling.length).toBeGreaterThan(0)
-    for (const job of hauling)
+    for (const request of hauling)
       expect(
         demoActivity.submissions.some(
           (submission) =>
-            submission.kind === 'transportApplication' &&
-            submission.targetId === job.id &&
+            submission.kind === 'requestProposal' &&
+            submission.targetId === request.id &&
             submission.status === 'agreed',
         ),
       ).toBe(true)
@@ -127,7 +127,7 @@ describe('demoActivity', () => {
       const involved =
         demoActivity.orders.some(
           (o) => o.buyerUserId === userId || o.sellerUserId === userId,
-        ) || demoActivity.rentals.some((r) => r.renterUserId === userId)
+        ) || demoActivity.leases.some((r) => r.tenantUserId === userId)
       expect(involved, userId).toBe(true)
       expect(
         demoActivity.notifications.some((n) => n.userId === userId),

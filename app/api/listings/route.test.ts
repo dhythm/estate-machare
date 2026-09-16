@@ -51,7 +51,7 @@ describe('GET /api/listings', () => {
     ).toBe(true)
     expect(
       body.items.every(
-        (item: { rentPerDay?: number }) => item.rentPerDay !== undefined,
+        (item: { rentPerMonth?: number }) => item.rentPerMonth !== undefined,
       ),
     ).toBe(true)
   })
@@ -92,8 +92,8 @@ const submission = {
   city: '長岡市',
   deals: ['sale'],
   salePrice: '1500000',
-  rentPerDay: '',
-  rentToOwn: false,
+  rentPerMonth: '',
+  purchaseOption: false,
   summary: 'キャビン付き。',
   sellerName: 'テスト農園',
   sellerKind: '農業法人',

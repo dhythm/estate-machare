@@ -21,18 +21,18 @@ import {
 } from '@/lib/data'
 import type { AccountOverview } from '@/lib/server/account'
 import type { Submission } from '@/lib/server/store/types'
-import { CompleteJobButton } from './complete-job-button'
-import { RentalActions } from './rental-actions'
-import { StartHaulButton } from './start-haul-button'
+import { CloseRequestButton } from './close-request-button'
+import { LeaseActions } from './lease-actions'
+import { StartIntroductionButton } from './start-introduction-button'
 import { ListingStatusButton } from '@/components/listings/listing-status-button'
 import { ReviewForm } from '@/components/reviews/review-form'
 import { StarRating } from '@/components/reviews/star-rating'
 import type { Review } from '@/lib/server/store/types'
-import { rentalStatusLabels } from '@/lib/rent-to-own'
+import { leaseStatusLabels } from '@/lib/lease'
 import { orderStatusLabels } from '@/lib/data'
 import type { OrderWithListing } from '@/lib/server/orders'
 import { OrderActions } from './order-actions'
-import type { RentalWithListing } from '@/lib/server/rentals'
+import type { LeaseWithListing } from '@/lib/server/leases'
 
 const moderationLabels: Record<ModerationStatus, string> = {
   pending: '審査待ち',
@@ -202,7 +202,7 @@ function OrderList({
             </Badge>
             <span className="text-muted-foreground">
               {formatYen(order.price)}
-              {order.sourceRentalId && '（レンタルから切替）'}
+              {order.sourceLeaseId && '（レンタルから切替）'}
             </span>
           </div>
           {order.message && (
@@ -241,21 +241,21 @@ function OrderList({
   )
 }
 
-function RentalList({
+function LeaseList({
   items,
   party,
   reviewedSources,
 }: {
-  items: RentalWithListing[]
-  party: 'owner' | 'renter'
+  items: LeaseWithListing[]
+  party: 'owner' | 'tenant'
   reviewedSources: Record<string, Review>
 }) {
   if (items.length === 0) return <Empty label="まだありません" />
   return (
     <ul className="flex flex-col gap-3">
-      {items.map(({ rental, listing }) => (
+      {items.map(({ lease, listing }) => (
         <li
-          key={rental.id}
+          key={lease.id}
           className="rounded-2xl border border-border bg-card p-5 text-sm sm:p-6"
         >
           <div className="flex flex-wrap items-center gap-2">
@@ -270,21 +270,21 @@ function RentalList({
               <span className="text-muted-foreground">削除された農機具</span>
             )}
             <Badge
-              variant={rental.status === 'requested' ? 'default' : 'muted'}
+              variant={lease.status === 'requested' ? 'default' : 'muted'}
             >
-              {rentalStatusLabels[rental.status]}
+              {leaseStatusLabels[lease.status]}
             </Badge>
           </div>
           <p className="mt-1 text-muted-foreground">
-            {rental.startDate} 〜 {rental.endDate}・{rental.days}日間・
-            {formatYen(rental.rentTotal)}
+            {lease.startDate} 〜 {lease.endDate}・{lease.months}か月・
+            {formatYen(lease.rentTotal)}
           </p>
-          {rental.purchasePrice !== undefined && (
+          {lease.purchasePrice !== undefined && (
             <p className="mt-1 text-foreground">
-              購入価格 {formatYen(rental.purchasePrice)}（充当後）
+              購入価格 {formatYen(lease.purchasePrice)}（充当後）
             </p>
           )}
-          {rental.status === 'converted' && listing && party === 'renter' && (
+          {lease.status === 'converted' && listing && party === 'tenant' && (
             <Link
               href={`/transport/new?listingId=${listing.id}`}
               className="mt-2 inline-block text-sm font-medium text-primary hover:underline"
@@ -293,23 +293,23 @@ function RentalList({
             </Link>
           )}
           <div className="mt-4 border-t border-border pt-4">
-            <RentalActions
-              rentalId={rental.id}
-              status={rental.status}
+            <LeaseActions
+              leaseId={lease.id}
+              status={lease.status}
               party={party}
               canConvert={
-                rental.salePrice !== undefined &&
-                rental.creditRate !== undefined
+                lease.salePrice !== undefined &&
+                lease.creditRate !== undefined
               }
             />
           </div>
-          {party === 'renter' &&
-            (rental.status === 'completed' || rental.status === 'converted') &&
-            (reviewedSources[`rental:${rental.id}`] ? (
-              <WrittenReview review={reviewedSources[`rental:${rental.id}`]} />
+          {party === 'tenant' &&
+            (lease.status === 'completed' || lease.status === 'converted') &&
+            (reviewedSources[`lease:${lease.id}`] ? (
+              <WrittenReview review={reviewedSources[`lease:${lease.id}`]} />
             ) : (
               <div className="mt-3 border-t border-border pt-3">
-                <ReviewForm sourceKind="rental" sourceId={rental.id} />
+                <ReviewForm sourceKind="lease" sourceId={lease.id} />
               </div>
             ))}
         </li>
@@ -341,7 +341,7 @@ export function AccountOverviewView({
     },
     {
       label: '承認待ちのレンタル',
-      value: overview.summary.requestedRentals,
+      value: overview.summary.requestedLeases,
       href: '#lending',
       icon: CalendarDays,
     },
@@ -384,7 +384,7 @@ export function AccountOverviewView({
         </ul>
       </section>
       <div className="grid items-start gap-7 lg:grid-cols-[205px_minmax(0,1fr)] lg:gap-9">
-        <AccountNavigation isCarrier={Boolean(overview.carrier)} />
+        <AccountNavigation isAgent={Boolean(overview.agent)} />
         <div className="flex min-w-0 flex-col gap-10">
           <AccountActivity overview={overview} />
           <Section
@@ -424,7 +424,7 @@ export function AccountOverviewView({
                         />
                         <div className="min-w-0">
                           <p className="mb-1 text-xs text-muted-foreground">
-                            {listing.maker} · {listing.category}
+                            {listing.category} · {listing.zoning}
                           </p>
                           <Link
                             href={`/listings/${listing.id}`}
@@ -502,7 +502,7 @@ export function AccountOverviewView({
                     <Badge variant="outline">
                       {deal.kind === 'order'
                         ? '注文'
-                        : deal.kind === 'rental'
+                        : deal.kind === 'lease'
                           ? 'レンタル'
                           : '運搬'}
                     </Badge>
@@ -553,13 +553,13 @@ export function AccountOverviewView({
           </Section>
 
           <Section
-            id="rentals"
+            id="leases"
             title="借りている農機具"
-            count={overview.rentals.asRenter.length}
+            count={overview.leases.asTenant.length}
           >
-            <RentalList
-              items={overview.rentals.asRenter}
-              party="renter"
+            <LeaseList
+              items={overview.leases.asTenant}
+              party="tenant"
               reviewedSources={overview.reviewedSources}
             />
           </Section>
@@ -567,10 +567,10 @@ export function AccountOverviewView({
           <Section
             id="lending"
             title="貸している農機具"
-            count={overview.rentals.asOwner.length}
+            count={overview.leases.asOwner.length}
           >
-            <RentalList
-              items={overview.rentals.asOwner}
+            <LeaseList
+              items={overview.leases.asOwner}
               party="owner"
               reviewedSources={overview.reviewedSources}
             />
@@ -579,7 +579,7 @@ export function AccountOverviewView({
           <Section
             id="transport"
             title="自分の運搬依頼"
-            count={overview.transportJobs.length}
+            count={overview.propertyRequests.length}
             action={
               <Link
                 href="/transport/new"
@@ -593,40 +593,40 @@ export function AccountOverviewView({
               </Link>
             }
           >
-            {overview.transportJobs.length === 0 ? (
+            {overview.propertyRequests.length === 0 ? (
               <Empty label="まだありません" />
             ) : (
               <ul className="flex flex-col gap-4">
-                {overview.transportJobs.map(
-                  ({ job, applications, inquiries }) => (
+                {overview.propertyRequests.map(
+                  ({ request, applications, inquiries }) => (
                     <li
-                      key={job.id}
+                      key={request.id}
                       className="rounded-2xl border border-border bg-card p-5"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-2">
                           <Link
-                            href={`/transport/${job.id}`}
+                            href={`/transport/${request.id}`}
                             className="font-semibold text-foreground hover:text-primary hover:underline"
                           >
-                            {job.item}
+                            {request.title}
                           </Link>
-                          <ModerationBadge status={job.moderationStatus} />
-                          <Badge variant="muted">{job.status}</Badge>
+                          <ModerationBadge status={request.moderationStatus} />
+                          <Badge variant="muted">{request.status}</Badge>
                         </div>
                         <span className="text-sm text-muted-foreground">
-                          {job.from} → {job.to}・{formatYen(job.reward)}
+                          {request.prefecture} {request.city}・{formatYen(request.budget)}
                         </span>
                       </div>
                       <div className="mt-3 flex items-center gap-3">
                         <Link
-                          href={`/transport/${job.id}/edit`}
+                          href={`/transport/${request.id}/edit`}
                           className="text-xs font-medium text-primary hover:underline"
                         >
                           編集
                         </Link>
-                        {job.status !== '完了' && (
-                          <CompleteJobButton jobId={job.id} />
+                        {request.status !== '成約' && (
+                          <CloseRequestButton requestId={request.id} />
                         )}
                       </div>
                       <IncomingList
@@ -690,16 +690,16 @@ export function AccountOverviewView({
             )}
           </Section>
 
-          {overview.carrier && (
-            <Section id="carrier" title="運搬者プロフィール">
+          {overview.agent && (
+            <Section id="agent" title="運搬者プロフィール">
               <div className="rounded-2xl border border-border bg-card p-5 text-sm">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-medium text-foreground">
-                    {overview.carrier.profile.name}
+                    {overview.agent.profile.name}
                   </span>
-                  <Badge variant="muted">{overview.carrier.profile.kind}</Badge>
+                  <Badge variant="muted">{overview.agent.profile.kind}</Badge>
                   <span className="text-muted-foreground">
-                    拠点 {overview.carrier.profile.prefecture}
+                    拠点 {overview.agent.profile.prefecture}
                   </span>
                   <Link
                     href="/transport/register"
@@ -709,26 +709,26 @@ export function AccountOverviewView({
                   </Link>
                 </div>
                 <p className="mt-2 text-muted-foreground">
-                  車両: {overview.carrier.profile.vehicles.join('・')}
-                  ／対応地域: {overview.carrier.profile.serviceAreas.join('・')}
+                  車両: {overview.agent.profile.handledCategories.join('・')}
+                  ／対応地域: {overview.agent.profile.serviceAreas.join('・')}
                 </p>
                 <h3 className="mt-4 text-sm font-medium text-foreground">
                   対応地域の募集中案件
                 </h3>
-                {overview.carrier.matchingJobs.length === 0 ? (
+                {overview.agent.matchingRequests.length === 0 ? (
                   <p className="mt-1 text-muted-foreground">該当なし</p>
                 ) : (
                   <ul className="mt-2 flex flex-col gap-1">
-                    {overview.carrier.matchingJobs.map((job) => (
-                      <li key={job.id} className="flex flex-wrap gap-2">
+                    {overview.agent.matchingRequests.map((request) => (
+                      <li key={request.id} className="flex flex-wrap gap-2">
                         <Link
-                          href={`/transport/${job.id}`}
+                          href={`/transport/${request.id}`}
                           className="font-semibold text-foreground hover:text-primary hover:underline"
                         >
-                          {job.item}
+                          {request.title}
                         </Link>
                         <span className="text-muted-foreground">
-                          {job.from} → {job.to}・{formatYen(job.reward)}
+                          {request.prefecture} {request.city}・{formatYen(request.budget)}
                         </span>
                       </li>
                     ))}
@@ -738,7 +738,7 @@ export function AccountOverviewView({
             </Section>
           )}
 
-          {!overview.carrier && (
+          {!overview.agent && (
             <Link
               href="/transport/register"
               className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-muted/40 px-5 py-5 text-sm font-semibold text-primary"
@@ -803,25 +803,25 @@ export function AccountOverviewView({
               <Empty label="まだありません" />
             ) : (
               <ul className="flex flex-col gap-3">
-                {overview.sentApplications.map(({ submission, job }) => (
+                {overview.sentApplications.map(({ submission, request }) => (
                   <li
                     key={submission.id}
                     className="rounded-2xl border border-border bg-card p-5 text-sm sm:p-6"
                   >
                     <div className="flex flex-wrap items-center gap-2">
-                      {job ? (
+                      {request ? (
                         <Link
-                          href={`/transport/${job.id}`}
+                          href={`/transport/${request.id}`}
                           className="font-semibold text-foreground hover:text-primary hover:underline"
                         >
-                          {job.item}
+                          {request.title}
                         </Link>
                       ) : (
                         <span className="text-muted-foreground">
                           削除された案件
                         </span>
                       )}
-                      {job && <Badge variant="muted">{job.status}</Badge>}
+                      {request && <Badge variant="muted">{request.status}</Badge>}
                       <span className="text-muted-foreground">
                         {receivedAt(submission)}
                       </span>
@@ -831,9 +831,9 @@ export function AccountOverviewView({
                       {text(submission.payload.availableDate)}
                     </p>
                     {submission.status === 'agreed' &&
-                      job?.status === '調整中' && (
+                      request?.status === '調整中' && (
                         <div className="mt-2">
-                          <StartHaulButton jobId={job.id} />
+                          <StartIntroductionButton requestId={request.id} />
                         </div>
                       )}
                     <div className="mt-2">
@@ -854,18 +854,18 @@ export function AccountOverviewView({
               <Empty label="まだありません" />
             ) : (
               <ul className="flex flex-col gap-3">
-                {overview.sentJobInquiries.map(({ submission, job }) => (
+                {overview.sentJobInquiries.map(({ submission, request }) => (
                   <li
                     key={submission.id}
                     className="rounded-2xl border border-border bg-card p-5 text-sm sm:p-6"
                   >
                     <div className="flex flex-wrap items-center gap-2">
-                      {job ? (
+                      {request ? (
                         <Link
-                          href={`/transport/${job.id}`}
+                          href={`/transport/${request.id}`}
                           className="font-semibold text-foreground hover:text-primary hover:underline"
                         >
-                          {job.item}
+                          {request.title}
                         </Link>
                       ) : (
                         <span className="text-muted-foreground">

@@ -7,17 +7,17 @@ import { createSqlRepository } from './sql-repository'
 import type { TableSpec } from './sql-repository'
 import {
   accountStatusTable,
-  carrierProfileTable,
+  agentProfileTable,
   dealEventTable,
   listingTable,
   messageTable,
   notificationTable,
   orderTable,
-  rentalTable,
+  leaseTable,
   reviewTable,
   submissionTable,
   threadReadTable,
-  transportJobTable,
+  propertyRequestTable,
 } from './tables'
 
 export type PgliteStoreOptions = SeedOptions & {
@@ -42,15 +42,15 @@ async function seed(db: PGlite, options: SeedOptions): Promise<void> {
         await repository.create(entity)
     }
     await insert(listingTable, rows.listings)
-    await insert(transportJobTable, rows.transportJobs)
+    await insert(propertyRequestTable, rows.propertyRequests)
     await insert(submissionTable, rows.submissions)
     await insert(messageTable, rows.messages)
-    await insert(rentalTable, rows.rentals)
+    await insert(leaseTable, rows.leases)
     await insert(accountStatusTable, rows.accountStatuses)
     await insert(notificationTable, rows.notifications)
     await insert(reviewTable, rows.reviews)
     await insert(threadReadTable, rows.threadReads)
-    await insert(carrierProfileTable, rows.carrierProfiles)
+    await insert(agentProfileTable, rows.agentProfiles)
     await insert(orderTable, rows.orders)
     await insert(dealEventTable, rows.dealEvents)
   })
@@ -84,21 +84,21 @@ export function createPgliteStore(options: PgliteStoreOptions): Store {
   return {
     kind: 'pglite',
     listings: createSqlRepository(listingTable, connect),
-    transportJobs: createSqlRepository(transportJobTable, connect),
+    propertyRequests: createSqlRepository(propertyRequestTable, connect),
     submissions: createSqlRepository(submissionTable, connect),
     messages: createSqlRepository(messageTable, connect),
-    rentals: createSqlRepository(rentalTable, connect),
+    leases: createSqlRepository(leaseTable, connect),
     accountStatuses: createSqlRepository(accountStatusTable, connect),
     notifications: createSqlRepository(notificationTable, connect),
     reviews: createSqlRepository(reviewTable, connect),
     threadReads: createSqlRepository(threadReadTable, connect),
-    carrierProfiles: createSqlRepository(carrierProfileTable, connect),
+    agentProfiles: createSqlRepository(agentProfileTable, connect),
     orders: createSqlRepository(orderTable, connect),
     dealEvents: createSqlRepository(dealEventTable, connect),
     async reset() {
       const db = await ready
       await db.exec(
-        `truncate listings, transport_jobs, submissions, messages, rentals, account_statuses, notifications, reviews, thread_reads, carrier_profiles, orders, deal_events restart identity`,
+        `truncate listings, property_requests, submissions, messages, leases, account_statuses, notifications, reviews, thread_reads, agent_profiles, orders, deal_events restart identity`,
       )
       await seed(db, options)
     },

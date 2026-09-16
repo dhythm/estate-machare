@@ -12,12 +12,12 @@ const valid = {
   city: '長岡市',
   deals: ['sale', 'rent'],
   salePrice: '1500000',
-  rentPerDay: '12000',
-  rentToOwn: true,
-  rentToOwnCreditRate: '50',
-  rentToOwnCreditCap: '300000',
+  rentPerMonth: '12000',
+  purchaseOption: true,
+  purchaseOptionCreditRate: '50',
+  purchaseOptionCreditCap: '300000',
   summary: 'キャビン付き。まず借りて試せます。',
-  sellerName: '中村ファーム',
+  sellerName: '中村不動産',
   sellerKind: '農業法人',
   contactEmail: 'seller@example.com',
 }
@@ -31,10 +31,10 @@ describe('validateListingSubmission', () => {
       year: 2018,
       hours: 500,
       salePrice: 1_500_000,
-      rentPerDay: 12_000,
-      rentToOwn: true,
-      rentToOwnCreditRate: 50,
-      rentToOwnCreditCap: 300_000,
+      rentPerMonth: 12_000,
+      purchaseOption: true,
+      purchaseOptionCreditRate: 50,
+      purchaseOptionCreditCap: 300_000,
       deals: ['sale', 'rent'],
     })
   })
@@ -75,33 +75,33 @@ describe('validateListingSubmission', () => {
     expect(tooBig.ok).toBe(false)
   })
 
-  it('requires the credit rate only for rent-to-own and clears it otherwise', () => {
+  it('requires the credit rate only for purchase-option and clears it otherwise', () => {
     const missingRate = validateListingSubmission({
       ...valid,
-      rentToOwnCreditRate: '',
+      purchaseOptionCreditRate: '',
     })
     expect(missingRate.ok).toBe(false)
     if (!missingRate.ok)
-      expect(missingRate.errors).toHaveProperty('rentToOwnCreditRate')
+      expect(missingRate.errors).toHaveProperty('purchaseOptionCreditRate')
 
     const tooHigh = validateListingSubmission({
       ...valid,
-      rentToOwnCreditRate: '120',
+      purchaseOptionCreditRate: '120',
     })
     expect(tooHigh.ok).toBe(false)
 
     const noCap = validateListingSubmission({
       ...valid,
-      rentToOwnCreditCap: '',
+      purchaseOptionCreditCap: '',
     })
     expect(noCap.ok).toBe(true)
-    if (noCap.ok) expect(noCap.value.rentToOwnCreditCap).toBeUndefined()
+    if (noCap.ok) expect(noCap.value.purchaseOptionCreditCap).toBeUndefined()
 
-    const plain = validateListingSubmission({ ...valid, rentToOwn: false })
+    const plain = validateListingSubmission({ ...valid, purchaseOption: false })
     expect(plain.ok).toBe(true)
     if (plain.ok) {
-      expect(plain.value.rentToOwnCreditRate).toBeUndefined()
-      expect(plain.value.rentToOwnCreditCap).toBeUndefined()
+      expect(plain.value.purchaseOptionCreditRate).toBeUndefined()
+      expect(plain.value.purchaseOptionCreditCap).toBeUndefined()
     }
   })
 
@@ -110,7 +110,7 @@ describe('validateListingSubmission', () => {
       ...valid,
       deals: ['rent'],
       salePrice: '',
-      rentToOwn: false,
+      purchaseOption: false,
     })
     expect(rentOnly.ok).toBe(true)
     if (rentOnly.ok) expect(rentOnly.value.salePrice).toBeUndefined()
@@ -118,10 +118,10 @@ describe('validateListingSubmission', () => {
     const missingRent = validateListingSubmission({
       ...valid,
       deals: ['rent'],
-      rentPerDay: '',
+      rentPerMonth: '',
     })
     expect(missingRent.ok).toBe(false)
-    if (!missingRent.ok) expect(missingRent.errors).toHaveProperty('rentPerDay')
+    if (!missingRent.ok) expect(missingRent.errors).toHaveProperty('rentPerMonth')
   })
 
   it('reports every invalid field', () => {
@@ -148,14 +148,14 @@ describe('validateListingSubmission', () => {
     ])
   })
 
-  it('rejects rent-to-own without both deals', () => {
+  it('rejects purchase-option without both deals', () => {
     const result = validateListingSubmission({
       ...valid,
       deals: ['sale'],
-      rentToOwn: true,
+      purchaseOption: true,
     })
     expect(result.ok).toBe(false)
-    if (!result.ok) expect(result.errors).toHaveProperty('rentToOwn')
+    if (!result.ok) expect(result.errors).toHaveProperty('purchaseOption')
   })
 
   it('rejects non-object input', () => {

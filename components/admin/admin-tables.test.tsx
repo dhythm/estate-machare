@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import {
   AccountTable,
-  CarrierTable,
+  AgentTable,
   OrderTable,
-  RentalTable,
+  LeaseTable,
   ReviewTable,
   ThreadTable,
 } from './admin-tables'
@@ -15,19 +15,19 @@ vi.mock('next/navigation', () => ({
 }))
 
 describe('admin tables', () => {
-  it('renders rentals with listing, renter, and status', () => {
+  it('renders leases with listing, tenant, and status', () => {
     render(
-      <RentalTable
+      <LeaseTable
         items={[
           {
-            rental: {
+            lease: {
               id: 'r-1',
               listingId: 'trc-001',
-              renterUserId: 'demo-user',
+              tenantUserId: 'demo-user',
               startDate: '2026-10-01',
               endDate: '2026-10-07',
               days: 7,
-              rentPerDay: 22_000,
+              rentPerMonth: 22_000,
               rentTotal: 154_000,
               status: 'requested',
               createdAt: '2026-09-13T00:00:00.000Z',
@@ -111,7 +111,7 @@ describe('admin tables', () => {
               listingId: 'trc-001',
               sellerUserId: 'demo-seller',
               reviewerUserId: 'demo-user',
-              sourceKind: 'rental',
+              sourceKind: 'lease',
               sourceId: 'r-1',
               rating: 5,
               comment: '最高',
@@ -127,9 +127,9 @@ describe('admin tables', () => {
     expect(screen.getByLabelText('評価 5')).toBeInTheDocument()
   })
 
-  it('renders carriers and accounts, and empty states', () => {
+  it('renders agents and accounts, and empty states', () => {
     render(
-      <CarrierTable
+      <AgentTable
         items={[
           {
             id: 'demo-user',
@@ -155,8 +155,8 @@ describe('admin tables', () => {
             email: 'seller@example.com',
             role: 'user',
             listingCount: 6,
-            transportJobCount: 2,
-            rentalCount: 0,
+            propertyRequestCount: 2,
+            leaseCount: 0,
             status: 'suspended',
             note: '規約違反',
           },
@@ -171,7 +171,7 @@ describe('admin tables', () => {
     expect(
       screen.getByRole('button', { name: '停止を解除' }),
     ).toBeInTheDocument()
-    render(<RentalTable items={[]} />)
+    render(<LeaseTable items={[]} />)
     expect(screen.getByText('該当なし')).toBeInTheDocument()
   })
 })

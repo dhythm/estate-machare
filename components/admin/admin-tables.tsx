@@ -1,14 +1,14 @@
 import Link from 'next/link'
 import { Badge } from '@/components/badge'
 import { formatYen, threadStatusLabels } from '@/lib/data'
-import { rentalStatusLabels } from '@/lib/rent-to-own'
+import { leaseStatusLabels } from '@/lib/lease'
 import type { AccountSummary, ThreadSummary } from '@/lib/server/admin-overview'
-import type { RentalWithListing } from '@/lib/server/rentals'
-import type { CarrierProfile, Review } from '@/lib/server/store/types'
+import type { LeaseWithListing } from '@/lib/server/leases'
+import type { AgentProfile, Review } from '@/lib/server/store/types'
 import { StarRating } from '@/components/reviews/star-rating'
 import {
   OrderCancelButton,
-  RentalCancelButton,
+  LeaseCancelButton,
   ThreadCloseButton,
 } from './admin-actions'
 import { orderStatusLabels } from '@/lib/data'
@@ -26,14 +26,14 @@ function when(iso: string): string {
   })
 }
 
-export function RentalTable({ items }: { items: RentalWithListing[] }) {
+export function LeaseTable({ items }: { items: LeaseWithListing[] }) {
   return (
     <AdminDataTable
       title="レンタル"
       headers={['農機具', '申込者', '期間', '金額', '状態', '購入価格', '']}
-      rows={items.map(({ rental, listing }) => ({
-        key: rental.id,
-        searchText: `${rental.id} ${listing?.name ?? '削除済み'} ${rental.renterUserId} ${rentalStatusLabels[rental.status]} ${rental.startDate} ${rental.endDate}`,
+      rows={items.map(({ lease, listing }) => ({
+        key: lease.id,
+        searchText: `${lease.id} ${listing?.name ?? '削除済み'} ${lease.tenantUserId} ${leaseStatusLabels[lease.status]} ${lease.startDate} ${lease.endDate}`,
         cells: [
           listing ? (
             <Link
@@ -46,28 +46,28 @@ export function RentalTable({ items }: { items: RentalWithListing[] }) {
             <span className="text-muted-foreground">（削除済み）</span>
           ),
           <code key="code-71" className="text-xs">
-            {rental.renterUserId}
+            {lease.tenantUserId}
           </code>,
-          `${rental.startDate} 〜 ${rental.endDate}（${rental.days}日）`,
-          formatYen(rental.rentTotal),
+          `${lease.startDate} 〜 ${lease.endDate}（${lease.months}か月）`,
+          formatYen(lease.rentTotal),
           <Badge
             key="badge-74"
-            variant={rental.status === 'requested' ? 'default' : 'muted'}
+            variant={lease.status === 'requested' ? 'default' : 'muted'}
           >
-            {rentalStatusLabels[rental.status]}
+            {leaseStatusLabels[lease.status]}
           </Badge>,
-          rental.purchasePrice !== undefined
-            ? formatYen(rental.purchasePrice)
+          lease.purchasePrice !== undefined
+            ? formatYen(lease.purchasePrice)
             : '—',
           <span key="actions" className="inline-flex items-center gap-2">
             <Link
-              href={`/account/deals/rental/${rental.id}`}
+              href={`/account/deals/lease/${lease.id}`}
               className="text-xs font-medium text-primary hover:underline"
             >
               履歴
             </Link>
-            {(rental.status === 'requested' || rental.status === 'active') && (
-              <RentalCancelButton rentalId={rental.id} />
+            {(lease.status === 'requested' || lease.status === 'active') && (
+              <LeaseCancelButton leaseId={lease.id} />
             )}
           </span>,
         ],
@@ -126,28 +126,28 @@ export function ThreadTable({ items }: { items: ThreadSummary[] }) {
   )
 }
 
-export function CarrierTable({ items }: { items: CarrierProfile[] }) {
+export function AgentTable({ items }: { items: AgentProfile[] }) {
   return (
     <AdminDataTable
       title="運搬者"
       headers={['運搬者', '区分', '拠点', '車両', '対応地域', '更新日']}
-      rows={items.map((carrier) => ({
-        key: carrier.id,
-        searchText: `${carrier.id} ${carrier.name} ${carrier.kind} ${carrier.prefecture} ${carrier.vehicles.join(' ')} ${carrier.serviceAreas.join(' ')}`,
+      rows={items.map((agent) => ({
+        key: agent.id,
+        searchText: `${agent.id} ${agent.name} ${agent.kind} ${agent.prefecture} ${agent.handledCategories.join(' ')} ${agent.serviceAreas.join(' ')}`,
         cells: [
           <div key="identity" className="min-w-40 space-y-1">
-            <p className="font-semibold text-foreground">{carrier.name}</p>
-            <code className="text-xs text-muted-foreground">{carrier.id}</code>
+            <p className="font-semibold text-foreground">{agent.name}</p>
+            <code className="text-xs text-muted-foreground">{agent.id}</code>
           </div>,
-          carrier.kind,
-          carrier.prefecture,
+          agent.kind,
+          agent.prefecture,
           <span key="vehicle" className="block min-w-32 whitespace-normal">
-            {carrier.vehicles.join('・')}
+            {agent.handledCategories.join('・')}
           </span>,
           <span key="area" className="block min-w-32 whitespace-normal">
-            {carrier.serviceAreas.join('・')}
+            {agent.serviceAreas.join('・')}
           </span>,
-          when(carrier.updatedAt),
+          when(agent.updatedAt),
         ],
       }))}
     />
@@ -193,8 +193,8 @@ export function AccountTable({
             {roleLabels[account.role]}
           </Badge>,
           String(account.listingCount),
-          String(account.transportJobCount),
-          String(account.rentalCount),
+          String(account.propertyRequestCount),
+          String(account.leaseCount),
           <span key="status" className="flex flex-col gap-1">
             <Badge
               variant={account.status === 'suspended' ? 'default' : 'muted'}

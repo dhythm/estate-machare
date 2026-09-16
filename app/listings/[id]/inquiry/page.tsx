@@ -62,14 +62,14 @@ export default async function InquiryPage({
           </div>
           <div className="min-w-0">
             <p className="text-xs text-muted-foreground">
-              {listing.maker} · {listing.category}
+              {listing.category} · {listing.zoning}
             </p>
             <h1 className="mt-0.5 truncate font-display text-lg font-bold text-foreground">
               {listing.name}
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {listing.rentPerDay && `${formatYen(listing.rentPerDay)}/日`}
-              {listing.rentPerDay && listing.salePrice && ' · '}
+              {listing.rentPerMonth && `${formatYen(listing.rentPerMonth)}/日`}
+              {listing.rentPerMonth && listing.salePrice && ' · '}
               {listing.salePrice && `販売 ${formatYen(listing.salePrice)}`}
             </p>
           </div>

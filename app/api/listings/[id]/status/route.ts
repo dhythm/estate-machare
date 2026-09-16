@@ -24,7 +24,7 @@ export async function PATCH(
       return notFound('農機具が見つかりません。')
     case 'forbidden':
       return forbidden('この農機具を編集する権限がありません。')
-    case 'rental_open':
+    case 'lease_open':
       return conflict('進行中のレンタルがあります。')
   }
 }

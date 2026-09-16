@@ -4,7 +4,7 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AdminQueue } from './admin-queue'
-import type { Listing, TransportJob } from '@/lib/data'
+import type { Listing, PropertyRequest } from '@/lib/data'
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: vi.fn() }),
@@ -29,8 +29,8 @@ const listing: Listing = {
   moderationStatus: 'pending',
 }
 
-const job: TransportJob = {
-  id: 'pending-job',
+const request: PropertyRequest = {
+  id: 'pending-request',
   item: '審査中コンバイン',
   from: '秋田県 大仙市',
   to: '山形県 天童市',
@@ -43,10 +43,10 @@ const job: TransportJob = {
 }
 
 function setup(
-  kind: 'listing' | 'transportJob',
-  queue: { listings: Listing[]; transportJobs: TransportJob[] } = {
+  kind: 'listing' | 'propertyRequest',
+  queue: { listings: Listing[]; propertyRequests: PropertyRequest[] } = {
     listings: [listing],
-    transportJobs: [job],
+    propertyRequests: [request],
   },
 ) {
   render(
@@ -73,7 +73,7 @@ describe('AdminQueue', () => {
           seller: { ...listing.seller, name: '別の農園' },
         },
       ],
-      transportJobs: [job],
+      propertyRequests: [request],
     })
     await user.type(
       screen.getByRole('searchbox', { name: '出品を検索' }),
@@ -111,7 +111,7 @@ describe('AdminQueue', () => {
         },
         { ...listing, id: 'ng', name: '却下品', moderationStatus: 'rejected' },
       ],
-      transportJobs: [],
+      propertyRequests: [],
     })
     const approved = screen.getByText('承認済み品').closest('li')!
     expect(within(approved).queryByRole('button', { name: '承認' })).toBeNull()
@@ -139,7 +139,7 @@ describe('AdminQueue', () => {
       if (init?.method === 'POST') {
         return Response.json({ ...listing, moderationStatus: 'approved' })
       }
-      return Response.json({ listings: [], transportJobs: [job] })
+      return Response.json({ listings: [], propertyRequests: [request] })
     })
     vi.stubGlobal('fetch', fetchMock)
     const user = setup('listing')
@@ -170,17 +170,17 @@ describe('AdminQueue', () => {
     expect(screen.queryByText('審査中トラクター')).not.toBeInTheDocument()
   })
 
-  it('rejects a transport job', async () => {
+  it('rejects a transport request', async () => {
     const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
       if (init?.method === 'POST') {
-        return Response.json({ ...job, moderationStatus: 'rejected' })
+        return Response.json({ ...request, moderationStatus: 'rejected' })
       }
-      return Response.json({ listings: [listing], transportJobs: [] })
+      return Response.json({ listings: [listing], propertyRequests: [] })
     })
     vi.stubGlobal('fetch', fetchMock)
-    const user = setup('transportJob')
+    const user = setup('propertyRequest')
     const jobCard = screen.getByText('審査中コンバイン').closest('li')
-    if (!jobCard) throw new Error('job card')
+    if (!jobCard) throw new Error('request card')
     await user.click(within(jobCard).getByRole('button', { name: '却下' }))
     expect(
       JSON.parse(
@@ -192,8 +192,8 @@ describe('AdminQueue', () => {
         )[1].body as string,
       ),
     ).toMatchObject({
-      kind: 'transportJob',
-      id: 'pending-job',
+      kind: 'propertyRequest',
+      id: 'pending-request',
       status: 'rejected',
     })
     expect(await screen.findByText('該当なし')).toBeInTheDocument()

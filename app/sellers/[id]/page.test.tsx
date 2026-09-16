@@ -29,7 +29,7 @@ vi.mock('@/lib/server/sellers', () => ({
               listingId: 'trc-001',
               sellerUserId: 'demo-seller',
               reviewerUserId: 'demo-user',
-              sourceKind: 'rental',
+              sourceKind: 'lease',
               sourceId: 'r-1',
               rating: 4,
               comment: '対応が丁寧でした',

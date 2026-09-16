@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getSellerProfile } from './sellers'
 import { getListing, setListingStatus } from './listings'
-import { requestRental, updateRentalStatus } from './rentals'
+import { requestLease, updateLeaseStatus } from './leases'
 import { createReview } from './reviews'
 import { resetStore } from './store'
 import { demoSeller, demoUser } from '@/test/mock-auth'
@@ -10,17 +10,17 @@ vi.mock('server-only', () => ({}))
 
 beforeEach(() => resetStore())
 
-async function reviewCompletedRental(rating: number) {
-  const created = await requestRental(
+async function reviewCompletedLease(rating: number) {
+  const created = await requestLease(
     (await getListing('trc-001'))!,
     demoUser,
     { startDate: '2026-10-01', endDate: '2026-10-07' },
   )
   const id = created.ok ? created.value.id : ''
-  await updateRentalStatus(id, demoSeller, 'active')
-  await updateRentalStatus(id, demoSeller, 'completed')
+  await updateLeaseStatus(id, demoSeller, 'active')
+  await updateLeaseStatus(id, demoSeller, 'completed')
   await createReview(demoUser, {
-    sourceKind: 'rental',
+    sourceKind: 'lease',
     sourceId: id,
     rating,
     comment: '良かったです',
@@ -29,8 +29,8 @@ async function reviewCompletedRental(rating: number) {
 
 describe('getSellerProfile', () => {
   it('collects the live listings and the review average of a seller account', async () => {
-    await reviewCompletedRental(5)
-    await reviewCompletedRental(4)
+    await reviewCompletedLease(5)
+    await reviewCompletedLease(4)
     await setListingStatus('cmb-002', 'withdrawn', demoSeller)
 
     const profile = await getSellerProfile('demo-seller')

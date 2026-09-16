@@ -13,7 +13,7 @@ export type Receipt = {
 }
 
 export type SubmissionOptions = {
-  /** Listing or transport job the submission refers to. */
+  /** Listing or transport request the submission refers to. */
   targetId?: string
   /** Signed-in sender, when the form requires login. */
   userId?: string
@@ -52,17 +52,17 @@ async function notifyTargetOwner(submission: Submission): Promise<void> {
       href: `/account/threads/${submission.id}`,
     })
   } else if (
-    submission.kind === 'transportApplication' ||
-    submission.kind === 'transportInquiry'
+    submission.kind === 'requestProposal' ||
+    submission.kind === 'requestInquiry'
   ) {
-    const job = await store.transportJobs.get(submission.targetId)
-    if (!job?.ownerUserId) return
-    const isApplication = submission.kind === 'transportApplication'
+    const request = await store.propertyRequests.get(submission.targetId)
+    if (!request?.ownerUserId) return
+    const isApplication = submission.kind === 'requestProposal'
     await notify({
-      userId: job.ownerUserId,
+      userId: request.ownerUserId,
       kind: isApplication ? 'application' : 'inquiry',
       title: isApplication ? '応募が届きました' : '案件への質問が届きました',
-      body: job.item,
+      body: request.title,
       href: `/account/threads/${submission.id}`,
     })
   }

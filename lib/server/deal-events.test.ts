@@ -3,11 +3,11 @@ import { listDealEvents, recordDealEvent } from './deal-events'
 import { getListing } from './listings'
 import { applyModeration } from './moderation'
 import { requestOrder, updateOrderStatus } from './orders'
-import { requestRental, updateRentalStatus } from './rentals'
+import { requestLease, updateLeaseStatus } from './leases'
 import { resetStore } from './store'
 import { acceptSubmission } from './submissions'
 import { updateThreadStatus } from './threads'
-import { createTransportJob, updateTransportJobStatus } from './transport'
+import { createPropertyRequest, updatePropertyRequestStatus } from './property-requests'
 import { demoAdmin, demoSeller, demoUser } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
@@ -61,8 +61,8 @@ describe('deal events', () => {
     expect(events[0].note).toBe('現金で')
   })
 
-  it('records the rental lifecycle including the conversion order', async () => {
-    const created = await requestRental(
+  it('records the lease lifecycle including the conversion order', async () => {
+    const created = await requestLease(
       (await getListing('trc-001'))!,
       demoUser,
       {
@@ -72,18 +72,18 @@ describe('deal events', () => {
     )
     const id = created.ok ? created.value.id : ''
     await later()
-    await updateRentalStatus(id, demoSeller, 'active')
+    await updateLeaseStatus(id, demoSeller, 'active')
     await later()
-    await updateRentalStatus(id, demoUser, 'converted')
-    expect((await listDealEvents('rental', id)).map((e) => e.status)).toEqual([
+    await updateLeaseStatus(id, demoUser, 'converted')
+    expect((await listDealEvents('lease', id)).map((e) => e.status)).toEqual([
       'requested',
       'active',
       'converted',
     ])
   })
 
-  it('records job creation, review, booking, haul, and completion', async () => {
-    const job = await createTransportJob(
+  it('records request creation, review, booking, haul, and completion', async () => {
+    const request = await createPropertyRequest(
       {
         item: 'トラクター',
         from: '新潟県 長岡市',
@@ -97,26 +97,26 @@ describe('deal events', () => {
       'demo-seller',
     )
     await later()
-    await applyModeration('transportJob', job.id, {
+    await applyModeration('propertyRequest', request.id, {
       status: 'approved',
       note: '掲載可',
     })
     await later()
     const { id: threadId } = await acceptSubmission(
-      'transportApplication',
+      'requestProposal',
       {
         name: '利用者デモ',
         vehicle: '2tトラック',
         availableDate: '2026-10-03',
       },
-      { targetId: job.id, userId: 'demo-user' },
+      { targetId: request.id, userId: 'demo-user' },
     )
     await updateThreadStatus(threadId, demoSeller, 'agreed')
     await later()
-    await updateTransportJobStatus(job.id, demoUser, '運搬中')
+    await updatePropertyRequestStatus(request.id, demoUser, '運搬中')
     await later()
-    await updateTransportJobStatus(job.id, demoSeller, '完了')
-    const events = await listDealEvents('transportJob', job.id)
+    await updatePropertyRequestStatus(request.id, demoSeller, '完了')
+    const events = await listDealEvents('propertyRequest', request.id)
     expect(events.map((e) => e.status)).toEqual([
       '募集中',
       'approved',

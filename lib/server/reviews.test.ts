@@ -6,7 +6,7 @@ import {
   reviewableSources,
 } from './reviews'
 import { getListing } from './listings'
-import { requestRental, updateRentalStatus } from './rentals'
+import { requestLease, updateLeaseStatus } from './leases'
 import { resetStore } from './store'
 import { acceptSubmission } from './submissions'
 import { updateThreadStatus } from './threads'
@@ -16,8 +16,8 @@ vi.mock('server-only', () => ({}))
 
 beforeEach(() => resetStore())
 
-async function completedRental() {
-  const created = await requestRental(
+async function completedLease() {
+  const created = await requestLease(
     (await getListing('trc-001'))!,
     demoUser,
     {
@@ -26,8 +26,8 @@ async function completedRental() {
     },
   )
   const id = created.ok ? created.value.id : ''
-  await updateRentalStatus(id, demoSeller, 'active')
-  await updateRentalStatus(id, demoSeller, 'completed')
+  await updateLeaseStatus(id, demoSeller, 'active')
+  await updateLeaseStatus(id, demoSeller, 'completed')
   return id
 }
 
@@ -42,12 +42,12 @@ async function agreedInquiry() {
 }
 
 describe('createReview', () => {
-  it('lets the renter review a completed rental and updates the seller rating', async () => {
+  it('lets the tenant review a completed lease and updates the seller rating', async () => {
     const before = (await getListing('trc-001'))!.seller
     expect(before).toMatchObject({ rating: 4.8, reviews: 34 })
-    const id = await completedRental()
+    const id = await completedLease()
     const result = await createReview(demoUser, {
-      sourceKind: 'rental',
+      sourceKind: 'lease',
       sourceId: id,
       rating: 3,
       comment: '普通でした',
@@ -62,9 +62,9 @@ describe('createReview', () => {
     expect(after.reviews).toBe(35)
     expect(after.rating).toBe(4.7)
     expect((await getListing('cmb-002'))!.seller.reviews).toBe(59)
-    expect(await findReviewForSource('rental', id)).toMatchObject({ rating: 3 })
+    expect(await findReviewForSource('lease', id)).toMatchObject({ rating: 3 })
     const again = await createReview(demoUser, {
-      sourceKind: 'rental',
+      sourceKind: 'lease',
       sourceId: id,
       rating: 5,
     })
@@ -80,10 +80,10 @@ describe('createReview', () => {
       comment: '丁寧でした',
     })
     expect(result.ok).toBe(true)
-    const rentalId = await completedRental()
+    const leaseId = await completedLease()
     await createReview(demoUser, {
-      sourceKind: 'rental',
-      sourceId: rentalId,
+      sourceKind: 'lease',
+      sourceId: leaseId,
       rating: 4,
     })
     const reviews = await listReviewsForSeller('demo-seller')
@@ -92,7 +92,7 @@ describe('createReview', () => {
   })
 
   it('refuses the wrong person, the wrong state, and unknown sources', async () => {
-    const created = await requestRental(
+    const created = await requestLease(
       (await getListing('trc-001'))!,
       demoUser,
       {
@@ -102,19 +102,19 @@ describe('createReview', () => {
     )
     const pending = created.ok ? created.value.id : ''
     const early = await createReview(demoUser, {
-      sourceKind: 'rental',
+      sourceKind: 'lease',
       sourceId: pending,
       rating: 5,
     })
     expect(!early.ok && early.reason).toBe('not_reviewable')
     const other = await createReview(demoSeller, {
-      sourceKind: 'rental',
+      sourceKind: 'lease',
       sourceId: pending,
       rating: 5,
     })
     expect(!other.ok && other.reason).toBe('forbidden')
     const admin = await createReview(demoAdmin, {
-      sourceKind: 'rental',
+      sourceKind: 'lease',
       sourceId: pending,
       rating: 5,
     })
@@ -129,19 +129,19 @@ describe('createReview', () => {
 })
 
 describe('reviewableSources', () => {
-  it('tells which of the user rentals and threads can still be reviewed', async () => {
-    const rentalId = await completedRental()
+  it('tells which of the user leases and threads can still be reviewed', async () => {
+    const leaseId = await completedLease()
     const threadId = await agreedInquiry()
     const before = await reviewableSources(demoUser)
-    expect(before.rentals).toEqual([rentalId])
+    expect(before.leases).toEqual([leaseId])
     expect(before.threads).toEqual([threadId])
     await createReview(demoUser, {
-      sourceKind: 'rental',
-      sourceId: rentalId,
+      sourceKind: 'lease',
+      sourceId: leaseId,
       rating: 4,
     })
     const after = await reviewableSources(demoUser)
-    expect(after.rentals).toEqual([])
+    expect(after.leases).toEqual([])
     expect(after.threads).toEqual([threadId])
   })
 })

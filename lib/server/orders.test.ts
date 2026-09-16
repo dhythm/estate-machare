@@ -7,7 +7,7 @@ import {
 } from './orders'
 import { getListing } from './listings'
 import { listNotifications } from './notifications'
-import { requestRental, updateRentalStatus } from './rentals'
+import { requestLease, updateLeaseStatus } from './leases'
 import { createReview, reviewableSources } from './reviews'
 import { resetStore } from './store'
 import { demoAdmin, demoSeller, demoUser } from '@/test/mock-auth'
@@ -98,9 +98,9 @@ describe('updateOrderStatus', () => {
   })
 })
 
-describe('rental conversion', () => {
-  it('creates a delivered order from the rental terms', async () => {
-    const rental = await requestRental(
+describe('lease conversion', () => {
+  it('creates a delivered order from the lease terms', async () => {
+    const lease = await requestLease(
       (await getListing('trc-001'))!,
       demoUser,
       {
@@ -108,15 +108,15 @@ describe('rental conversion', () => {
         endDate: '2026-10-07',
       },
     )
-    const rentalId = rental.ok ? rental.value.id : ''
-    await updateRentalStatus(rentalId, demoSeller, 'active')
-    await updateRentalStatus(rentalId, demoUser, 'converted')
+    const leaseId = lease.ok ? lease.value.id : ''
+    await updateLeaseStatus(leaseId, demoSeller, 'active')
+    await updateLeaseStatus(leaseId, demoUser, 'converted')
     const orders = await listOrdersForBuyer('demo-user')
     expect(orders).toHaveLength(1)
     expect(orders[0].order).toMatchObject({
       status: 'delivered',
       price: 18_800_000 - 77_000,
-      sourceRentalId: rentalId,
+      sourceLeaseId: leaseId,
     })
     expect(orders[0].listing?.id).toBe('trc-001')
     expect(

@@ -32,7 +32,7 @@ const workspaces = [
     links: [
       { label: '出品の審査', href: '/admin/deals' },
       { label: '注文', href: '/admin/deals/orders' },
-      { label: 'レンタル', href: '/admin/deals/rentals' },
+      { label: 'レンタル', href: '/admin/deals/leases' },
       { label: '問い合わせ', href: '/admin/deals/inquiries' },
       { label: 'レビュー', href: '/admin/deals/reviews' },
     ],
@@ -44,7 +44,7 @@ const workspaces = [
       { label: '運搬依頼の審査', href: '/admin/transport' },
       { label: '運搬への応募', href: '/admin/transport/applications' },
       { label: '案件への質問', href: '/admin/transport/inquiries' },
-      { label: '運搬者', href: '/admin/transport/carriers' },
+      { label: '運搬者', href: '/admin/transport/agents' },
     ],
   },
   {
@@ -60,7 +60,7 @@ export default async function AdminDashboardPage() {
     listRecentActivity(8),
     listRecentReviews(5),
   ])
-  const pendingCount = counts.pendingListings + counts.pendingTransportJobs
+  const pendingCount = counts.pendingListings + counts.pendingPropertyRequests
   const metrics = [
     {
       label: '承諾待ちの注文',
@@ -70,13 +70,13 @@ export default async function AdminDashboardPage() {
     },
     {
       label: '申込中のレンタル',
-      value: counts.requestedRentals,
+      value: counts.requestedLeases,
       icon: CalendarDays,
-      links: [{ label: '申込一覧', href: '/admin/deals/rentals' }],
+      links: [{ label: '申込一覧', href: '/admin/deals/leases' }],
     },
     {
       label: '運搬中の案件',
-      value: counts.haulingJobs,
+      value: counts.introducingRequests,
       icon: Truck,
       links: [{ label: '運搬依頼', href: '/admin/transport' }],
     },
@@ -91,9 +91,9 @@ export default async function AdminDashboardPage() {
     },
     {
       label: '登録済みの運搬者',
-      value: counts.carriers,
+      value: counts.agents,
       icon: Truck,
-      links: [{ label: '運搬者一覧', href: '/admin/transport/carriers' }],
+      links: [{ label: '運搬者一覧', href: '/admin/transport/agents' }],
     },
   ]
 
@@ -137,7 +137,7 @@ export default async function AdminDashboardPage() {
               },
               {
                 label: '審査待ちの運搬依頼',
-                value: counts.pendingTransportJobs,
+                value: counts.pendingPropertyRequests,
                 href: '/admin/transport',
               },
             ].map((item) => (
@@ -226,7 +226,7 @@ export default async function AdminDashboardPage() {
                   <Badge variant="outline">
                     {item.kind === 'order'
                       ? '注文'
-                      : item.kind === 'rental'
+                      : item.kind === 'lease'
                         ? 'レンタル'
                         : '運搬'}
                   </Badge>

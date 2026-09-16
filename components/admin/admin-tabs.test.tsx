@@ -9,12 +9,12 @@ vi.mock('next/navigation', () => ({ usePathname }))
 
 describe('AdminTabs', () => {
   it('marks the current tab', () => {
-    usePathname.mockReturnValue('/admin/deals/rentals')
+    usePathname.mockReturnValue('/admin/deals/leases')
     render(
       <AdminTabs
         items={[
           { href: '/admin/deals', label: '出品' },
-          { href: '/admin/deals/rentals', label: 'レンタル' },
+          { href: '/admin/deals/leases', label: 'レンタル' },
         ]}
       />,
     )

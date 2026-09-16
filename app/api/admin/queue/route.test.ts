@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { GET, POST } from './route'
 import { POST as createListing } from '../../listings/route'
-import { POST as createJob } from '../../transport/jobs/route'
+import { POST as createJob } from '../../requests/route'
 import { resetStore } from '@/lib/server/store'
 
 const auth = vi.hoisted(() => vi.fn())
@@ -36,8 +36,8 @@ const listingBody = {
   city: '長岡市',
   deals: ['sale'],
   salePrice: '1000000',
-  rentPerDay: '',
-  rentToOwn: false,
+  rentPerMonth: '',
+  purchaseOption: false,
   summary: '審査中。',
   sellerName: '審査農園',
   sellerKind: '農業法人',
@@ -109,9 +109,9 @@ describe('/api/admin/queue', () => {
     ).toEqual([])
   })
 
-  it('rejects a pending transport job', async () => {
+  it('rejects a pending transport request', async () => {
     const created = await createJob(
-      new Request('http://localhost/api/transport/jobs', {
+      new Request('http://localhost/api/transport/requests', {
         method: 'POST',
         body: JSON.stringify({
           item: '審査中コンバイン',
@@ -127,7 +127,7 @@ describe('/api/admin/queue', () => {
     )
     const { id } = (await created.json()) as { id: string }
     const rejected = await adminPost({
-      kind: 'transportJob',
+      kind: 'propertyRequest',
       id,
       status: 'rejected',
       note: '区間が不明瞭',

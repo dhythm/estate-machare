@@ -5,10 +5,10 @@ import { buildModes } from './listing-detail'
 vi.mock('server-only', () => ({}))
 
 describe('listing detail business rules', () => {
-  it('offers rental, rent-to-own, and purchase for eligible equipment', async () => {
+  it('offers lease, purchase-option, and purchase for eligible equipment', async () => {
     const listing = (await getListing('trc-001'))!
     const modes = buildModes(listing)
-    expect(modes.map((mode) => mode.id)).toEqual(['rent', 'rentToOwn', 'buy'])
+    expect(modes.map((mode) => mode.id)).toEqual(['rent', 'purchaseOption', 'buy'])
     expect(modes[0].price).toBe('¥22,000/日')
     expect(modes[2].price).toBe('¥18,800,000')
     expect(modes[1].note).toBe(

@@ -1,16 +1,16 @@
 // @vitest-environment node
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { Listing, TransportJob } from '@/lib/data'
+import type { Listing, PropertyRequest } from '@/lib/data'
 import { createMemoryStore } from './memory'
 import { createPgliteStore } from './pglite'
 import type {
   AccountStatus,
-  CarrierProfile,
+  AgentProfile,
   DealEvent,
   Message,
   Notification,
   Order,
-  Rental,
+  Lease,
   Review,
   Store,
   Submission,
@@ -33,19 +33,19 @@ const listing = (id: string, name: string): Listing => ({
   summary: '説明',
   deals: ['sale', 'rent'],
   salePrice: 18_800_000,
-  rentPerDay: 22_000,
-  rentToOwn: true,
-  rentToOwnCreditRate: 50,
-  rentToOwnCreditCap: 5_000_000,
+  rentPerMonth: 22_000,
+  purchaseOption: true,
+  purchaseOptionCreditRate: 50,
+  purchaseOptionCreditCap: 5_000_000,
   images: ['data:image/png;base64,iVBORw0KGgo='],
-  seller: { name: '中村ファーム', kind: '農業法人', rating: 4.8, reviews: 34 },
+  seller: { name: '中村不動産', kind: '農業法人', rating: 4.8, reviews: 34 },
   tags: ['キャビン付', '4WD'],
   createdAt: '2026-09-13T00:00:00.000Z',
   updatedAt: '2026-09-13T00:00:00.000Z',
   ownerUserId: 'demo-seller',
 })
 
-const job = (id: string): TransportJob => ({
+const request = (id: string): PropertyRequest => ({
   id,
   item: 'コンバイン 4条刈',
   from: '秋田県 大仙市',
@@ -88,7 +88,7 @@ describe.each(stores)('$name store', { timeout: 20_000 }, ({ store }) => {
       'cmb-002',
       'rpl-003',
     ])
-    expect((await store.transportJobs.list())[0].id).toBe('tj-01')
+    expect((await store.propertyRequests.list())[0].id).toBe('tj-01')
     expect(await store.submissions.list()).toEqual([])
   })
 
@@ -104,7 +104,7 @@ describe.each(stores)('$name store', { timeout: 20_000 }, ({ store }) => {
       ...listing('new-2', '最小'),
       deals: ['rent'],
       salePrice: undefined,
-      rentToOwn: undefined,
+      purchaseOption: undefined,
       createdAt: undefined,
       updatedAt: undefined,
     }
@@ -159,10 +159,10 @@ describe.each(stores)('$name store', { timeout: 20_000 }, ({ store }) => {
     })
   })
 
-  it('round-trips transport jobs and submissions', async () => {
-    expect(await store.transportJobs.create(job('job-1'))).toEqual(job('job-1'))
+  it('round-trips transport requests and submissions', async () => {
+    expect(await store.propertyRequests.create(request('request-1'))).toEqual(request('request-1'))
     expect(
-      await store.transportJobs.update('job-1', {
+      await store.propertyRequests.update('request-1', {
         status: '調整中',
         reward: 1,
       }),
@@ -206,15 +206,15 @@ describe.each(stores)('$name store', { timeout: 20_000 }, ({ store }) => {
     expect(await store.messages.list()).toEqual([])
   })
 
-  it('round-trips rentals', async () => {
-    const rental: Rental = {
+  it('round-trips leases', async () => {
+    const lease: Lease = {
       id: 'r-1',
       listingId: 'trc-001',
-      renterUserId: 'demo-user',
+      tenantUserId: 'demo-user',
       startDate: '2026-10-01',
       endDate: '2026-10-07',
       days: 7,
-      rentPerDay: 22_000,
+      rentPerMonth: 22_000,
       rentTotal: 154_000,
       salePrice: 18_800_000,
       creditRate: 50,
@@ -223,24 +223,24 @@ describe.each(stores)('$name store', { timeout: 20_000 }, ({ store }) => {
       createdAt: '2026-09-13T04:00:00.000Z',
       updatedAt: '2026-09-13T04:00:00.000Z',
     }
-    expect(await store.rentals.create(rental)).toEqual(rental)
+    expect(await store.leases.create(lease)).toEqual(lease)
     expect(
-      await store.rentals.update('r-1', {
+      await store.leases.update('r-1', {
         status: 'converted',
         purchasePrice: 18_723_000,
       }),
     ).toMatchObject({ status: 'converted', purchasePrice: 18_723_000 })
-    await store.rentals.create({
-      ...rental,
+    await store.leases.create({
+      ...lease,
       id: 'r-2',
       salePrice: undefined,
       creditCap: undefined,
     })
-    const second = await store.rentals.get('r-2')
+    const second = await store.leases.get('r-2')
     expect(second?.salePrice).toBeUndefined()
     expect(second?.creditCap).toBeUndefined()
     await store.reset()
-    expect(await store.rentals.list()).toEqual([])
+    expect(await store.leases.list()).toEqual([])
   })
 
   it('round-trips account statuses keyed by user id', async () => {
@@ -287,7 +287,7 @@ describe.each(stores)('$name store', { timeout: 20_000 }, ({ store }) => {
       listingId: 'trc-001',
       sellerUserId: 'demo-seller',
       reviewerUserId: 'demo-user',
-      sourceKind: 'rental',
+      sourceKind: 'lease',
       sourceId: 'r-1',
       rating: 5,
       comment: '整備が行き届いていました',
@@ -319,8 +319,8 @@ describe.each(stores)('$name store', { timeout: 20_000 }, ({ store }) => {
     expect(await store.threadReads.list()).toEqual([])
   })
 
-  it('round-trips carrier profiles', async () => {
-    const profile: CarrierProfile = {
+  it('round-trips agent profiles', async () => {
+    const profile: AgentProfile = {
       id: 'demo-user',
       name: '高橋運送',
       kind: '法人',
@@ -331,13 +331,13 @@ describe.each(stores)('$name store', { timeout: 20_000 }, ({ store }) => {
       createdAt: '2026-09-13T09:00:00.000Z',
       updatedAt: '2026-09-13T09:00:00.000Z',
     }
-    expect(await store.carrierProfiles.create(profile)).toEqual(profile)
+    expect(await store.agentProfiles.create(profile)).toEqual(profile)
     expect(
-      (await store.carrierProfiles.update('demo-user', { note: undefined }))
+      (await store.agentProfiles.update('demo-user', { note: undefined }))
         ?.note,
     ).toBeUndefined()
     await store.reset()
-    expect(await store.carrierProfiles.list()).toEqual([])
+    expect(await store.agentProfiles.list()).toEqual([])
   })
 
   it('round-trips orders', async () => {
@@ -357,12 +357,12 @@ describe.each(stores)('$name store', { timeout: 20_000 }, ({ store }) => {
       ...order,
       id: 'o-2',
       message: undefined,
-      sourceRentalId: 'r-1',
+      sourceLeaseId: 'r-1',
       status: 'delivered',
     })
     const second = await store.orders.get('o-2')
     expect(second?.message).toBeUndefined()
-    expect(second?.sourceRentalId).toBe('r-1')
+    expect(second?.sourceLeaseId).toBe('r-1')
     expect(
       (await store.orders.update('o-1', { status: 'accepted' }))?.status,
     ).toBe('accepted')

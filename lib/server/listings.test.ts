@@ -12,7 +12,7 @@ import {
   updateListing,
 } from './listings'
 import { listNotifications } from './notifications'
-import { requestRental } from './rentals'
+import { requestLease } from './leases'
 import { demoAdmin, demoSeller, demoUser } from '@/test/mock-auth'
 import { applyModeration } from './moderation'
 import { resetStore } from './store'
@@ -34,8 +34,8 @@ const submission: ListingSubmission = {
   city: '長岡市',
   deals: ['sale', 'rent'],
   salePrice: 1_500_000,
-  rentPerDay: 12_000,
-  rentToOwn: true,
+  rentPerMonth: 12_000,
+  purchaseOption: true,
   summary: 'キャビン付き。',
   sellerName: 'テスト農園',
   sellerKind: '農業法人',
@@ -73,17 +73,17 @@ describe('listing search', () => {
     ).toBe(true)
   })
 
-  it('limits rent-to-own search to eligible listings', async () => {
+  it('limits purchase-option search to eligible listings', async () => {
     const result = await searchListings({
       category: 'すべて',
-      deal: 'rentToOwn',
+      deal: 'purchaseOption',
     })
     expect(result.map((listing) => listing.id).slice(0, 3)).toEqual([
       'trc-001',
       'cmb-002',
       'rpl-003',
     ])
-    expect(result.every((listing) => listing.rentToOwn === true)).toBe(true)
+    expect(result.every((listing) => listing.purchaseOption === true)).toBe(true)
   })
 
   it('matches keywords against name, maker, category, location, and tags', async () => {
@@ -178,9 +178,9 @@ describe('listing refinements', () => {
     expect(
       dailyRent.every(
         (listing) =>
-          listing.rentPerDay !== undefined &&
-          listing.rentPerDay >= 20_000 &&
-          listing.rentPerDay <= 30_000,
+          listing.rentPerMonth !== undefined &&
+          listing.rentPerMonth >= 20_000 &&
+          listing.rentPerMonth <= 30_000,
       ),
     ).toBe(true)
   })
@@ -209,13 +209,13 @@ describe('listing refinements', () => {
       sort: 'rentAsc',
     })
     const rents = rent
-      .filter((l) => l.rentPerDay !== undefined)
-      .map((l) => l.rentPerDay as number)
+      .filter((l) => l.rentPerMonth !== undefined)
+      .map((l) => l.rentPerMonth as number)
     expect(rents).toEqual([...rents].sort((a, b) => a - b))
   })
 
   it('keeps only rentable listings free for the requested dates', async () => {
-    await requestRental((await getListing('trc-001'))!, demoUser, {
+    await requestLease((await getListing('trc-001'))!, demoUser, {
       startDate: '2026-10-01',
       endDate: '2026-10-07',
     })
@@ -226,7 +226,7 @@ describe('listing refinements', () => {
       availableTo: '2026-10-06',
     })
     expect(busy.map((l) => l.id)).not.toContain('trc-001')
-    expect(busy.every((l) => l.rentPerDay !== undefined)).toBe(true)
+    expect(busy.every((l) => l.rentPerMonth !== undefined)).toBe(true)
     const free = await searchListings({
       category: 'すべて',
       deal: 'all',
@@ -370,7 +370,7 @@ describe('listing CRUD', () => {
     expect(withoutPictures.images).toEqual([])
   })
 
-  it('withdraws and republishes a listing, refusing while a rental is open', async () => {
+  it('withdraws and republishes a listing, refusing while a lease is open', async () => {
     const withdrawn = await setListingStatus('trc-001', 'withdrawn', demoSeller)
     expect(withdrawn.ok && withdrawn.value.withdrawnAt).toEqual(
       expect.any(String),
@@ -381,12 +381,12 @@ describe('listing CRUD', () => {
     expect(republished.ok && republished.value.withdrawnAt).toBeUndefined()
     expect(await getListingIds()).toContain('trc-001')
 
-    await requestRental((await getListing('trc-001'))!, demoUser, {
+    await requestLease((await getListing('trc-001'))!, demoUser, {
       startDate: '2026-10-01',
       endDate: '2026-10-02',
     })
     const blocked = await setListingStatus('trc-001', 'withdrawn', demoSeller)
-    expect(!blocked.ok && blocked.reason).toBe('rental_open')
+    expect(!blocked.ok && blocked.reason).toBe('lease_open')
     const stranger = await setListingStatus('trc-001', 'withdrawn', demoUser)
     expect(!stranger.ok && stranger.reason).toBe('forbidden')
     const missing = await setListingStatus('nope', 'withdrawn', demoAdmin)
@@ -414,13 +414,13 @@ describe('listing CRUD', () => {
       name: '更新後の名前',
       deals: ['rent'],
       salePrice: undefined,
-      rentToOwn: false,
+      purchaseOption: false,
     })
     expect(updated).toMatchObject({
       id: created.id,
       name: '更新後の名前',
       deals: ['rent'],
-      rentToOwn: false,
+      purchaseOption: false,
       seller: { rating: 0, reviews: 0 },
       createdAt: created.createdAt,
     })

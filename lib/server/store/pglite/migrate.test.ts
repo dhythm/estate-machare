@@ -21,18 +21,18 @@ describe('migrate', { timeout: 20_000 }, () => {
     )
     expect(tables.rows.map((row) => row.table_name)).toEqual([
       'account_statuses',
-      'carrier_profiles',
+      'agent_profiles',
       'deal_events',
       'listings',
       'messages',
       'notifications',
       'orders',
-      'rentals',
+      'leases',
       'reviews',
       'schema_migrations',
       'submissions',
       'thread_reads',
-      'transport_jobs',
+      'property_requests',
     ])
     expect(await migrate(db)).toEqual([])
   })

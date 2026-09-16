@@ -63,8 +63,8 @@ export function ThreadCloseButton({ threadId }: { threadId: string }) {
   return <ActionButton label="終了する" action={action} />
 }
 
-export function RentalCancelButton({ rentalId }: { rentalId: string }) {
-  const action = useAction(`/api/rentals/${rentalId}`, { status: 'cancelled' })
+export function LeaseCancelButton({ leaseId }: { leaseId: string }) {
+  const action = useAction(`/api/leases/${leaseId}`, { status: 'cancelled' })
   return <ActionButton label="取り消す" action={action} />
 }
 
