@@ -7,8 +7,8 @@ import { AccountMenu } from '@/components/auth/account-menu'
 import { BrandLogo } from '@/components/brand-logo'
 
 const links = [
-  { href: '/listings', label: '農機具を探す' },
-  { href: '/transport', label: '運搬マッチング' },
+  { href: '/listings', label: '物件を探す' },
+  { href: '/requests', label: 'リクエストマッチング' },
   { href: '/guide', label: 'はじめての方へ' },
 ]
 
@@ -17,7 +17,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-[1360px] items-center justify-between gap-3 px-4 sm:px-8 lg:px-10">
-        <Link href="/" aria-label="Agri Machare ホーム">
+        <Link href="/" aria-label="Estate Machare ホーム">
           <BrandLogo />
         </Link>
         <nav

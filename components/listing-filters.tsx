@@ -4,19 +4,21 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import {
   categories,
+  isLayout,
   isListingSort,
+  layouts,
   listingSortLabels,
   listingSorts,
   type DealFilter,
   type ListingFilter,
 } from '@/lib/data'
-import { prefectureNames } from '@/lib/transport-fee'
+import { prefectureNames } from '@/lib/prefectures'
 
 const dealFilters: { id: DealFilter; label: string }[] = [
   { id: 'all', label: 'すべて' },
   { id: 'sale', label: '購入できる' },
-  { id: 'rent', label: 'レンタルできる' },
-  { id: 'rentToOwn', label: 'レンタル購入可' },
+  { id: 'rent', label: '賃貸できる' },
+  { id: 'purchaseOption', label: '買取オプション可' },
 ]
 
 export function DealFilterToggle({
@@ -87,6 +89,7 @@ function readYen(value: string): number | undefined {
 
 const emptyRefinements = {
   prefecture: undefined,
+  layout: undefined,
   priceMin: undefined,
   priceMax: undefined,
   sort: undefined,
@@ -97,7 +100,7 @@ const emptyRefinements = {
 const controlClass =
   'h-11 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30'
 
-/** Prefecture, price range, sort, and rental dates; each change reports only its own keys. */
+/** Prefecture, layout, price range, sort, and move-in dates; each change reports only its own keys. */
 export function SearchRefinements({
   value,
   onChange,
@@ -109,9 +112,10 @@ export function SearchRefinements({
   const [priceMax, setPriceMax] = useState(yenText(value.priceMax))
   const [from, setFrom] = useState(value.availableFrom ?? '')
   const [to, setTo] = useState(value.availableTo ?? '')
-  const priceLabel = value.deal === 'rent' ? '日額' : '販売価格'
+  const priceLabel = value.deal === 'rent' ? '月額賃料' : '販売価格'
   const active =
     value.prefecture !== undefined ||
+    value.layout !== undefined ||
     value.priceMin !== undefined ||
     value.priceMax !== undefined ||
     (value.sort !== undefined && value.sort !== 'newest') ||
@@ -141,6 +145,24 @@ export function SearchRefinements({
           {prefectureNames.map((name) => (
             <option key={name} value={name}>
               {name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="flex flex-col gap-1 text-xs font-medium text-foreground">
+        間取り
+        <select
+          value={value.layout ?? ''}
+          onChange={(event) => {
+            const layout = event.target.value
+            onChange({ layout: isLayout(layout) ? layout : undefined })
+          }}
+          className={cn(controlClass, 'w-32')}
+        >
+          <option value="">すべて</option>
+          {layouts.map((layout) => (
+            <option key={layout} value={layout}>
+              {layout}
             </option>
           ))}
         </select>
@@ -181,7 +203,7 @@ export function SearchRefinements({
       </form>
       <div className="flex items-end gap-2">
         <label className="flex flex-col gap-1 text-xs font-medium text-foreground">
-          利用開始日
+          入居開始日
           <input
             type="date"
             value={from}
@@ -190,7 +212,7 @@ export function SearchRefinements({
           />
         </label>
         <label className="flex flex-col gap-1 text-xs font-medium text-foreground">
-          利用終了日
+          入居終了日
           <input
             type="date"
             value={to}

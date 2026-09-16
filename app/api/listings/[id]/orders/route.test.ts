@@ -32,11 +32,11 @@ const patch = (id: string, body: unknown) =>
 
 describe('orders API', () => {
   it('opens an order and walks it to completion', async () => {
-    const created = await post('trc-001', { message: '現金で' })
+    const created = await post('apt-001', { message: '現金で' })
     expect(created.status).toBe(201)
     const order = await created.json()
-    expect(order).toMatchObject({ status: 'requested', price: 18_800_000 })
-    expect((await post('trc-001', {})).status).toBe(409)
+    expect(order).toMatchObject({ status: 'requested', price: 88_000_000 })
+    expect((await post('apt-001', {})).status).toBe(409)
     expect((await patch(order.id, { status: 'accepted' })).status).toBe(409)
     signInAs(demoSeller)
     expect((await patch(order.id, { status: 'accepted' })).status).toBe(200)
@@ -49,14 +49,14 @@ describe('orders API', () => {
   })
 
   it('maps failures', async () => {
-    expect((await post('drn-005', {})).status).toBe(409)
+    expect((await post('cml-005', {})).status).toBe(409)
     expect((await post('missing', {})).status).toBe(404)
     signInAs(demoSeller)
-    expect((await post('trc-001', {})).status).toBe(403)
+    expect((await post('apt-001', {})).status).toBe(403)
     signInAs(demoAdmin)
     expect((await patch('nope', { status: 'cancelled' })).status).toBe(404)
     signInAs(null)
-    expect((await post('trc-001', {})).status).toBe(401)
+    expect((await post('apt-001', {})).status).toBe(401)
     expect((await patch('nope', { status: 'cancelled' })).status).toBe(401)
   })
 })

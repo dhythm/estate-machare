@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, MessageSquare, Truck } from 'lucide-react'
+import { ArrowUpRight, MessageSquare, Handshake } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/badge'
 import { FormAlert, TextareaField } from '@/components/forms/fields'
@@ -24,8 +24,8 @@ import { cn } from '@/lib/utils'
 
 const inquiryModeLabels: Record<string, string> = {
   buy: '購入したい',
-  rent: 'レンタルしたい',
-  rentToOwn: 'レンタル購入したい',
+  rent: '賃貸したい',
+  purchaseOption: '買取オプションしたい',
   question: '質問',
 }
 
@@ -41,7 +41,7 @@ function TargetCard({ target }: { target: Thread['target'] }) {
   if (!target)
     return (
       <p className="text-sm text-muted-foreground">
-        対象の農機具・案件は削除されました。
+        対象の物件・リクエストは削除されました。
       </p>
     )
   if (target.kind === 'listing') {
@@ -58,7 +58,7 @@ function TargetCard({ target }: { target: Thread['target'] }) {
           />
         </div>
         <p className="mb-2 text-xs text-muted-foreground">
-          {listing.maker} · {listing.category}
+          {listing.category} · {listing.zoning}
         </p>
         <Link
           href={`/listings/${listing.id}`}
@@ -74,11 +74,11 @@ function TargetCard({ target }: { target: Thread['target'] }) {
           {listing.prefecture} {listing.city}
         </p>
         <dl className="mt-5 space-y-3 border-t border-border pt-4">
-          {listing.rentPerDay && (
+          {listing.rentPerMonth && (
             <div className="flex items-center justify-between gap-3">
-              <dt className="text-xs text-muted-foreground">レンタル / 日</dt>
+              <dt className="text-xs text-muted-foreground">賃貸 / 日</dt>
               <dd className="font-semibold tabular-nums">
-                {formatYen(listing.rentPerDay)}
+                {formatYen(listing.rentPerMonth)}
               </dd>
             </div>
           )}
@@ -94,35 +94,38 @@ function TargetCard({ target }: { target: Thread['target'] }) {
       </div>
     )
   }
-  const { job } = target
+  const { request } = target
   return (
     <div className="text-sm">
       <span className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/5 text-primary">
-        <Truck className="size-6" aria-hidden="true" />
+        <Handshake className="size-6" aria-hidden="true" />
       </span>
       <div className="flex flex-wrap items-center gap-2">
         <Link
-          href={`/transport/${job.id}`}
+          href={`/requests/${request.id}`}
           className="font-semibold text-foreground hover:text-primary"
         >
-          {job.item}
+          {request.title}
         </Link>
-        <Badge variant="muted">{job.status}</Badge>
+        <Badge variant="muted">{request.status}</Badge>
       </div>
       <div className="mt-5 space-y-3 border-y border-border py-4">
         <p className="flex gap-3">
-          <span className="text-xs text-muted-foreground">集荷</span>
-          {job.from}
+          <span className="text-xs text-muted-foreground">希望エリア</span>
+          {request.prefecture} {request.city}
         </p>
         <p className="flex gap-3">
-          <span className="text-xs text-muted-foreground">届け先</span>
-          {job.to}
+          <span className="text-xs text-muted-foreground">条件</span>
+          {request.category}
+          {request.layout ? ` / ${request.layout}` : ''}
         </p>
       </div>
       <p className="mt-4 flex justify-between gap-3">
-        <span className="text-xs text-muted-foreground">運搬報酬</span>
+        <span className="text-xs text-muted-foreground">
+          {request.deal === 'rent' ? '月額賃料の上限' : '予算の上限'}
+        </span>
         <span className="font-semibold tabular-nums">
-          {formatYen(job.reward)}
+          {formatYen(request.budget)}
         </span>
       </p>
     </div>
@@ -259,7 +262,7 @@ export function ThreadView({
           <p className="min-w-0 font-medium leading-relaxed">
             {thread.target?.kind === 'listing'
               ? thread.target.listing.name
-              : thread.target?.job.item}
+              : thread.target?.request.title}
           </p>
           <Link
             href="#transaction-title"
@@ -369,11 +372,11 @@ export function ThreadView({
             thread.target?.kind === 'listing' &&
             thread.role !== 'admin' && (
               <Link
-                href={`/transport/new?listingId=${thread.target.listing.id}`}
+                href={`/requests/new?listingId=${thread.target.listing.id}`}
                 className={cn(buttonVariants(), 'mt-5 h-10 w-full')}
               >
-                <Truck className="size-4" aria-hidden="true" />
-                運搬を依頼する
+                <Handshake className="size-4" aria-hidden="true" />
+                希望条件を登録する
               </Link>
             )}
         </section>

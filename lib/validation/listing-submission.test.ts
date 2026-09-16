@@ -2,23 +2,28 @@ import { describe, expect, it } from 'vitest'
 import { validateListingSubmission } from './listing-submission'
 
 const valid = {
-  name: 'クボタ トラクター 30馬力',
-  category: 'トラクター',
-  maker: 'クボタ',
-  year: '2018',
-  hours: '500',
-  condition: '目立った傷なし',
-  prefecture: '新潟県',
-  city: '長岡市',
+  name: 'シティタワー 世田谷区 3LDK',
+  category: 'マンション',
+  zoning: '第一種住居地域',
+  layout: '3LDK',
+  floorArea: 74.2,
+  builtYear: 2019,
+  nearestStation: '小田急線 経堂駅',
+  walkMinutes: 6,
+  prefecture: '東京都',
+  city: '世田谷区',
   deals: ['sale', 'rent'],
-  salePrice: '1500000',
-  rentPerDay: '12000',
-  rentToOwn: true,
-  rentToOwnCreditRate: '50',
-  rentToOwnCreditCap: '300000',
-  summary: 'キャビン付き。まず借りて試せます。',
-  sellerName: '中村ファーム',
-  sellerKind: '農業法人',
+  salePrice: '88,000,000',
+  rentPerMonth: '268000',
+  depositMonths: '2',
+  keyMoneyMonths: '1',
+  leaseType: '普通借家',
+  purchaseOption: true,
+  purchaseOptionCreditRate: '50',
+  purchaseOptionCreditCap: '5000000',
+  summary: '南向き角住戸。まず借りて住み心地を確かめられます。',
+  sellerName: '中村不動産',
+  sellerKind: '宅建業者',
   contactEmail: 'seller@example.com',
 }
 
@@ -28,13 +33,19 @@ describe('validateListingSubmission', () => {
     expect(result.ok).toBe(true)
     if (!result.ok) return
     expect(result.value).toMatchObject({
-      year: 2018,
-      hours: 500,
-      salePrice: 1_500_000,
-      rentPerDay: 12_000,
-      rentToOwn: true,
-      rentToOwnCreditRate: 50,
-      rentToOwnCreditCap: 300_000,
+      zoning: '第一種住居地域',
+      layout: '3LDK',
+      floorArea: 74.2,
+      builtYear: 2019,
+      walkMinutes: 6,
+      salePrice: 88_000_000,
+      rentPerMonth: 268_000,
+      depositMonths: 2,
+      keyMoneyMonths: 1,
+      leaseType: '普通借家',
+      purchaseOption: true,
+      purchaseOptionCreditRate: 50,
+      purchaseOptionCreditCap: 5_000_000,
       deals: ['sale', 'rent'],
     })
   })
@@ -75,33 +86,33 @@ describe('validateListingSubmission', () => {
     expect(tooBig.ok).toBe(false)
   })
 
-  it('requires the credit rate only for rent-to-own and clears it otherwise', () => {
+  it('requires the credit rate only for purchase-option and clears it otherwise', () => {
     const missingRate = validateListingSubmission({
       ...valid,
-      rentToOwnCreditRate: '',
+      purchaseOptionCreditRate: '',
     })
     expect(missingRate.ok).toBe(false)
     if (!missingRate.ok)
-      expect(missingRate.errors).toHaveProperty('rentToOwnCreditRate')
+      expect(missingRate.errors).toHaveProperty('purchaseOptionCreditRate')
 
     const tooHigh = validateListingSubmission({
       ...valid,
-      rentToOwnCreditRate: '120',
+      purchaseOptionCreditRate: '120',
     })
     expect(tooHigh.ok).toBe(false)
 
     const noCap = validateListingSubmission({
       ...valid,
-      rentToOwnCreditCap: '',
+      purchaseOptionCreditCap: '',
     })
     expect(noCap.ok).toBe(true)
-    if (noCap.ok) expect(noCap.value.rentToOwnCreditCap).toBeUndefined()
+    if (noCap.ok) expect(noCap.value.purchaseOptionCreditCap).toBeUndefined()
 
-    const plain = validateListingSubmission({ ...valid, rentToOwn: false })
+    const plain = validateListingSubmission({ ...valid, purchaseOption: false })
     expect(plain.ok).toBe(true)
     if (plain.ok) {
-      expect(plain.value.rentToOwnCreditRate).toBeUndefined()
-      expect(plain.value.rentToOwnCreditCap).toBeUndefined()
+      expect(plain.value.purchaseOptionCreditRate).toBeUndefined()
+      expect(plain.value.purchaseOptionCreditCap).toBeUndefined()
     }
   })
 
@@ -110,18 +121,31 @@ describe('validateListingSubmission', () => {
       ...valid,
       deals: ['rent'],
       salePrice: '',
-      rentToOwn: false,
+      purchaseOption: false,
     })
     expect(rentOnly.ok).toBe(true)
     if (rentOnly.ok) expect(rentOnly.value.salePrice).toBeUndefined()
 
+    const saleOnly = validateListingSubmission({
+      ...valid,
+      deals: ['sale'],
+      purchaseOption: false,
+    })
+    expect(saleOnly.ok).toBe(true)
+    if (saleOnly.ok) {
+      expect(saleOnly.value.rentPerMonth).toBeUndefined()
+      expect(saleOnly.value.depositMonths).toBeUndefined()
+      expect(saleOnly.value.leaseType).toBeUndefined()
+    }
+
     const missingRent = validateListingSubmission({
       ...valid,
       deals: ['rent'],
-      rentPerDay: '',
+      rentPerMonth: '',
     })
     expect(missingRent.ok).toBe(false)
-    if (!missingRent.ok) expect(missingRent.errors).toHaveProperty('rentPerDay')
+    if (!missingRent.ok)
+      expect(missingRent.errors).toHaveProperty('rentPerMonth')
   })
 
   it('reports every invalid field', () => {
@@ -129,7 +153,7 @@ describe('validateListingSubmission', () => {
       ...valid,
       name: '',
       category: '不明',
-      year: '1800',
+      walkMinutes: '90',
       deals: [],
       sellerName: '',
       sellerKind: '団体',
@@ -144,18 +168,34 @@ describe('validateListingSubmission', () => {
       'name',
       'sellerKind',
       'sellerName',
-      'year',
+      'walkMinutes',
     ])
   })
 
-  it('rejects rent-to-own without both deals', () => {
+  it('asks for no layout or built year on land', () => {
+    const land = validateListingSubmission({
+      ...valid,
+      category: '土地',
+      deals: ['sale'],
+      purchaseOption: false,
+      layout: '',
+      builtYear: '',
+    })
+    expect(land.ok).toBe(true)
+    if (land.ok) {
+      expect(land.value.layout).toBeUndefined()
+      expect(land.value.builtYear).toBeUndefined()
+    }
+  })
+
+  it('rejects purchase-option without both deals', () => {
     const result = validateListingSubmission({
       ...valid,
       deals: ['sale'],
-      rentToOwn: true,
+      purchaseOption: true,
     })
     expect(result.ok).toBe(false)
-    if (!result.ok) expect(result.errors).toHaveProperty('rentToOwn')
+    if (!result.ok) expect(result.errors).toHaveProperty('purchaseOption')
   })
 
   it('rejects non-object input', () => {

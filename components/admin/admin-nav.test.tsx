@@ -9,10 +9,10 @@ vi.mock('next/navigation', () => ({ usePathname }))
 
 describe('AdminNav', () => {
   it('lists the operator menus and marks the current one', () => {
-    usePathname.mockReturnValue('/admin/deals/rentals')
+    usePathname.mockReturnValue('/admin/deals/leases')
     render(<AdminNav />)
     expect(screen.getAllByRole('link').map((link) => link.textContent)).toEqual(
-      ['ダッシュボード', 'アカウント管理', '取引管理', '運搬管理'],
+      ['ダッシュボード', 'アカウント管理', '取引管理', 'リクエスト管理'],
     )
     expect(screen.getByRole('link', { name: '取引管理' })).toHaveAttribute(
       'aria-current',

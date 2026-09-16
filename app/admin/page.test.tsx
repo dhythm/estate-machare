@@ -7,13 +7,13 @@ vi.mock('next/navigation', () => ({ usePathname: () => '/admin' }))
 vi.mock('@/lib/server/admin-overview', () => ({
   getAdminCounts: vi.fn(async () => ({
     pendingListings: 2,
-    pendingTransportJobs: 3,
-    requestedRentals: 4,
-    activeRentals: 1,
+    pendingPropertyRequests: 3,
+    requestedLeases: 4,
+    activeLeases: 1,
     requestedOrders: 5,
-    haulingJobs: 2,
+    introducingRequests: 2,
     openThreads: 6,
-    carriers: 8,
+    agents: 8,
   })),
   listRecentActivity: vi.fn(async () => [
     {
@@ -31,7 +31,7 @@ vi.mock('@/lib/server/admin-overview', () => ({
     {
       review: {
         id: 'rv-1',
-        listingId: 'trc-001',
+        listingId: 'apt-001',
         sellerUserId: 'demo-seller',
         reviewerUserId: 'demo-user',
         sourceKind: 'order',
@@ -49,19 +49,19 @@ describe('AdminDashboardPage', () => {
   it('prioritizes pending review work and provides access to every operation', async () => {
     render(await AdminDashboardPage())
     expect(
-      screen.getByRole('heading', { name: '審査を待っている案件' }),
+      screen.getByRole('heading', { name: '審査を待っている出品・リクエスト' }),
     ).toBeInTheDocument()
     expect(screen.getByLabelText('審査待ち 5 件')).toBeInTheDocument()
     for (const path of [
       '/admin/deals',
       '/admin/deals/orders',
-      '/admin/deals/rentals',
+      '/admin/deals/leases',
       '/admin/deals/inquiries',
       '/admin/deals/reviews',
-      '/admin/transport',
-      '/admin/transport/applications',
-      '/admin/transport/inquiries',
-      '/admin/transport/carriers',
+      '/admin/requests',
+      '/admin/requests/proposals',
+      '/admin/requests/inquiries',
+      '/admin/requests/agents',
       '/admin/accounts',
     ]) {
       expect(
@@ -75,7 +75,7 @@ describe('AdminDashboardPage', () => {
   it('shows order and haul metrics, recent activity, and recent reviews', async () => {
     render(await AdminDashboardPage())
     expect(screen.getByText('承諾待ちの注文')).toBeInTheDocument()
-    expect(screen.getByText('運搬中の案件')).toBeInTheDocument()
+    expect(screen.getByText('紹介中のリクエスト')).toBeInTheDocument()
     const activity = screen.getByRole('region', { name: '直近の取引の動き' })
     expect(
       within(activity).getByRole('link', { name: /クボタ 45馬力/ }),

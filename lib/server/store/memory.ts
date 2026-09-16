@@ -1,15 +1,15 @@
-import type { Listing, TransportJob } from '@/lib/data'
+import type { Listing, PropertyRequest } from '@/lib/data'
 import { seedRows, type SeedOptions } from './seed'
 import { createMemoryRepository } from './memory-repository'
 import type { Repository } from './repository'
 import type {
   AccountStatus,
-  CarrierProfile,
+  AgentProfile,
   DealEvent,
   Message,
   Notification,
   Order,
-  Rental,
+  Lease,
   Review,
   Store,
   Submission,
@@ -21,19 +21,17 @@ export function createMemoryStore(options: SeedOptions = {}): Store {
     const rows = seedRows(options)
     return {
       listings: createMemoryRepository(rows.listings),
-      transportJobs: createMemoryRepository(rows.transportJobs),
+      propertyRequests: createMemoryRepository(rows.propertyRequests),
       submissions: createMemoryRepository<Submission>(rows.submissions),
       messages: createMemoryRepository<Message>(rows.messages),
-      rentals: createMemoryRepository<Rental>(rows.rentals),
+      leases: createMemoryRepository<Lease>(rows.leases),
       accountStatuses: createMemoryRepository<AccountStatus>(
         rows.accountStatuses,
       ),
       notifications: createMemoryRepository<Notification>(rows.notifications),
       reviews: createMemoryRepository<Review>(rows.reviews),
       threadReads: createMemoryRepository<ThreadRead>(rows.threadReads),
-      carrierProfiles: createMemoryRepository<CarrierProfile>(
-        rows.carrierProfiles,
-      ),
+      agentProfiles: createMemoryRepository<AgentProfile>(rows.agentProfiles),
       orders: createMemoryRepository<Order>(rows.orders),
       dealEvents: createMemoryRepository<DealEvent>(rows.dealEvents),
     }
@@ -51,15 +49,15 @@ export function createMemoryStore(options: SeedOptions = {}): Store {
   return {
     kind: 'memory',
     listings: proxy<Listing>(() => store.listings),
-    transportJobs: proxy<TransportJob>(() => store.transportJobs),
+    propertyRequests: proxy<PropertyRequest>(() => store.propertyRequests),
     submissions: proxy<Submission>(() => store.submissions),
     messages: proxy<Message>(() => store.messages),
-    rentals: proxy<Rental>(() => store.rentals),
+    leases: proxy<Lease>(() => store.leases),
     accountStatuses: proxy<AccountStatus>(() => store.accountStatuses),
     notifications: proxy<Notification>(() => store.notifications),
     reviews: proxy<Review>(() => store.reviews),
     threadReads: proxy<ThreadRead>(() => store.threadReads),
-    carrierProfiles: proxy<CarrierProfile>(() => store.carrierProfiles),
+    agentProfiles: proxy<AgentProfile>(() => store.agentProfiles),
     orders: proxy<Order>(() => store.orders),
     dealEvents: proxy<DealEvent>(() => store.dealEvents),
     async reset() {

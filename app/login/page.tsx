@@ -8,7 +8,7 @@ import { PageShell } from '@/components/page-shell'
 import { getCurrentUser } from '@/lib/server/auth/session'
 import { readCallbackUrl } from '@/lib/validation/auth'
 
-export const metadata: Metadata = { title: 'ログイン | Agri Machare' }
+export const metadata: Metadata = { title: 'ログイン | Estate Machare' }
 export const dynamic = 'force-dynamic'
 
 export default async function LoginPage({
@@ -23,8 +23,8 @@ export default async function LoginPage({
       <div className="mx-auto grid max-w-6xl gap-0 px-5 py-10 sm:px-8 sm:py-16 md:grid-cols-2">
         <div className="relative hidden min-h-[540px] overflow-hidden rounded-l-2xl bg-primary md:block">
           <Image
-            src="/brand-field.webp"
-            alt="朝の光が差す農地"
+            src="/brand-city.svg"
+            alt="夕暮れの街並みに並ぶ住宅とマンション"
             fill
             sizes="50vw"
             className="object-cover object-[65%_center]"
@@ -32,15 +32,15 @@ export default async function LoginPage({
           <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/20 to-transparent" />
           <div className="absolute bottom-12 left-10 right-10 text-white">
             <p className="text-[10px] tracking-[0.2em] text-accent">
-              GROWING POSSIBILITIES.
+              THE NEXT CHAPTER, AT HOME.
             </p>
             <h2 className="mt-5 font-display text-4xl font-bold leading-relaxed">
-              次の一台。
+              次の住まい。
               <br />
               次のつながり。
             </h2>
             <p className="mt-5 text-sm leading-7 text-white/75">
-              あなたの農業の、つづきへ。
+              あなたの住まい探しの、つづきへ。
             </p>
           </div>
         </div>
@@ -55,7 +55,7 @@ export default async function LoginPage({
               href="/guide"
               className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-primary"
             >
-              Agri Machare をはじめて使う方へ
+              Estate Machare をはじめて使う方へ
               <ArrowUpRight className="size-3.5" />
             </Link>
           </div>

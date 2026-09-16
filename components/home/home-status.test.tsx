@@ -11,10 +11,10 @@ describe('HomeStatus', () => {
         status={{
           unreadThreads: 2,
           openInquiries: 1,
-          requestedRentals: 0,
+          requestedLeases: 0,
           requestedOrders: 1,
           pendingListings: 3,
-          matchingJobs: 4,
+          matchingRequests: 4,
           unreadNotifications: 5,
         }}
       />,
@@ -29,12 +29,12 @@ describe('HomeStatus', () => {
       '/account/notifications',
     )
     expect(
-      within(region).getByRole('link', { name: /対応地域の募集中案件/ }),
-    ).toHaveAttribute('href', '/transport')
+      within(region).getByRole('link', { name: /対応地域の募集中リクエスト/ }),
+    ).toHaveAttribute('href', '/requests')
     expect(within(region).getByText('5')).toBeInTheDocument()
     expect(
       within(region).getByRole('link', { name: /承諾待ちの注文/ }),
     ).toBeInTheDocument()
-    expect(within(region).queryByText(/申込中のレンタル/)).toBeNull()
+    expect(within(region).queryByText(/申込中の賃貸/)).toBeNull()
   })
 })

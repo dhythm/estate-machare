@@ -2,20 +2,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   getAdminCounts,
   listAccountSummaries,
-  listAllRentals,
-  listCarriers,
+  listAllLeases,
+  listAgents,
   listRecentActivity,
   listThreadSummaries,
   listTransportApplications,
 } from './admin-overview'
 import { getListing } from './listings'
-import { requestRental } from './rentals'
+import { requestLease } from './leases'
 import { resetStore } from './store'
 import { acceptSubmission } from './submissions'
 import { addMessage } from './threads'
 import { createListing } from './listings'
 import { setAccountStatus } from './auth/account-status'
-import { upsertCarrierProfile } from './carriers'
+import { upsertAgentProfile } from './agents'
 import { requestOrder } from './orders'
 import { demoSeller, demoUser } from '@/test/mock-auth'
 
@@ -30,43 +30,45 @@ async function seedActivity() {
   const inquiry = await acceptSubmission(
     'listingInquiry',
     { mode: 'rent', name: '利用者デモ', message: '借りたい' },
-    { targetId: 'trc-001', userId: 'demo-user' },
+    { targetId: 'apt-001', userId: 'demo-user' },
   )
   await addMessage(inquiry.id, demoSeller, '在庫あります')
   await acceptSubmission(
-    'transportApplication',
-    { name: '利用者デモ', vehicle: '2tトラック', availableDate: '2026-10-03' },
-    { targetId: 'tj-01', userId: 'demo-user' },
+    'requestProposal',
+    { name: '利用者デモ', availableDate: '2026-10-03' },
+    { targetId: 'pr-01', userId: 'demo-user' },
   )
-  await upsertCarrierProfile(demoUser, {
-    name: '高橋運送',
-    kind: '法人',
-    prefecture: '秋田県',
-    vehicles: ['4tトラック'],
-    serviceAreas: ['秋田県'],
+  await upsertAgentProfile(demoUser, {
+    name: '高橋不動産',
+    kind: '宅建業者',
+    prefecture: '東京都',
+    handledCategories: ['マンション'],
+    serviceAreas: ['東京都'],
   })
   await acceptSubmission('contact', { message: 'hello' })
-  await requestRental((await getListing('trc-001'))!, demoUser, {
+  await requestLease((await getListing('apt-001'))!, demoUser, {
     startDate: '2026-10-01',
     endDate: '2026-10-07',
   })
   await createListing(
     {
       name: '審査中',
-      category: 'トラクター',
-      maker: 'クボタ',
-      year: 2018,
-      hours: 500,
-      condition: '目立った傷なし',
-      prefecture: '新潟県',
-      city: '長岡市',
+      category: 'マンション',
+      zoning: '第一種住居地域',
+      layout: '3LDK',
+      floorArea: 74.2,
+      builtYear: 2019,
+      nearestStation: '小田急線 経堂駅',
+      walkMinutes: 6,
+      prefecture: '長野県',
+      city: '長野市',
       deals: ['sale'],
-      salePrice: 1_000_000,
-      rentToOwn: false,
+      salePrice: 32_000_000,
+      purchaseOption: false,
       images: [],
       summary: '説明',
       sellerName: '出品者デモ',
-      sellerKind: '農業法人',
+      sellerKind: '宅建業者',
       contactEmail: 'seller@example.com',
     },
     'demo-seller',
@@ -77,16 +79,16 @@ async function seedActivity() {
 describe('getAdminCounts', () => {
   it('counts what needs attention', async () => {
     await seedActivity()
-    await requestOrder((await getListing('cmb-002'))!, demoUser, {})
+    await requestOrder((await getListing('hse-002'))!, demoUser, {})
     expect(await getAdminCounts()).toEqual({
       pendingListings: 1,
-      pendingTransportJobs: 0,
-      requestedRentals: 1,
-      activeRentals: 0,
+      pendingPropertyRequests: 0,
+      requestedLeases: 1,
+      activeLeases: 0,
       requestedOrders: 1,
-      haulingJobs: 0,
+      introducingRequests: 0,
       openThreads: 2,
-      carriers: 1,
+      agents: 1,
     })
   })
 })
@@ -94,20 +96,20 @@ describe('getAdminCounts', () => {
 describe('recent activity', () => {
   it('resolves the newest deal events to titles, actors, and history links', async () => {
     await seedActivity()
-    await requestOrder((await getListing('cmb-002'))!, demoUser, {
+    await requestOrder((await getListing('hse-002'))!, demoUser, {
       message: '現金で',
     })
     const activity = await listRecentActivity(8)
     expect(activity[0]).toMatchObject({
       kind: 'order',
-      title: expect.stringContaining('ヤンマー'),
+      title: expect.stringContaining('ガレージ付戸建'),
       statusLabel: '申込中',
       actorName: '利用者デモ',
     })
     expect(activity[0].href).toMatch(/^\/account\/deals\/order\//)
     expect(
       activity.some(
-        (item) => item.kind === 'rental' && item.statusLabel === '申込中',
+        (item) => item.kind === 'lease' && item.statusLabel === '申込中',
       ),
     ).toBe(true)
     expect(activity.length).toBeLessThanOrEqual(8)
@@ -115,12 +117,12 @@ describe('recent activity', () => {
 })
 
 describe('lists', () => {
-  it('lists every rental with its listing', async () => {
+  it('lists every lease with its listing', async () => {
     await seedActivity()
-    const rentals = await listAllRentals()
-    expect(rentals).toHaveLength(1)
-    expect(rentals[0].listing?.id).toBe('trc-001')
-    expect(rentals[0].rental.status).toBe('requested')
+    const leases = await listAllLeases()
+    expect(leases).toHaveLength(1)
+    expect(leases[0].listing?.id).toBe('apt-001')
+    expect(leases[0].lease.status).toBe('requested')
   })
 
   it('summarizes threads with target, sender, status, and reply count', async () => {
@@ -129,21 +131,21 @@ describe('lists', () => {
     expect(threads).toHaveLength(1)
     expect(threads[0]).toMatchObject({
       id,
-      targetName: expect.stringContaining('クボタ'),
+      targetName: expect.stringContaining('シティタワー'),
       senderName: '利用者デモ',
       status: 'new',
       replyCount: 1,
     })
-    expect(await listThreadSummaries('transportApplication')).toHaveLength(1)
+    expect(await listThreadSummaries('requestProposal')).toHaveLength(1)
   })
 
-  it('lists applications with the job and carriers from registrations', async () => {
+  it('lists applications with the request and agents from registrations', async () => {
     await seedActivity()
     const applications = await listTransportApplications()
-    expect(applications[0].targetName).toContain('コンバイン')
-    const carriers = await listCarriers()
-    expect(carriers).toHaveLength(1)
-    expect(carriers[0].name).toBe('高橋運送')
+    expect(applications[0].targetName).toContain('2LDK')
+    const agents = await listAgents()
+    expect(agents).toHaveLength(1)
+    expect(agents[0].name).toBe('高橋不動産')
   })
 
   it('summarizes accounts with their activity', async () => {
@@ -158,14 +160,14 @@ describe('lists', () => {
     const seller = accounts.find((account) => account.id === 'demo-seller')
     expect(seller).toMatchObject({
       role: 'user',
-      listingCount: 3,
-      rentalCount: 0,
+      listingCount: 4,
+      leaseCount: 0,
     })
     expect(
       accounts.find((account) => account.id === 'tamura')?.listingCount,
     ).toBeGreaterThan(0)
     const user = accounts.find((account) => account.id === 'demo-user')
-    expect(user).toMatchObject({ listingCount: 0, rentalCount: 1 })
+    expect(user).toMatchObject({ listingCount: 0, leaseCount: 1 })
     expect(JSON.stringify(accounts)).not.toContain('password')
     expect(user?.status).toBe('active')
     await setAccountStatus('demo-user', 'suspended', '規約違反')

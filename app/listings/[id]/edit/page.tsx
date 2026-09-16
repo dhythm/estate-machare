@@ -9,7 +9,7 @@ import { canManage } from '@/lib/server/auth/access'
 import { getCurrentUser } from '@/lib/server/auth/session'
 import { getListing } from '@/lib/server/listings'
 
-export const metadata: Metadata = { title: '出品を編集する | Agri Machare' }
+export const metadata: Metadata = { title: '出品を編集する | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 
@@ -21,18 +21,23 @@ function toEdit(listing: Listing): ListingEdit {
     values: {
       name: listing.name,
       category: listing.category,
-      maker: listing.maker,
-      year: String(listing.year),
-      hours: String(listing.hours),
-      condition: listing.condition,
+      zoning: listing.zoning,
+      layout: listing.layout ?? '',
+      floorArea: String(listing.floorArea),
+      builtYear: text(listing.builtYear),
+      nearestStation: listing.nearestStation,
+      walkMinutes: String(listing.walkMinutes),
       prefecture: listing.prefecture,
       city: listing.city,
       deals: listing.deals,
       salePrice: text(listing.salePrice),
-      rentPerDay: text(listing.rentPerDay),
-      rentToOwn: listing.rentToOwn ?? false,
-      rentToOwnCreditRate: text(listing.rentToOwnCreditRate),
-      rentToOwnCreditCap: text(listing.rentToOwnCreditCap),
+      rentPerMonth: text(listing.rentPerMonth),
+      depositMonths: text(listing.depositMonths),
+      keyMoneyMonths: text(listing.keyMoneyMonths),
+      leaseType: listing.leaseType ?? '',
+      purchaseOption: listing.purchaseOption ?? false,
+      purchaseOptionCreditRate: text(listing.purchaseOptionCreditRate),
+      purchaseOptionCreditCap: text(listing.purchaseOptionCreditCap),
       summary: listing.summary,
       sellerName: listing.seller.name,
       sellerKind: listing.seller.kind,
@@ -57,7 +62,7 @@ export default async function EditListingPage({
   return (
     <PageShell>
       <div className="mx-auto max-w-4xl px-5 py-12 sm:px-8">
-        <BackLink href={`/listings/${id}`} label="農機具の詳細にもどる" />
+        <BackLink href={`/listings/${id}`} label="物件の詳細にもどる" />
         <div className="mt-6">
           <PageIntro title="出品を編集する" />
         </div>

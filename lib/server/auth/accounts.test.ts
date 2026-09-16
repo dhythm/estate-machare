@@ -58,7 +58,7 @@ describe('configuredAccounts', () => {
     vi.stubEnv('NODE_ENV', 'test')
     const personas = configuredAccounts().slice(3)
     expect(personas.length).toBeGreaterThanOrEqual(16)
-    expect(personas.map((account) => account.id)).toContain('nakamura-farm')
+    expect(personas.map((account) => account.id)).toContain('nakamura-estate')
     expect(personas.every((account) => account.role === 'user')).toBe(true)
     expect(new Set(configuredAccounts().map((a) => a.email)).size).toBe(
       configuredAccounts().length,
@@ -103,27 +103,27 @@ describe('authenticate', () => {
   it('signs personas in with the shared persona password', () => {
     clearAccountEnv()
     vi.stubEnv('NODE_ENV', 'test')
-    expect(authenticate('nakamura-farm@example.com', 'dev-persona')).toEqual({
-      id: 'nakamura-farm',
-      email: 'nakamura-farm@example.com',
-      name: '中村ファーム',
+    expect(authenticate('nakamura-estate@example.com', 'dev-persona')).toEqual({
+      id: 'nakamura-estate',
+      email: 'nakamura-estate@example.com',
+      name: '中村不動産',
       role: 'user',
     })
     vi.stubEnv('DEMO_PERSONA_PASSWORD', 'shared-pass')
     expect(
-      authenticate('nakamura-farm@example.com', 'dev-persona'),
+      authenticate('nakamura-estate@example.com', 'dev-persona'),
     ).toBeUndefined()
     expect(
-      authenticate('nakamura-farm@example.com', 'shared-pass'),
+      authenticate('nakamura-estate@example.com', 'shared-pass'),
     ).toBeDefined()
   })
 
   it('keeps personas listed but not signable in production without a password', () => {
     clearAccountEnv()
     vi.stubEnv('NODE_ENV', 'production')
-    expect(configuredAccounts().map((a) => a.id)).toContain('nakamura-farm')
+    expect(configuredAccounts().map((a) => a.id)).toContain('nakamura-estate')
     expect(
-      authenticate('nakamura-farm@example.com', 'dev-persona'),
+      authenticate('nakamura-estate@example.com', 'dev-persona'),
     ).toBeUndefined()
   })
 

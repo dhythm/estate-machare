@@ -8,7 +8,7 @@ import {
 } from './notifications'
 import { getListing } from './listings'
 import { applyModeration } from './moderation'
-import { requestRental, updateRentalStatus } from './rentals'
+import { requestLease, updateLeaseStatus } from './leases'
 import { resetStore } from './store'
 import { acceptSubmission } from './submissions'
 import { addMessage, updateThreadStatus } from './threads'
@@ -32,8 +32,8 @@ describe('notifications service', () => {
     })
     await notify({
       userId: 'demo-user',
-      kind: 'rental',
-      title: 'レンタルが承認されました',
+      kind: 'lease',
+      title: '賃貸が承認されました',
       body: 'クボタ',
       href: '/account',
     })
@@ -44,7 +44,7 @@ describe('notifications service', () => {
       href: '/account',
     })
     expect(await titles('demo-user')).toEqual([
-      'レンタルが承認されました',
+      '賃貸が承認されました',
       '返信があります',
     ])
     expect(await countUnread('demo-user')).toBe(2)
@@ -65,7 +65,7 @@ describe('notification triggers', () => {
     const { id } = await acceptSubmission(
       'listingInquiry',
       { mode: 'rent', name: '利用者デモ', message: '借りたい' },
-      { targetId: 'trc-001', userId: 'demo-user' },
+      { targetId: 'apt-001', userId: 'demo-user' },
     )
     expect(await titles('demo-seller')).toEqual(['問い合わせが届きました'])
     expect((await listNotifications('demo-seller'))[0].href).toBe(
@@ -85,22 +85,22 @@ describe('notification triggers', () => {
     ])
   })
 
-  it('tells the job owner about applications', async () => {
+  it('tells the request owner about applications', async () => {
     await acceptSubmission(
-      'transportApplication',
+      'requestProposal',
       {
         name: '利用者デモ',
-        vehicle: '2tトラック',
+        vehicle: 'マンション',
         availableDate: '2026-10-03',
       },
-      { targetId: 'tj-01', userId: 'demo-user' },
+      { targetId: 'pr-01', userId: 'demo-user' },
     )
-    expect(await titles('demo-seller')).toEqual(['応募が届きました'])
+    expect(await titles('demo-seller')).toEqual(['提案が届きました'])
   })
 
-  it('follows a rental through request, approval, and conversion', async () => {
-    const created = await requestRental(
-      (await getListing('trc-001'))!,
+  it('follows a lease through request, approval, and conversion', async () => {
+    const created = await requestLease(
+      (await getListing('apt-001'))!,
       demoUser,
       {
         startDate: '2026-10-01',
@@ -108,15 +108,15 @@ describe('notification triggers', () => {
       },
     )
     const id = created.ok ? created.value.id : ''
-    expect(await titles('demo-seller')).toEqual(['レンタルの申込が届きました'])
-    await updateRentalStatus(id, demoSeller, 'active')
+    expect(await titles('demo-seller')).toEqual(['入居の申込が届きました'])
+    await updateLeaseStatus(id, demoSeller, 'active')
     expect(await titles('demo-user')).toEqual([
-      'レンタルが「レンタル中」になりました',
+      '賃貸借契約が「入居中」になりました',
     ])
-    await updateRentalStatus(id, demoUser, 'converted')
+    await updateLeaseStatus(id, demoUser, 'converted')
     expect(await titles('demo-seller')).toEqual([
-      'レンタルが「購入に切替」になりました',
-      'レンタルの申込が届きました',
+      '賃貸借契約が「購入へ切替」になりました',
+      '入居の申込が届きました',
     ])
   })
 
@@ -124,32 +124,34 @@ describe('notification triggers', () => {
     const listing = await createListing(
       {
         name: '審査中',
-        category: 'トラクター',
-        maker: 'クボタ',
-        year: 2018,
-        hours: 500,
-        condition: '目立った傷なし',
+        category: 'マンション',
+        zoning: '第一種住居地域',
+        layout: '3LDK',
+        floorArea: 74.2,
+        builtYear: 2019,
+        nearestStation: '小田急線 経堂駅',
+        walkMinutes: 6,
         prefecture: '新潟県',
         city: '長岡市',
         deals: ['sale'],
         salePrice: 1_000_000,
-        rentToOwn: false,
+        purchaseOption: false,
         images: [],
         summary: '説明',
         sellerName: '出品者デモ',
-        sellerKind: '農業法人',
+        sellerKind: '宅建業者',
         contactEmail: 'seller@example.com',
       },
       'demo-seller',
     )
     await applyModeration('listing', listing.id, { status: 'approved' })
-    await applyModeration('transportJob', 'tj-01', {
+    await applyModeration('propertyRequest', 'pr-01', {
       status: 'rejected',
       note: '区間が不明瞭',
     })
     const items = await listNotifications('demo-seller')
     expect(items.map((n) => n.title)).toEqual([
-      '運搬依頼が却下されました',
+      '物件リクエストが却下されました',
       '出品が承認されました',
     ])
     expect(items[0].body).toContain('区間が不明瞭')

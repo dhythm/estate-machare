@@ -6,8 +6,8 @@ import { getListing } from '@/lib/server/listings'
 import { buildModes } from '@/lib/server/listing-detail'
 
 describe('ListingDetail', () => {
-  it('preserves the selected equipment when starting a transport request', async () => {
-    const listing = (await getListing('trc-001'))!
+  it('carries the listing over when starting a property request', async () => {
+    const listing = (await getListing('apt-001'))!
     render(
       <ListingDetail
         listing={listing}
@@ -19,12 +19,12 @@ describe('ListingDetail', () => {
     )
 
     expect(
-      screen.getByRole('link', { name: 'この農機具の運搬を依頼する' }),
-    ).toHaveAttribute('href', '/transport/new?listingId=trc-001')
+      screen.getByRole('link', { name: '希望条件を登録して提案を受ける' }),
+    ).toHaveAttribute('href', '/requests/new?listingId=apt-001')
   })
 
   it('exposes the selected transaction and retains purchase and question destinations', async () => {
-    const listing = (await getListing('trc-001'))!
+    const listing = (await getListing('apt-001'))!
     render(
       <ListingDetail
         listing={listing}
@@ -41,14 +41,14 @@ describe('ListingDetail', () => {
     expect(purchase).toHaveAttribute('aria-pressed', 'true')
     expect(
       screen.getByRole('link', { name: 'ログインして購入を申し込む' }),
-    ).toHaveAttribute('href', '/login?callbackUrl=%2Flistings%2Ftrc-001')
+    ).toHaveAttribute('href', '/login?callbackUrl=%2Flistings%2Fapt-001')
     expect(
       screen.getByRole('link', { name: '出品者に質問する' }),
-    ).toHaveAttribute('href', '/listings/trc-001/inquiry?mode=question')
+    ).toHaveAttribute('href', '/listings/apt-001/inquiry?mode=question')
   })
 
   it('links the seller block to the seller page', async () => {
-    const listing = (await getListing('trc-001'))!
+    const listing = (await getListing('apt-001'))!
     render(
       <ListingDetail
         listing={listing}

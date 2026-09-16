@@ -5,7 +5,7 @@ describe('validateReview', () => {
   it('accepts a rating with an optional comment', () => {
     expect(
       validateReview({
-        sourceKind: 'rental',
+        sourceKind: 'lease',
         sourceId: 'r-1',
         rating: '5',
         comment: ' 助かりました ',
@@ -13,7 +13,7 @@ describe('validateReview', () => {
     ).toEqual({
       ok: true,
       value: {
-        sourceKind: 'rental',
+        sourceKind: 'lease',
         sourceId: 'r-1',
         rating: 5,
         comment: '助かりました',
@@ -38,10 +38,10 @@ describe('validateReview', () => {
       validateReview({ sourceKind: 'x', sourceId: 'r', rating: 3 }).ok,
     ).toBe(false)
     expect(
-      validateReview({ sourceKind: 'rental', sourceId: 'r', rating: 6 }).ok,
+      validateReview({ sourceKind: 'lease', sourceId: 'r', rating: 6 }).ok,
     ).toBe(false)
     expect(
-      validateReview({ sourceKind: 'rental', sourceId: '', rating: 1 }).ok,
+      validateReview({ sourceKind: 'lease', sourceId: '', rating: 1 }).ok,
     ).toBe(false)
   })
 })

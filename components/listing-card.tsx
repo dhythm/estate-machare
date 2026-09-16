@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { MapPin, Star, ArrowUpRight, Repeat2 } from 'lucide-react'
-import { type Listing, formatYen } from '@/lib/data'
+import { type Listing, formatArea, formatYen } from '@/lib/data'
 
 export function ListingCard({ listing }: { listing: Listing }) {
   const canBuy = listing.deals.includes('sale')
@@ -9,7 +9,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-[box-shadow,transform] duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_-18px_rgba(23,63,53,0.3)]"
+      className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-[box-shadow,transform] duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_-18px_rgba(23,58,79,0.3)]"
     >
       <div className="relative aspect-[1.55] overflow-hidden bg-muted">
         <Image
@@ -22,12 +22,12 @@ export function ListingCard({ listing }: { listing: Listing }) {
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5 text-[10px] font-bold">
           {canBuy && (
             <span className="rounded-md bg-white/95 px-2.5 py-1 text-primary">
-              販売
+              売買
             </span>
           )}
           {canRent && (
             <span className="rounded-md bg-accent px-2.5 py-1 text-accent-foreground">
-              レンタル
+              賃貸
             </span>
           )}
         </div>
@@ -37,24 +37,27 @@ export function ListingCard({ listing }: { listing: Listing }) {
       </div>
       <div className="flex flex-1 flex-col p-5">
         <p className="text-[10px] font-bold tracking-wider text-muted-foreground">
-          {listing.maker} <span className="mx-1.5 text-border">/</span>{' '}
-          {listing.category}
+          {listing.category} <span className="mx-1.5 text-border">/</span>{' '}
+          {listing.zoning}
         </p>
         <h3 className="mt-2 line-clamp-2 text-base font-bold leading-relaxed text-foreground">
           {listing.name}
         </h3>
         <p className="mt-2 text-xs text-muted-foreground">
-          {listing.year}年式 <span className="mx-1.5">·</span>{' '}
-          {listing.hours.toLocaleString('ja-JP')}時間{' '}
-          <span className="mx-1.5">·</span> {listing.condition}
+          {listing.layout ? `${listing.layout} · ` : ''}
+          {formatArea(listing.floorArea)}
+          {listing.builtYear !== undefined && <> · {listing.builtYear}年築</>}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {listing.nearestStation} 徒歩{listing.walkMinutes}分
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
           <MapPin className="size-3.5" />
           {listing.prefecture} {listing.city}
-          {listing.rentToOwn && (
+          {listing.purchaseOption && (
             <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-bold text-primary">
               <Repeat2 className="size-3" />
-              レンタル購入可
+              買取オプション
             </span>
           )}
         </div>
@@ -69,15 +72,15 @@ export function ListingCard({ listing }: { listing: Listing }) {
               </span>
             </p>
           )}
-          {canRent && listing.rentPerDay !== undefined && (
+          {canRent && listing.rentPerMonth !== undefined && (
             <p className="flex items-baseline justify-between gap-2">
               <span className="text-[11px] text-muted-foreground">
-                レンタル
+                月額賃料
               </span>
               <span className="font-display text-lg font-bold text-primary">
-                {formatYen(listing.rentPerDay)}
+                {formatYen(listing.rentPerMonth)}
                 <span className="ml-1 text-xs font-normal text-muted-foreground">
-                  / 日
+                  / 月
                 </span>
               </span>
             </p>

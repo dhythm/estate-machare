@@ -7,7 +7,6 @@ import {
   ClipboardCheck,
   Handshake,
   MessageSquare,
-  Truck,
   Users,
 } from 'lucide-react'
 import { AdminSection } from '@/components/admin/admin-section'
@@ -20,7 +19,7 @@ import { StarRating } from '@/components/reviews/star-rating'
 import { Badge } from '@/components/badge'
 
 export const metadata: Metadata = {
-  title: 'ダッシュボード | Agri Machare 運営',
+  title: 'ダッシュボード | Estate Machare 運営',
 }
 
 export const dynamic = 'force-dynamic'
@@ -32,19 +31,19 @@ const workspaces = [
     links: [
       { label: '出品の審査', href: '/admin/deals' },
       { label: '注文', href: '/admin/deals/orders' },
-      { label: 'レンタル', href: '/admin/deals/rentals' },
+      { label: '賃貸', href: '/admin/deals/leases' },
       { label: '問い合わせ', href: '/admin/deals/inquiries' },
       { label: 'レビュー', href: '/admin/deals/reviews' },
     ],
   },
   {
-    title: '運搬管理',
-    icon: Truck,
+    title: 'リクエスト管理',
+    icon: Handshake,
     links: [
-      { label: '運搬依頼の審査', href: '/admin/transport' },
-      { label: '運搬への応募', href: '/admin/transport/applications' },
-      { label: '案件への質問', href: '/admin/transport/inquiries' },
-      { label: '運搬者', href: '/admin/transport/carriers' },
+      { label: '物件リクエストの審査', href: '/admin/requests' },
+      { label: 'リクエストへの提案', href: '/admin/requests/proposals' },
+      { label: 'リクエストへの質問', href: '/admin/requests/inquiries' },
+      { label: '担当者', href: '/admin/requests/agents' },
     ],
   },
   {
@@ -60,7 +59,7 @@ export default async function AdminDashboardPage() {
     listRecentActivity(8),
     listRecentReviews(5),
   ])
-  const pendingCount = counts.pendingListings + counts.pendingTransportJobs
+  const pendingCount = counts.pendingListings + counts.pendingPropertyRequests
   const metrics = [
     {
       label: '承諾待ちの注文',
@@ -69,16 +68,16 @@ export default async function AdminDashboardPage() {
       links: [{ label: '注文一覧', href: '/admin/deals/orders' }],
     },
     {
-      label: '申込中のレンタル',
-      value: counts.requestedRentals,
+      label: '申込中の賃貸',
+      value: counts.requestedLeases,
       icon: CalendarDays,
-      links: [{ label: '申込一覧', href: '/admin/deals/rentals' }],
+      links: [{ label: '申込一覧', href: '/admin/deals/leases' }],
     },
     {
-      label: '運搬中の案件',
-      value: counts.haulingJobs,
-      icon: Truck,
-      links: [{ label: '運搬依頼', href: '/admin/transport' }],
+      label: '紹介中のリクエスト',
+      value: counts.introducingRequests,
+      icon: Handshake,
+      links: [{ label: '物件リクエスト', href: '/admin/requests' }],
     },
     {
       label: '未対応のやり取り',
@@ -86,21 +85,21 @@ export default async function AdminDashboardPage() {
       icon: MessageSquare,
       links: [
         { label: '問い合わせ', href: '/admin/deals/inquiries' },
-        { label: '運搬への応募', href: '/admin/transport/applications' },
+        { label: 'リクエストへの提案', href: '/admin/requests/proposals' },
       ],
     },
     {
-      label: '登録済みの運搬者',
-      value: counts.carriers,
-      icon: Truck,
-      links: [{ label: '運搬者一覧', href: '/admin/transport/carriers' }],
+      label: '登録済みの担当者',
+      value: counts.agents,
+      icon: Handshake,
+      links: [{ label: '担当者一覧', href: '/admin/requests/agents' }],
     },
   ]
 
   return (
     <AdminSection
       title="ダッシュボード"
-      description="農機具と人をつなぐ、日々の運営をここから。"
+      description="物件と人をつなぐ、日々の運営をここから。"
     >
       <section className="relative overflow-hidden rounded-2xl bg-primary p-6 text-primary-foreground sm:p-8">
         <div
@@ -117,7 +116,9 @@ export default async function AdminDashboardPage() {
               <ClipboardCheck className="size-4" aria-hidden="true" />
               REVIEW QUEUE
             </p>
-            <h2 className="text-lg font-medium">審査を待っている案件</h2>
+            <h2 className="text-lg font-medium">
+              審査を待っている出品・リクエスト
+            </h2>
             <p
               aria-label={`審査待ち ${pendingCount} 件`}
               className="mt-2 font-display text-6xl font-medium tracking-tight tabular-nums"
@@ -136,9 +137,9 @@ export default async function AdminDashboardPage() {
                 href: '/admin/deals',
               },
               {
-                label: '審査待ちの運搬依頼',
-                value: counts.pendingTransportJobs,
-                href: '/admin/transport',
+                label: '審査待ちのリクエスト',
+                value: counts.pendingPropertyRequests,
+                href: '/admin/requests',
               },
             ].map((item) => (
               <Link
@@ -226,9 +227,9 @@ export default async function AdminDashboardPage() {
                   <Badge variant="outline">
                     {item.kind === 'order'
                       ? '注文'
-                      : item.kind === 'rental'
-                        ? 'レンタル'
-                        : '運搬'}
+                      : item.kind === 'lease'
+                        ? '賃貸'
+                        : '物件リクエスト'}
                   </Badge>
                   <Link
                     href={item.href}

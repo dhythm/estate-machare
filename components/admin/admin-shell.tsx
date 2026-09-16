@@ -23,7 +23,7 @@ export function AdminShell({
       <aside className="relative flex shrink-0 flex-col gap-6 bg-primary px-5 pt-6 pb-4 text-primary-foreground lg:sticky lg:top-0 lg:h-screen lg:w-64 lg:gap-10 lg:px-5 lg:py-8">
         <Link
           href="/admin"
-          aria-label="Agri Machare 運営ホーム"
+          aria-label="Estate Machare 運営ホーム"
           className="block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground/50"
         >
           <BrandLogo inverse />
@@ -43,7 +43,7 @@ export function AdminShell({
             <div>
               <p className="text-sm font-medium">運営ワークスペース</p>
               <p className="mt-1 text-xs text-primary-foreground/55">
-                Agri Machare
+                Estate Machare
               </p>
             </div>
           </div>

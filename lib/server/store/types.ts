@@ -2,22 +2,22 @@ import type {
   Listing,
   OrderStatus,
   ThreadStatus,
-  TransportJob,
+  PropertyRequest,
 } from '@/lib/data'
-import type { RentalStatus } from '@/lib/rent-to-own'
+import type { LeaseStatus } from '@/lib/lease'
 import type { Repository } from './repository'
 
 export type SubmissionKind =
   | 'listingInquiry'
-  | 'transportRegistration'
-  | 'transportApplication'
-  | 'transportInquiry'
+  | 'agentRegistration'
+  | 'requestProposal'
+  | 'requestInquiry'
   | 'contact'
 
 export type Submission = {
   id: string
   kind: SubmissionKind
-  /** Id of the listing or transport job the submission refers to, if any. */
+  /** Id of the listing or property request the submission refers to, if any. */
   targetId?: string
   /** Id of the signed-in user who sent it, when the form required login. */
   userId?: string
@@ -26,7 +26,7 @@ export type Submission = {
   status?: ThreadStatus
 }
 
-/** A reply inside an inquiry or application thread. */
+/** A reply inside an inquiry or proposal thread. */
 export type Message = {
   id: string
   /** Id of the submission that opened the thread. */
@@ -36,20 +36,25 @@ export type Message = {
   createdAt: string
 }
 
-/** A rental agreement; pricing is copied from the listing at request time. */
-export type Rental = {
+/** A lease agreement; pricing is copied from the listing at request time. */
+export type Lease = {
   id: string
   listingId: string
-  renterUserId: string
+  tenantUserId: string
   startDate: string
   endDate: string
-  days: number
-  rentPerDay: number
+  /** Whole months the term covers. */
+  months: number
+  rentPerMonth: number
   rentTotal: number
+  /** Move-in costs in yen, fixed from the listing when the lease is requested. */
+  deposit: number
+  keyMoney: number
+  initialCost: number
   salePrice?: number
   creditRate?: number
   creditCap?: number
-  status: RentalStatus
+  status: LeaseStatus
   /** Price after the rent credit, set when converted to a purchase. */
   purchasePrice?: number
   createdAt: string
@@ -65,7 +70,7 @@ export type AccountStatus = {
 }
 
 export type NotificationKind =
-  'inquiry' | 'application' | 'reply' | 'threadStatus' | 'rental' | 'moderation'
+  'inquiry' | 'application' | 'reply' | 'threadStatus' | 'lease' | 'moderation'
 
 /** In-app notification for one user; `readAt` is set when opened. */
 export type Notification = {
@@ -79,16 +84,16 @@ export type Notification = {
   readAt?: string
 }
 
-export type ReviewSourceKind = 'rental' | 'thread' | 'order'
+export type ReviewSourceKind = 'lease' | 'thread' | 'order'
 
-/** A buyer's or renter's rating of the seller after one finished deal. */
+/** A buyer's or tenant's rating of the seller after one finished deal. */
 export type Review = {
   id: string
   listingId: string
   sellerUserId: string
   reviewerUserId: string
   sourceKind: ReviewSourceKind
-  /** Rental id or thread (submission) id the review is about. */
+  /** Lease id or thread (submission) id the review is about. */
   sourceId: string
   rating: number
   comment?: string
@@ -103,22 +108,23 @@ export type ThreadRead = {
   readAt: string
 }
 
-/** A signed-in user's carrier profile; `id` is the user id. */
-export type CarrierProfile = {
+/** A signed-in user's agent profile; `id` is the user id. */
+export type AgentProfile = {
   id: string
   name: string
-  kind: '個人' | '法人'
+  kind: '個人' | '宅建業者' | '管理会社' | '法人'
   /** Base prefecture. */
   prefecture: string
-  vehicles: string[]
-  /** Prefectures the carrier serves. */
+  /** Listing categories the agent handles. */
+  handledCategories: string[]
+  /** Prefectures the agent serves. */
   serviceAreas: string[]
   note?: string
   createdAt: string
   updatedAt: string
 }
 
-/** A purchase; the price is copied from the listing (or the rental credit) when opened. */
+/** A purchase; the price is copied from the listing (or the lease credit) when opened. */
 export type Order = {
   id: string
   listingId: string
@@ -127,13 +133,13 @@ export type Order = {
   price: number
   status: OrderStatus
   message?: string
-  /** Set when the order came from a rent-to-own conversion. */
-  sourceRentalId?: string
+  /** Set when the order came from a purchase-option conversion. */
+  sourceLeaseId?: string
   createdAt: string
   updatedAt: string
 }
 
-export type DealKind = 'order' | 'rental' | 'transportJob'
+export type DealKind = 'order' | 'lease' | 'propertyRequest'
 
 /** One step in a deal's history, appended whenever its status changes. */
 export type DealEvent = {
@@ -151,15 +157,15 @@ export type StoreKind = 'memory' | 'pglite'
 export type Store = {
   kind: StoreKind
   listings: Repository<Listing>
-  transportJobs: Repository<TransportJob>
+  propertyRequests: Repository<PropertyRequest>
   submissions: Repository<Submission>
   messages: Repository<Message>
-  rentals: Repository<Rental>
+  leases: Repository<Lease>
   accountStatuses: Repository<AccountStatus>
   notifications: Repository<Notification>
   reviews: Repository<Review>
   threadReads: Repository<ThreadRead>
-  carrierProfiles: Repository<CarrierProfile>
+  agentProfiles: Repository<AgentProfile>
   orders: Repository<Order>
   dealEvents: Repository<DealEvent>
   /** Drop every row and load the sample data again. */

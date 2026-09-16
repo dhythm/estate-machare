@@ -19,13 +19,13 @@ const zenKaku = Zen_Kaku_Gothic_New({
 
 export const metadata: Metadata = {
   icons: { icon: { url: '/icon.svg', type: 'image/svg+xml' } },
-  title: 'Agri Machare | 農機具の売買・レンタル・運搬マッチング',
+  title: 'Estate Machare | 不動産の売買・賃貸・物件リクエスト',
   description:
-    'トラクター・コンバイン・田植機などの農機具を、売る・買う・借りる・運ぶ。高額な農機具をシェアして、レンタルから購入までスムーズに。',
+    'マンション・戸建・土地・事業用物件を、売る・買う・借りる。所有する人と必要とする人をつなぎ、賃貸から購入までスムーズに。',
 }
 
 export const viewport: Viewport = {
-  themeColor: '#173f35',
+  themeColor: '#173a4f',
 }
 
 export default function RootLayout({

@@ -1,18 +1,18 @@
-import { listings, transportJobs } from '../data'
+import { listings, propertyRequests } from '../data'
 import { demoActivity, type DemoActivity } from '../demo-activity'
 
 export type SeedOptions = {
-  /** Load the sample activity (orders, rentals, threads, …) on top of the listings. */
+  /** Load the sample activity (orders, leases, threads, …) on top of the listings. */
   demoActivity?: boolean
 }
 
-const empty: Omit<DemoActivity, 'listings' | 'transportJobs'> = {
+const empty: Omit<DemoActivity, 'listings' | 'propertyRequests'> = {
   submissions: [],
   messages: [],
-  rentals: [],
+  leases: [],
   orders: [],
   reviews: [],
-  carrierProfiles: [],
+  agentProfiles: [],
   notifications: [],
   threadReads: [],
   accountStatuses: [],
@@ -21,10 +21,10 @@ const empty: Omit<DemoActivity, 'listings' | 'transportJobs'> = {
 
 /** Every table's initial rows, newest first where the table lists that way. */
 export function seedRows(options: SeedOptions): DemoActivity {
-  if (!options.demoActivity) return { ...empty, listings, transportJobs }
+  if (!options.demoActivity) return { ...empty, listings, propertyRequests }
   return {
     ...demoActivity,
     listings: [...demoActivity.listings, ...listings],
-    transportJobs: [...demoActivity.transportJobs, ...transportJobs],
+    propertyRequests: [...demoActivity.propertyRequests, ...propertyRequests],
   }
 }

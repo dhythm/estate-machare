@@ -4,11 +4,11 @@ import { ArrowRight } from 'lucide-react'
 export type HomeStatusCounts = {
   unreadThreads: number
   openInquiries: number
-  requestedRentals: number
+  requestedLeases: number
   requestedOrders: number
   pendingListings: number
-  /** Only for users with a carrier profile. */
-  matchingJobs?: number
+  /** Only for users with a agent profile. */
+  matchingRequests?: number
   unreadNotifications: number
 }
 
@@ -22,13 +22,13 @@ export function HomeStatus({
   const items = [
     { label: '未読のやり取り', value: status.unreadThreads, href: '/account' },
     {
-      label: '未対応の問い合わせ・応募',
+      label: '未対応の問い合わせ・提案',
       value: status.openInquiries,
       href: '/account',
     },
     {
-      label: '申込中のレンタル',
-      value: status.requestedRentals,
+      label: '申込中の賃貸',
+      value: status.requestedLeases,
       href: '/account',
     },
     {
@@ -42,10 +42,10 @@ export function HomeStatus({
       href: '/account',
     },
     {
-      label: '対応地域の募集中案件',
-      value: status.matchingJobs ?? 0,
-      href: '/transport',
-      show: status.matchingJobs !== undefined,
+      label: '対応地域の募集中リクエスト',
+      value: status.matchingRequests ?? 0,
+      href: '/requests',
+      show: status.matchingRequests !== undefined,
     },
     {
       label: '通知',

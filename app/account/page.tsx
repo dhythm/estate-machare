@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { getAccountOverview } from '@/lib/server/account'
 import { getCurrentUser } from '@/lib/server/auth/session'
 
-export const metadata: Metadata = { title: 'マイページ | Agri Machare' }
+export const metadata: Metadata = { title: 'マイページ | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 
@@ -50,7 +50,7 @@ export default async function AccountPage() {
                 'h-10 px-4',
               )}
             >
-              農機具を探す
+              物件を探す
               <ArrowUpRight className="size-4" aria-hidden="true" />
             </Link>
             <Link

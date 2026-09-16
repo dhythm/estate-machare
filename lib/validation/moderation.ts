@@ -10,7 +10,7 @@ import {
   type ValidationResult,
 } from './shared'
 
-const moderationKinds = ['listing', 'transportJob'] as const
+const moderationKinds = ['listing', 'propertyRequest'] as const
 const moderationDecisions = ['approved', 'rejected'] as const
 const moderationQueueFilters = ['all', ...moderationStatuses] as const
 

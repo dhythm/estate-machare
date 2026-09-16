@@ -20,6 +20,17 @@ function byNewest(a: Listing, b: Listing): number {
   return (b.createdAt ?? '').localeCompare(a.createdAt ?? '')
 }
 
+/** A signed-in owner's live listings, for offering one in a proposal. */
+export async function listListingsForOwner(
+  userId: string,
+): Promise<{ id: string; name: string }[]> {
+  const listings = await getStore().listings.list()
+  return listings
+    .filter((listing) => listing.ownerUserId === userId && isApproved(listing))
+    .sort(byNewest)
+    .map((listing) => ({ id: listing.id, name: listing.name }))
+}
+
 export async function getSellerProfile(
   userId: string,
 ): Promise<SellerProfile | undefined> {

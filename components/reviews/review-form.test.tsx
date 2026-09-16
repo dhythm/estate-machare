@@ -15,7 +15,7 @@ describe('ReviewForm', () => {
       Response.json({ id: 'rv-1' }, { status: 201 }),
     )
     vi.stubGlobal('fetch', fetchMock)
-    render(<ReviewForm sourceKind="rental" sourceId="r-1" />)
+    render(<ReviewForm sourceKind="lease" sourceId="r-1" />)
     const user = userEvent.setup()
     await user.click(screen.getByRole('radio', { name: '4' }))
     await user.type(screen.getByLabelText('コメント'), '助かりました')
@@ -30,7 +30,7 @@ describe('ReviewForm', () => {
           .body as string,
       ),
     ).toEqual({
-      sourceKind: 'rental',
+      sourceKind: 'lease',
       sourceId: 'r-1',
       rating: 4,
       comment: '助かりました',

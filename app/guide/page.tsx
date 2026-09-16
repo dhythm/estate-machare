@@ -1,54 +1,54 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Repeat2, ShoppingCart, Tag, Truck } from 'lucide-react'
+import { Handshake, Repeat2, ShoppingCart, Tag } from 'lucide-react'
 import { PageIntro, PageShell } from '@/components/page-shell'
 import { Badge } from '@/components/badge'
 
-export const metadata: Metadata = { title: 'はじめての方へ | Agri Machare' }
+export const metadata: Metadata = { title: 'はじめての方へ | Estate Machare' }
 
 const roles = [
   {
     icon: Tag,
     title: '売る・貸す',
-    body: '使わない期間だけ貸す、買い替えで手放す。出品フォームから機種・状態・価格を登録すると、販売とレンタルをまとめて募集できます。',
+    body: '空いている期間だけ貸す、住み替えで手放す。出品フォームから間取り・面積・価格を登録すると、売買と賃貸をまとめて募集できます。',
     href: '/listings/new',
     action: '出品する',
   },
   {
     icon: Repeat2,
     title: '借りる',
-    body: '必要な期間だけレンタル。農機具の詳細で利用日を選び、申込み後はマイページで承認状況を確認できます。',
+    body: '必要な期間だけ借りる。物件の詳細で入居期間を選び、申込み後はマイページで承認状況を確認できます。',
     href: '/listings?deal=rent',
-    action: 'レンタルできる農機具を探す',
+    action: '借りられる物件を探す',
   },
   {
     icon: ShoppingCart,
     title: '買う',
-    body: '写真・状態・稼働時間を確認して、出品者に問い合わせ。マイページのメッセージで条件を相談し、取引を進めます。',
+    body: '写真・間取り・築年を確認して、出品者に問い合わせ。マイページのメッセージで条件を相談し、取引を進めます。',
     href: '/listings?deal=sale',
-    action: '販売中の農機具を探す',
+    action: '売り出し中の物件を探す',
   },
   {
-    icon: Truck,
-    title: '運ぶ',
-    body: '空きトラックや帰り便で農機具を運び、報酬を受け取ります。運搬者登録のあと、案件に応募できます。',
-    href: '/transport',
-    action: '運搬案件を見る',
+    icon: Handshake,
+    title: 'つなぐ',
+    body: '探している人の希望条件に、空いている物件を提案します。担当者登録のあと、リクエストに提案できます。',
+    href: '/requests',
+    action: '物件リクエストを見る',
   },
 ]
 
-const rentToOwnSteps = [
+const purchaseOptionSteps = [
   {
     title: 'まず借りて試す',
-    body: '「レンタル購入可」の農機具を短期レンタル。自分の圃場・作業に合うかを実機で確かめます。',
+    body: '「買取オプション付き」の物件をまず賃貸。暮らしに合うかを実際に住んで確かめます。',
   },
   {
     title: '気に入ったら購入へ',
-    body: 'レンタル中はマイページから購入に切り替えられます。申込み時の充当条件で購入価格が決まります。',
+    body: '入居中はマイページから購入に切り替えられます。申込み時の充当条件で購入価格が決まります。',
   },
   {
-    title: 'レンタル料を一部充当',
-    body: '支払い済みレンタル料の一部（出品者が設定した割合・上限）を購入価格に充当。試した分が無駄になりません。',
+    title: '賃料を一部充当',
+    body: '支払い済み賃料の一部（出品者が設定した割合・上限）を購入価格に充当。試した分が無駄になりません。',
   },
 ]
 
@@ -56,10 +56,10 @@ export default function GuidePage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8">
-        <p className="eyebrow mb-5">HOW AGRI MACHARE WORKS</p>
+        <p className="eyebrow mb-5">HOW ESTATE MACHARE WORKS</p>
         <PageIntro
           title="はじめての方へ"
-          description="農機具を売る、買う、借りる、運ぶ。あなたに合う入口から、次のつながりを。出品・申込み・問い合わせにはログインが必要です。"
+          description="物件を売る、買う、借りる、つなぐ。あなたに合う入口から、次のつながりを。出品・申込み・問い合わせにはログインが必要です。"
         />
 
         <section className="mt-10">
@@ -92,16 +92,16 @@ export default function GuidePage() {
           </div>
         </section>
 
-        <section id="rent-to-own" className="mt-12 scroll-mt-20">
+        <section id="purchase-option" className="mt-12 scroll-mt-20">
           <Badge variant="accent">
             <Repeat2 className="size-3.5" />
-            レンタル購入
+            買取オプション
           </Badge>
           <h2 className="mt-3 font-display text-xl font-bold text-foreground">
             「借りて、良ければ買う」の流れ
           </h2>
           <ol className="mt-4 grid gap-4 md:grid-cols-3">
-            {rentToOwnSteps.map((step, index) => (
+            {purchaseOptionSteps.map((step, index) => (
               <li
                 key={step.title}
                 className="rounded-2xl border border-border bg-card p-5"
@@ -119,10 +119,10 @@ export default function GuidePage() {
             ))}
           </ol>
           <Link
-            href="/listings?deal=rentToOwn"
+            href="/listings?deal=purchaseOption"
             className="mt-4 inline-block text-sm font-medium text-primary"
           >
-            レンタル購入できる農機具を探す →
+            買取オプション付きの物件を探す →
           </Link>
         </section>
 
@@ -135,17 +135,19 @@ export default function GuidePage() {
               <strong className="text-foreground">
                 やり取りをひとつの場所に。
               </strong>
-              問い合わせ・応募・返信をマイページで確認できます。現在はコンセプト検証版のため、実際の取引・決済は行われません。
+              問い合わせ・提案・返信をマイページで確認できます。現在はコンセプト検証版のため、実際の取引・決済は行われません。
             </li>
             <li>
-              <strong className="text-foreground">状態の記録。</strong>
-              年式・稼働時間・整備記録を出品時に登録し、詳細ページで確認できます。
+              <strong className="text-foreground">物件情報の記録。</strong>
+              用途地域・間取り・専有面積・築年・最寄駅からの徒歩分を出品時に登録し、詳細ページで確認できます。
             </li>
             <li>
-              <strong className="text-foreground">運搬もまとめて。</strong>
-              遠方の農機具は運搬チャネルで配送を手配できます。料金は
-              <Link href="/transport/pricing" className="text-primary">
-                料金のめやす
+              <strong className="text-foreground">
+                条件から探すこともできます。
+              </strong>
+              希望のエリアと予算を登録すると、条件に合う物件を持つ出品者から提案が届きます。入居時の費用は
+              <Link href="/costs" className="text-primary">
+                初期費用のめやす
               </Link>
               を参照してください。
             </li>

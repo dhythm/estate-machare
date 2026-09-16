@@ -22,7 +22,7 @@ export function ListingResults({
         role="alert"
         className="mt-8 rounded-2xl border border-border bg-card p-6"
       >
-        <p>農機具を取得できませんでした。</p>
+        <p>物件を取得できませんでした。</p>
         <button
           type="button"
           onClick={() => void query.refetch()}
@@ -36,7 +36,7 @@ export function ListingResults({
   if (query.data.items.length === 0) {
     return (
       <div className="mt-8 rounded-2xl border border-dashed border-border bg-card p-12 text-center text-muted-foreground">
-        条件に合う農機具が見つかりませんでした。フィルターを変えてお試しください。
+        条件に合う物件が見つかりませんでした。フィルターを変えてお試しください。
       </div>
     )
   }

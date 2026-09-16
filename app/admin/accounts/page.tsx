@@ -5,7 +5,7 @@ import { listAccountSummaries } from '@/lib/server/admin-overview'
 import { getCurrentUser } from '@/lib/server/auth/session'
 
 export const metadata: Metadata = {
-  title: 'アカウント管理 | Agri Machare 運営',
+  title: 'アカウント管理 | Estate Machare 運営',
 }
 
 export const dynamic = 'force-dynamic'

@@ -6,9 +6,9 @@ import Link from 'next/link'
 import {
   MapPin,
   Star,
-  Gauge,
+  Ruler,
   Calendar,
-  Wrench,
+  TrainFront,
   ShieldCheck,
   Repeat2,
   ShoppingCart,
@@ -23,28 +23,35 @@ import { buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/badge'
 import { BackLink } from '@/components/back-link'
 import { ListingCard } from '@/components/listing-card'
-import { RentToOwnSimulator } from '@/components/rent-to-own/rent-to-own-simulator'
-import { RentalRequestForm } from '@/components/rent-to-own/rental-request-form'
+import { PurchaseOptionSimulator } from '@/components/purchase-option/purchase-option-simulator'
+import { LeaseRequestForm } from '@/components/leases/lease-request-form'
 import { OrderRequestForm } from '@/components/orders/order-request-form'
-import { TransportEstimate } from '@/components/transport/transport-estimate'
+import { InitialCostEstimate } from '@/components/leases/initial-cost-estimate'
 import { StarRating } from '@/components/reviews/star-rating'
 import type { Review } from '@/lib/server/store/types'
-import type { DateRange, RentToOwnTerms } from '@/lib/rent-to-own'
+import type { DateRange } from '@/lib/lease'
+import type { PurchaseOptionTerms } from '@/lib/purchase-option'
 import {
+  formatArea,
+  formatBuildingAge,
   formatYen,
   type Listing,
   type ListingMode,
   type ListingModeConfig,
 } from '@/lib/data'
 
-const modeIcon = { buy: ShoppingCart, rent: Calendar, rentToOwn: Repeat2 }
-const modeLabel = { buy: '購入', rent: 'レンタル', rentToOwn: '試して購入' }
+const modeIcon = { buy: ShoppingCart, rent: Calendar, purchaseOption: Repeat2 }
+const modeLabel = {
+  buy: '購入',
+  rent: '賃貸',
+  purchaseOption: '住んでから買う',
+}
 
 export function ListingDetail({
   listing,
   modes,
   related,
-  rentToOwnTerms,
+  purchaseOptionTerms,
   booked,
   viewer,
   sellerReviews = [],
@@ -53,7 +60,7 @@ export function ListingDetail({
   listing: Listing
   modes: ListingModeConfig[]
   related: Listing[]
-  rentToOwnTerms?: RentToOwnTerms
+  purchaseOptionTerms?: PurchaseOptionTerms
   booked: DateRange[]
   viewer: { signedIn: boolean; isOwner: boolean; canEdit?: boolean }
   sellerReviews?: Review[]
@@ -73,7 +80,7 @@ export function ListingDetail({
   return (
     <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
       <div className="flex items-center justify-between gap-4">
-        <BackLink href="/listings" label="農機具一覧にもどる" />
+        <BackLink href="/listings" label="物件一覧にもどる" />
         {viewer.canEdit && (
           <Link
             href={`/listings/${listing.id}/edit`}
@@ -93,7 +100,7 @@ export function ListingDetail({
             {listing.category}
           </Link>
           <span aria-hidden="true">/</span>
-          <span>{listing.maker}</span>
+          <span>{listing.zoning}</span>
         </div>
         <h1 className="mt-3 text-balance font-display text-2xl font-bold leading-snug tracking-tight text-foreground sm:text-3xl lg:text-4xl">
           {listing.name}
@@ -105,7 +112,7 @@ export function ListingDetail({
       </header>
 
       <div className="mt-7 grid items-start gap-7 lg:grid-cols-[minmax(0,1.5fr)_minmax(350px,1fr)] lg:gap-x-9">
-        <section aria-label="農機具の写真と仕様" className="min-w-0">
+        <section aria-label="物件の写真と仕様" className="min-w-0">
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted">
             <Image
               src={mainPicture || '/placeholder.svg'}
@@ -119,17 +126,17 @@ export function ListingDetail({
             <div className="absolute left-4 top-4 flex flex-wrap gap-1.5">
               {listing.deals.includes('sale') && (
                 <Badge className="bg-card/95 text-foreground shadow-sm">
-                  販売
+                  売買
                 </Badge>
               )}
               {listing.deals.includes('rent') && (
                 <Badge className="bg-accent text-accent-foreground shadow-sm">
-                  レンタル
+                  賃貸
                 </Badge>
               )}
-              {listing.rentToOwn && (
+              {listing.purchaseOption && (
                 <Badge className="bg-primary text-primary-foreground shadow-sm">
-                  購入充当
+                  買取オプション
                 </Badge>
               )}
             </div>
@@ -167,24 +174,28 @@ export function ListingDetail({
           )}
           <dl className="mt-5 grid grid-cols-2 overflow-hidden rounded-2xl border border-border bg-card sm:grid-cols-4">
             <Spec
+              icon={<Ruler className="size-4" />}
+              label="間取り・専有面積"
+              value={`${listing.layout ? `${listing.layout} / ` : ''}${formatArea(listing.floorArea)}`}
+            />
+            <Spec
               icon={<Calendar className="size-4" />}
-              label="年式"
-              value={`${listing.year}年`}
+              label="築年"
+              value={
+                listing.builtYear === undefined
+                  ? '—'
+                  : `${listing.builtYear}年（${formatBuildingAge(listing.builtYear, new Date())}）`
+              }
             />
             <Spec
-              icon={<Gauge className="size-4" />}
-              label="稼働時間"
-              value={`${listing.hours.toLocaleString('ja-JP')}h`}
-            />
-            <Spec
-              icon={<Wrench className="size-4" />}
-              label="状態"
-              value={listing.condition}
+              icon={<TrainFront className="size-4" />}
+              label="最寄駅"
+              value={`${listing.nearestStation} 徒歩${listing.walkMinutes}分`}
             />
             <Spec
               icon={<MapPin className="size-4" />}
-              label="所在地"
-              value={listing.prefecture}
+              label="用途地域"
+              value={listing.zoning}
             />
           </dl>
         </section>
@@ -231,8 +242,8 @@ export function ListingDetail({
                 {active.title}
               </p>
               <p className="mt-2 break-words font-display text-3xl font-bold leading-tight tracking-tight text-primary sm:text-4xl">
-                {active.id === 'rentToOwn' && listing.rentPerDay
-                  ? `${formatYen(listing.rentPerDay)}/日`
+                {active.id === 'purchaseOption' && listing.rentPerMonth
+                  ? `${formatYen(listing.rentPerMonth)}/月`
                   : active.price}
               </p>
               <p className="mt-3 text-xs leading-6 text-muted-foreground">
@@ -244,18 +255,18 @@ export function ListingDetail({
                   <span>{active.note}</span>
                 </div>
               )}
-              {active.id === 'rentToOwn' && rentToOwnTerms && (
+              {active.id === 'purchaseOption' && purchaseOptionTerms && (
                 <div className="mt-4">
-                  <RentToOwnSimulator terms={rentToOwnTerms} />
+                  <PurchaseOptionSimulator terms={purchaseOptionTerms} />
                 </div>
               )}
               <div className="mt-6 flex flex-col gap-2">
                 {active.id !== 'buy' &&
-                listing.rentPerDay &&
+                listing.rentPerMonth &&
                 !viewer.isOwner ? (
-                  <RentalRequestForm
+                  <LeaseRequestForm
                     listingId={listing.id}
-                    rentPerDay={listing.rentPerDay}
+                    rentPerMonth={listing.rentPerMonth}
                     booked={booked}
                     signedIn={viewer.signedIn}
                   />
@@ -287,17 +298,30 @@ export function ListingDetail({
               </div>
             </div>
             <div className="border-t border-border bg-muted/35 p-5 sm:px-6">
-              <TransportEstimate
-                category={listing.category}
-                fromPrefecture={listing.prefecture}
-              />
-              <Link
-                href={`/transport/new?listingId=${encodeURIComponent(listing.id)}`}
-                className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
-              >
-                この農機具の運搬を依頼する
-                <ArrowRight className="size-3.5" />
-              </Link>
+              {listing.rentPerMonth === undefined ? (
+                <Link
+                  href={`/requests/new?listingId=${encodeURIComponent(listing.id)}`}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                >
+                  希望条件を登録して提案を受ける
+                  <ArrowRight className="size-3.5" />
+                </Link>
+              ) : (
+                <>
+                  <InitialCostEstimate
+                    rentPerMonth={listing.rentPerMonth}
+                    depositMonths={listing.depositMonths}
+                    keyMoneyMonths={listing.keyMoneyMonths}
+                  />
+                  <Link
+                    href={`/requests/new?listingId=${encodeURIComponent(listing.id)}`}
+                    className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                  >
+                    希望条件を登録して提案を受ける
+                    <ArrowRight className="size-3.5" />
+                  </Link>
+                </>
+              )}
             </div>
           </div>
           <p className="mt-4 flex items-start gap-2 px-2 text-xs leading-6 text-muted-foreground">
@@ -309,7 +333,7 @@ export function ListingDetail({
         <div className="min-w-0 lg:col-start-1">
           <section className="border-b border-border pb-8">
             <h2 className="font-display text-xl font-bold text-foreground">
-              この農機具について
+              この物件について
             </h2>
             <p className="mt-4 whitespace-pre-line text-sm leading-8 text-muted-foreground">
               {listing.summary}
@@ -392,7 +416,7 @@ export function ListingDetail({
         <section className="mt-16 border-t border-border pt-10">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2 className="font-display text-2xl font-bold tracking-tight text-foreground">
-              こちらの農機具も
+              こちらの物件も
             </h2>
             <Link
               href={`/listings?category=${encodeURIComponent(listing.category)}`}

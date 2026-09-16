@@ -28,8 +28,8 @@ export function conflict(error: string): Response {
   return Response.json({ error }, { status: 409 })
 }
 
-/** Map a rental service failure to its HTTP response. */
-export function rentalFailure(
+/** Map a lease service failure to its HTTP response. */
+export function leaseFailure(
   reason:
     | 'not_found'
     | 'forbidden'
@@ -40,13 +40,13 @@ export function rentalFailure(
 ): Response {
   switch (reason) {
     case 'not_found':
-      return notFound('レンタルが見つかりません。')
+      return notFound('賃貸が見つかりません。')
     case 'forbidden':
-      return forbidden('このレンタルを操作する権限がありません。')
+      return forbidden('この賃貸を操作する権限がありません。')
     case 'conflict':
       return conflict('その期間はすでに予約されています。')
     case 'unavailable':
-      return conflict('この農機具はレンタルできません。')
+      return conflict('この物件は賃貸できません。')
     case 'invalid':
       return badRequest('期間の指定が正しくありません。')
     case 'transition':
@@ -66,7 +66,7 @@ export function orderFailure(
     case 'conflict':
       return conflict('他の方の購入手続きが進んでいます。')
     case 'unavailable':
-      return conflict('この農機具は購入できません。')
+      return conflict('この物件は購入できません。')
     case 'transition':
       return conflict('現在の状態ではその操作はできません。')
   }

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="夕暮れの街並みに並ぶ住宅とマンション">
+  <defs>
+    <linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d2434"/>
+      <stop offset=".55" stop-color="#1d4a64"/>
+      <stop offset="1" stop-color="#3d7590"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#e3b778" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#e3b778" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#dusk)"/>
+  <circle cx="1180" cy="300" r="120" fill="#e3b778" opacity=".28"/>
+  <rect y="560" width="1600" height="340" fill="url(#glow)"/>
+
+  <!-- far skyline, kept low and quiet on the left -->
+  <g fill="#173a4f" opacity=".75">
+    <rect x="-20" y="620" width="180" height="280"/>
+    <rect x="170" y="590" width="140" height="310"/>
+    <rect x="320" y="640" width="120" height="260"/>
+    <rect x="860" y="360" width="150" height="540"/>
+    <rect x="1030" y="300" width="120" height="600"/>
+    <rect x="1170" y="410" width="160" height="490"/>
+    <rect x="1350" y="340" width="130" height="560"/>
+    <rect x="1500" y="450" width="120" height="450"/>
+  </g>
+
+  <!-- lit windows, concentrated to the right -->
+  <g fill="#e3b778" opacity=".8">
+    <rect x="884" y="410" width="28" height="22"/><rect x="930" y="410" width="28" height="22" opacity=".5"/>
+    <rect x="884" y="470" width="28" height="22" opacity=".5"/><rect x="930" y="470" width="28" height="22"/>
+    <rect x="884" y="530" width="28" height="22"/><rect x="930" y="530" width="28" height="22" opacity=".5"/>
+    <rect x="1054" y="350" width="28" height="22"/><rect x="1100" y="350" width="28" height="22" opacity=".5"/>
+    <rect x="1054" y="410" width="28" height="22" opacity=".5"/><rect x="1100" y="410" width="28" height="22"/>
+    <rect x="1054" y="470" width="28" height="22"/><rect x="1100" y="470" width="28" height="22" opacity=".5"/>
+    <rect x="1194" y="460" width="28" height="22" opacity=".5"/><rect x="1240" y="460" width="28" height="22"/>
+    <rect x="1194" y="520" width="28" height="22"/><rect x="1240" y="520" width="28" height="22" opacity=".5"/>
+    <rect x="1374" y="390" width="28" height="22"/><rect x="1420" y="390" width="28" height="22" opacity=".5"/>
+    <rect x="1374" y="450" width="28" height="22" opacity=".5"/><rect x="1420" y="450" width="28" height="22"/>
+    <rect x="1524" y="500" width="28" height="22"/><rect x="1570" y="500" width="28" height="22" opacity=".5"/>
+  </g>
+
+  <!-- low houses along the foreground -->
+  <g fill="#0f2a3a">
+    <path d="M520 760l90-70 90 70v140H520z"/>
+    <path d="M700 780l80-62 80 62v120H700z"/>
+    <path d="M1140 790l70-56 70 56v110h-140z"/>
+    <path d="M1320 800l64-52 64 52v100h-128z"/>
+  </g>
+  <g fill="#e3b778" opacity=".85">
+    <rect x="576" y="790" width="34" height="30" rx="3"/>
+    <rect x="756" y="806" width="30" height="26" rx="3"/>
+    <rect x="1192" y="816" width="28" height="24" rx="3"/>
+    <rect x="1368" y="826" width="26" height="22" rx="3"/>
+  </g>
+  <rect y="880" width="1600" height="20" fill="#0a1d29"/>
+</svg>
