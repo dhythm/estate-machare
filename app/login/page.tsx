@@ -8,7 +8,7 @@ import { PageShell } from '@/components/page-shell'
 import { getCurrentUser } from '@/lib/server/auth/session'
 import { readCallbackUrl } from '@/lib/validation/auth'
 
-export const metadata: Metadata = { title: 'ログイン | Agri Machare' }
+export const metadata: Metadata = { title: 'ログイン | Estate Machare' }
 export const dynamic = 'force-dynamic'
 
 export default async function LoginPage({
@@ -40,7 +40,7 @@ export default async function LoginPage({
               次のつながり。
             </h2>
             <p className="mt-5 text-sm leading-7 text-white/75">
-              あなたの農業の、つづきへ。
+              あなたの住まい探しの、つづきへ。
             </p>
           </div>
         </div>
@@ -55,7 +55,7 @@ export default async function LoginPage({
               href="/guide"
               className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-primary"
             >
-              Agri Machare をはじめて使う方へ
+              Estate Machare をはじめて使う方へ
               <ArrowUpRight className="size-3.5" />
             </Link>
           </div>

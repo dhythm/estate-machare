@@ -82,17 +82,17 @@ export function ListingBrowser({
         <div>
           <p className="eyebrow mb-3">THE MARKETPLACE</p>
           <h1 className="text-balance font-display text-3xl font-bold sm:text-4xl tracking-tight text-foreground">
-            農機具を探す
+            物件を探す
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            買う、借りる、借りてから買う。畑に合う一台を。
+            買う、借りる、住んでから買う。暮らしに合う一件を。
           </p>
         </div>
         <Link
           href="/listings/new"
           className="inline-flex items-center gap-2 text-xs font-bold text-primary"
         >
-          農機具を出品する
+          物件を出品する
           <ArrowUpRight className="size-4" />
         </Link>
       </div>
@@ -111,7 +111,7 @@ export function ListingBrowser({
                 name="q"
                 value={keywordInput}
                 onChange={(event) => setKeywordInput(event.target.value)}
-                placeholder="機種名・メーカー・地域"
+                placeholder="物件名・最寄駅・地域"
                 className="h-12 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-sm text-foreground outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
               />
             </label>

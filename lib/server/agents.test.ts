@@ -2,9 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   getAgentProfile,
   listAgentProfiles,
-  matchAgentsForJob,
-  matchJobsForAgent,
-  parseTons,
+  matchAgentsForRequest,
+  matchRequestsForAgent,
   upsertAgentProfile,
 } from './agents'
 import { resetStore } from './store'
@@ -15,70 +14,76 @@ vi.mock('server-only', () => ({}))
 
 beforeEach(() => resetStore())
 
-const akita = {
-  name: '高橋運送',
-  kind: '法人' as const,
-  prefecture: '秋田県',
-  vehicles: ['2tトラック' as const],
-  serviceAreas: ['秋田県', '山形県'],
+const tokyo = {
+  name: '高橋不動産',
+  kind: '宅建業者' as const,
+  prefecture: '東京都',
+  handledCategories: ['マンション' as const],
+  serviceAreas: ['東京都', '神奈川県'],
 }
 
 describe('agent profiles', () => {
   it('creates and updates one profile per user', async () => {
-    const created = await upsertAgentProfile(demoUser, akita)
-    expect(created).toMatchObject({ id: 'demo-user', name: '高橋運送' })
+    const created = await upsertAgentProfile(demoUser, tokyo)
+    expect(created).toMatchObject({ id: 'demo-user', name: '高橋不動産' })
     const updated = await upsertAgentProfile(demoUser, {
-      ...akita,
-      vehicles: ['4tトラック'],
+      ...tokyo,
+      handledCategories: ['戸建'],
     })
-    expect(updated.vehicles).toEqual(['4tトラック'])
+    expect(updated.handledCategories).toEqual(['戸建'])
     expect(updated.createdAt).toBe(created.createdAt)
     expect(await listAgentProfiles()).toHaveLength(1)
-    expect((await getAgentProfile('demo-user'))?.vehicles).toEqual([
-      '4tトラック',
+    expect((await getAgentProfile('demo-user'))?.handledCategories).toEqual([
+      '戸建',
     ])
     expect(await getAgentProfile('nobody')).toBeUndefined()
   })
 })
 
-describe('parseTons', () => {
-  it('reads tons and kilograms from free text', () => {
-    expect(parseTons('約2.4t')).toBe(2.4)
-    expect(parseTons('1,800kg')).toBe(1.8)
-    expect(parseTons('軽量')).toBeUndefined()
-  })
-})
-
 describe('matching', () => {
-  it('ranks agents by matching areas and filters by capacity', async () => {
-    await upsertAgentProfile(demoUser, akita)
+  it('ranks a local agent above one who only serves the area', async () => {
+    // pr-01 wants a マンション in 東京都 世田谷区.
+    await upsertAgentProfile(demoUser, tokyo)
     await upsertAgentProfile(demoSeller, {
-      ...akita,
-      name: '大型運送',
-      vehicles: ['4tトラック'],
-      serviceAreas: ['山形県'],
+      ...tokyo,
+      name: '横浜不動産',
+      prefecture: '神奈川県',
+      serviceAreas: ['東京都'],
     })
-    const request = (await getPropertyRequest('tj-01'))! // 秋田県 → 山形県, 約2.4t
-    const matches = await matchAgentsForJob(request)
-    expect(matches.map((match) => match.profile.name)).toEqual(['大型運送'])
-    const light = await matchAgentsForJob({ ...request, weight: '約1t' })
-    expect(light.map((match) => [match.profile.name, match.score])).toEqual([
-      ['高橋運送', 2],
-      ['大型運送', 1],
-    ])
+    const request = (await getPropertyRequest('pr-01'))!
     expect(
-      await matchAgentsForJob({
+      (await matchAgentsForRequest(request)).map((match) => [
+        match.profile.name,
+        match.score,
+      ]),
+    ).toEqual([
+      ['高橋不動産', 2],
+      ['横浜不動産', 1],
+    ])
+  })
+
+  it('drops agents who do not handle the category or the area', async () => {
+    await upsertAgentProfile(demoUser, tokyo)
+    const request = (await getPropertyRequest('pr-01'))!
+    expect(
+      await matchAgentsForRequest({ ...request, category: '土地' }),
+    ).toEqual([])
+    expect(
+      await matchAgentsForRequest({
         ...request,
-        from: '沖縄県 那覇市',
-        to: '沖縄県 名護市',
+        prefecture: '沖縄県',
+        city: '那覇市',
       }),
     ).toEqual([])
   })
 
-  it('lists open approved requests inside the agent areas', async () => {
-    const profile = await upsertAgentProfile(demoUser, akita)
-    const requests = await matchJobsForAgent(profile)
-    expect(requests.map((request) => request.id)).toContain('tj-01')
+  it('lists open approved requests inside the agent areas and categories', async () => {
+    const profile = await upsertAgentProfile(demoUser, tokyo)
+    const requests = await matchRequestsForAgent(profile)
+    expect(requests.map((request) => request.id)).toContain('pr-01')
     expect(requests.every((request) => request.status === '募集中')).toBe(true)
+    expect(requests.every((request) => request.category === 'マンション')).toBe(
+      true,
+    )
   })
 })

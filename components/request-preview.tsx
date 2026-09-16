@@ -47,7 +47,9 @@ export async function RequestPreview() {
                         {request.title}
                       </p>
                       <Badge
-                        variant={request.status === '募集中' ? 'default' : 'muted'}
+                        variant={
+                          request.status === '募集中' ? 'default' : 'muted'
+                        }
                       >
                         {request.status}
                       </Badge>

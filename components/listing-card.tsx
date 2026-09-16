@@ -46,9 +46,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
         <p className="mt-2 text-xs text-muted-foreground">
           {listing.layout ? `${listing.layout} · ` : ''}
           {formatArea(listing.floorArea)}
-          {listing.builtYear !== undefined && (
-            <> · {listing.builtYear}年築</>
-          )}
+          {listing.builtYear !== undefined && <> · {listing.builtYear}年築</>}
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
           {listing.nearestStation} 徒歩{listing.walkMinutes}分

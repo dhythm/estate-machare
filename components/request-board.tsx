@@ -138,7 +138,9 @@ export async function RequestBoard() {
                 <div className="grid gap-5 lg:grid-cols-[1.1fr_1.4fr_auto] lg:items-center lg:gap-8">
                   <div>
                     <Badge
-                      variant={request.status === '募集中' ? 'default' : 'muted'}
+                      variant={
+                        request.status === '募集中' ? 'default' : 'muted'
+                      }
                     >
                       {request.status}
                     </Badge>
@@ -173,7 +175,9 @@ export async function RequestBoard() {
                   <div className="flex flex-wrap items-center justify-between gap-4 lg:min-w-44 lg:flex-col lg:items-end">
                     <div className="shrink-0">
                       <p className="text-xs text-muted-foreground lg:text-right">
-                        {request.deal === 'rent' ? '月額賃料の上限' : '予算の上限'}
+                        {request.deal === 'rent'
+                          ? '月額賃料の上限'
+                          : '予算の上限'}
                       </p>
                       <p className="mt-1 font-display text-2xl font-bold tracking-tight text-primary sm:text-3xl">
                         {formatYen(request.budget)}

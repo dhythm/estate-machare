@@ -3,7 +3,7 @@
 import type { PropertyRequest } from '@/lib/data'
 import { validateRequestProposal } from '@/lib/validation/property-request'
 import { useSubmissionForm } from './use-submission-form'
-import { FormAlert, SelectField, TextField, TextareaField } from './fields'
+import { FormAlert, TextField, TextareaField } from './fields'
 import { ReceiptPanel } from './receipt'
 import type { FormContact } from './contact'
 import { SubmitButton } from './submit-button'
@@ -41,8 +41,8 @@ export function RequestProposalForm({
             href: `/account/threads/${form.receipt.id}`,
             label: 'やり取りを開く',
           },
-          { href: '/transport', label: 'ほかの案件を見る' },
-          { href: '/transport/register', label: '運搬者として登録する' },
+          { href: '/requests', label: 'ほかの案件を見る' },
+          { href: '/requests/register', label: '担当者として登録する' },
         ]}
       />
     )

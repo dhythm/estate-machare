@@ -12,25 +12,26 @@ beforeEach(() => {
 })
 
 const input = {
-  item: 'トラクター 25馬力',
-  from: '長野県 松本市',
-  to: '長野県 諏訪市',
-  distanceKm: '40',
-  weight: '約1.2t',
-  desiredDate: '相談',
-  reward: '14000',
-  contactEmail: 'owner@example.com',
+  title: '駅徒歩10分以内の2LDKを借りたい',
+  deal: 'rent',
+  category: 'マンション',
+  layout: '2LDK',
+  prefecture: '東京都',
+  city: '世田谷区',
+  budget: '140000',
+  moveInDate: '2026-12-01',
+  contactEmail: 'seeker@example.com',
 }
 
 const post = (body: unknown) =>
   POST(
-    new Request('http://localhost/api/transport/requests', {
+    new Request('http://localhost/api/requests', {
       method: 'POST',
       body: JSON.stringify(body),
     }),
   )
 
-describe('/api/transport/requests', () => {
+describe('/api/requests', () => {
   it('lists requests', async () => {
     const response = await GET()
     expect(response.status).toBe(200)
@@ -43,15 +44,17 @@ describe('/api/transport/requests', () => {
     const body = await response.json()
     expect(body.request).toMatchObject({
       id: body.id,
-      item: input.title,
+      title: input.title,
       status: '募集中',
       moderationStatus: 'pending',
       ownerUserId: 'demo-seller',
     })
-    expect(JSON.stringify(body)).not.toContain('owner@example.com')
+    expect(JSON.stringify(body)).not.toContain('seeker@example.com')
     const listed = await (await GET()).json()
-    expect(listed[0].id).toBe('tj-01')
-    expect(listed.map((request: { id: string }) => request.id)).not.toContain(body.id)
+    expect(listed[0].id).toBe('pr-01')
+    expect(listed.map((request: { id: string }) => request.id)).not.toContain(
+      body.id,
+    )
   })
 
   it('requires login', async () => {
@@ -60,8 +63,8 @@ describe('/api/transport/requests', () => {
   })
 
   it('validates input', async () => {
-    const response = await post({ ...input, reward: '' })
+    const response = await post({ ...input, budget: '' })
     expect(response.status).toBe(400)
-    expect((await response.json()).errors).toHaveProperty('reward')
+    expect((await response.json()).errors).toHaveProperty('budget')
   })
 })

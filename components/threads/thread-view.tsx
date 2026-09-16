@@ -24,8 +24,8 @@ import { cn } from '@/lib/utils'
 
 const inquiryModeLabels: Record<string, string> = {
   buy: '購入したい',
-  rent: 'レンタルしたい',
-  purchaseOption: 'レンタル購入したい',
+  rent: '賃貸したい',
+  purchaseOption: '買取オプションしたい',
   question: '質問',
 }
 
@@ -41,7 +41,7 @@ function TargetCard({ target }: { target: Thread['target'] }) {
   if (!target)
     return (
       <p className="text-sm text-muted-foreground">
-        対象の農機具・案件は削除されました。
+        対象の物件・案件は削除されました。
       </p>
     )
   if (target.kind === 'listing') {
@@ -76,7 +76,7 @@ function TargetCard({ target }: { target: Thread['target'] }) {
         <dl className="mt-5 space-y-3 border-t border-border pt-4">
           {listing.rentPerMonth && (
             <div className="flex items-center justify-between gap-3">
-              <dt className="text-xs text-muted-foreground">レンタル / 日</dt>
+              <dt className="text-xs text-muted-foreground">賃貸 / 日</dt>
               <dd className="font-semibold tabular-nums">
                 {formatYen(listing.rentPerMonth)}
               </dd>
@@ -372,11 +372,11 @@ export function ThreadView({
             thread.target?.kind === 'listing' &&
             thread.role !== 'admin' && (
               <Link
-                href={`/transport/new?listingId=${thread.target.listing.id}`}
+                href={`/requests/new?listingId=${thread.target.listing.id}`}
                 className={cn(buttonVariants(), 'mt-5 h-10 w-full')}
               >
                 <Handshake className="size-4" aria-hidden="true" />
-                運搬を依頼する
+                希望条件を登録する
               </Link>
             )}
         </section>

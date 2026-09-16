@@ -72,7 +72,10 @@ export default async function NewPropertyRequestPage({
                 initial={initial}
               />
             ) : (
-              <LoginPrompt action="希望条件を登録する" callbackUrl={callbackUrl} />
+              <LoginPrompt
+                action="希望条件を登録する"
+                callbackUrl={callbackUrl}
+              />
             )}
           </div>
         </div>

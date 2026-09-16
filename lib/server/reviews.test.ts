@@ -17,14 +17,10 @@ vi.mock('server-only', () => ({}))
 beforeEach(() => resetStore())
 
 async function completedLease() {
-  const created = await requestLease(
-    (await getListing('trc-001'))!,
-    demoUser,
-    {
-      startDate: '2026-10-01',
-      endDate: '2026-10-07',
-    },
-  )
+  const created = await requestLease((await getListing('apt-001'))!, demoUser, {
+    startDate: '2026-10-01',
+    endDate: '2026-10-07',
+  })
   const id = created.ok ? created.value.id : ''
   await updateLeaseStatus(id, demoSeller, 'active')
   await updateLeaseStatus(id, demoSeller, 'completed')
@@ -35,7 +31,7 @@ async function agreedInquiry() {
   const { id } = await acceptSubmission(
     'listingInquiry',
     { mode: 'buy', name: '利用者デモ', message: '買います' },
-    { targetId: 'trc-001', userId: 'demo-user' },
+    { targetId: 'apt-001', userId: 'demo-user' },
   )
   await updateThreadStatus(id, demoSeller, 'agreed')
   return id
@@ -43,7 +39,7 @@ async function agreedInquiry() {
 
 describe('createReview', () => {
   it('lets the tenant review a completed lease and updates the seller rating', async () => {
-    const before = (await getListing('trc-001'))!.seller
+    const before = (await getListing('apt-001'))!.seller
     expect(before).toMatchObject({ rating: 4.8, reviews: 34 })
     const id = await completedLease()
     const result = await createReview(demoUser, {
@@ -53,15 +49,15 @@ describe('createReview', () => {
       comment: '普通でした',
     })
     expect(result.ok && result.value).toMatchObject({
-      listingId: 'trc-001',
+      listingId: 'apt-001',
       sellerUserId: 'demo-seller',
       reviewerUserId: 'demo-user',
       rating: 3,
     })
-    const after = (await getListing('trc-001'))!.seller
+    const after = (await getListing('apt-001'))!.seller
     expect(after.reviews).toBe(35)
     expect(after.rating).toBe(4.7)
-    expect((await getListing('cmb-002'))!.seller.reviews).toBe(59)
+    expect((await getListing('hse-002'))!.seller.reviews).toBe(59)
     expect(await findReviewForSource('lease', id)).toMatchObject({ rating: 3 })
     const again = await createReview(demoUser, {
       sourceKind: 'lease',
@@ -93,7 +89,7 @@ describe('createReview', () => {
 
   it('refuses the wrong person, the wrong state, and unknown sources', async () => {
     const created = await requestLease(
-      (await getListing('trc-001'))!,
+      (await getListing('apt-001'))!,
       demoUser,
       {
         startDate: '2026-11-01',

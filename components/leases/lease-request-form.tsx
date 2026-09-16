@@ -20,7 +20,7 @@ function BookedRanges({ booked }: { booked: DateRange[] }) {
   if (booked.length === 0) return null
   return (
     <p className="text-xs text-muted-foreground">
-      予約済み:{' '}
+      契約中:{' '}
       {booked.map((range, index) => (
         <span key={range.startDate + range.endDate}>
           {index > 0 && '、'}
@@ -48,7 +48,7 @@ export function LeaseRequestForm({
   const [error, setError] = useState<string>()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [done, setDone] = useState(false)
-  const days = countLeaseMonths(startDate, endDate)
+  const months = countLeaseMonths(startDate, endDate)
 
   if (!signedIn) {
     return (
@@ -72,7 +72,7 @@ export function LeaseRequestForm({
       >
         <CircleCheckBig className="mt-0.5 size-4 shrink-0 text-primary" />
         <span>
-          レンタルを申し込みました。出品者の承認をお待ちください。
+          入居を申し込みました。出品者の承認をお待ちください。
           <Link href="/account" className="ml-1 font-medium text-primary">
             マイページで確認する
           </Link>
@@ -89,7 +89,7 @@ export function LeaseRequestForm({
       setErrors(parsed.errors)
       return
     }
-    if (days === 0) {
+    if (months === 0) {
       setErrors({ endDate: '終了日は開始日以降にしてください。' })
       return
     }
@@ -136,12 +136,12 @@ export function LeaseRequestForm({
         />
       </div>
       <BookedRanges booked={booked} />
-      {days > 0 && (
+      {months > 0 && (
         <p className="text-sm text-foreground">
-          {days}日間 · {formatYen(rentPerMonth * days)}
+          {months}か月 · {formatYen(rentPerMonth * months)}
         </p>
       )}
-      <SubmitButton label="レンタルを申し込む" isSubmitting={isSubmitting} />
+      <SubmitButton label="入居を申し込む" isSubmitting={isSubmitting} />
     </form>
   )
 }

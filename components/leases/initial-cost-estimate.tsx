@@ -26,7 +26,10 @@ export function InitialCostEstimate({
     { label: '前家賃（1か月）', value: cost.rent },
     { label: `敷金（${depositMonths ?? 0}か月）`, value: cost.deposit },
     { label: `礼金（${keyMoneyMonths ?? 0}か月）`, value: cost.keyMoney },
-    { label: `仲介手数料（${brokerageFeeMonths}か月）`, value: cost.brokerageFee },
+    {
+      label: `仲介手数料（${brokerageFeeMonths}か月）`,
+      value: cost.brokerageFee,
+    },
   ]
 
   return (
@@ -37,7 +40,10 @@ export function InitialCostEstimate({
       </h3>
       <dl className="mt-4 space-y-2">
         {rows.map((row) => (
-          <div key={row.label} className="flex items-baseline justify-between gap-2">
+          <div
+            key={row.label}
+            className="flex items-baseline justify-between gap-2"
+          >
             <dt className="text-xs text-muted-foreground">{row.label}</dt>
             <dd className="text-sm font-medium text-foreground">
               {formatYen(row.value)}

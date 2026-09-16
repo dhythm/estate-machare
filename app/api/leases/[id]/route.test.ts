@@ -24,7 +24,7 @@ const patch = (id: string, body: unknown) =>
 
 describe('PATCH /api/leases/[id]', () => {
   it('applies transitions with the right status codes', async () => {
-    const listing = (await getListing('trc-001'))!
+    const listing = (await getListing('apt-001'))!
     const created = await requestLease(listing, demoUser, {
       startDate: '2026-10-01',
       endDate: '2026-10-07',
@@ -38,7 +38,7 @@ describe('PATCH /api/leases/[id]', () => {
     signInAs(demoUser)
     const converted = await patch(id, { status: 'converted' })
     expect(converted.status).toBe(200)
-    expect((await converted.json()).purchasePrice).toBe(18_723_000)
+    expect((await converted.json()).purchasePrice).toBe(87_866_000)
     signInAs(demoAdmin)
     expect((await patch(id, { status: 'completed' })).status).toBe(409)
     signInAs(null)

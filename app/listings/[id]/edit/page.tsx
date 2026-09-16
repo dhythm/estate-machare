@@ -9,7 +9,7 @@ import { canManage } from '@/lib/server/auth/access'
 import { getCurrentUser } from '@/lib/server/auth/session'
 import { getListing } from '@/lib/server/listings'
 
-export const metadata: Metadata = { title: '出品を編集する | Agri Machare' }
+export const metadata: Metadata = { title: '出品を編集する | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 
@@ -62,7 +62,7 @@ export default async function EditListingPage({
   return (
     <PageShell>
       <div className="mx-auto max-w-4xl px-5 py-12 sm:px-8">
-        <BackLink href={`/listings/${id}`} label="農機具の詳細にもどる" />
+        <BackLink href={`/listings/${id}`} label="物件の詳細にもどる" />
         <div className="mt-6">
           <PageIntro title="出品を編集する" />
         </div>

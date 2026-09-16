@@ -40,12 +40,7 @@ describe('LeaseActions', () => {
 
   it('offers the tenant conversion only when allowed', () => {
     render(
-      <LeaseActions
-        leaseId="r-1"
-        status="active"
-        party="tenant"
-        canConvert
-      />,
+      <LeaseActions leaseId="r-1" status="active" party="tenant" canConvert />,
     )
     expect(
       screen.getByRole('button', { name: '購入に切り替える' }),

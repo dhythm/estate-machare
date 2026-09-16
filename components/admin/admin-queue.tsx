@@ -44,7 +44,7 @@ export function AdminQueue({
   const [pendingId, setPendingId] = useState<string>()
   const [loading, setLoading] = useState(false)
   const [query, setQuery] = useState('')
-  const title = kind === 'listing' ? '出品' : '運搬依頼'
+  const title = kind === 'listing' ? '出品' : '物件リクエスト'
   const normalizedQuery = query.trim().toLocaleLowerCase('ja-JP')
 
   const load = async (nextStatus: ModerationQueueFilter) => {
@@ -158,7 +158,7 @@ export function AdminQueue({
 
       {kind === 'propertyRequest' && (
         <QueueSection
-          title="運搬依頼"
+          title="物件リクエスト"
           empty="該当なし"
           pendingId={pendingId}
           items={pendingFirst(queue.propertyRequests)

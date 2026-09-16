@@ -27,11 +27,13 @@ afterEach(() => {
 
 const listingBody = {
   name: '審査中トラクター',
-  category: 'トラクター',
-  maker: 'クボタ',
-  year: '2018',
-  hours: '500',
-  condition: '目立った傷なし',
+  category: 'マンション',
+  zoning: '第一種住居地域',
+  layout: '3LDK',
+  floorArea: 74.2,
+  builtYear: 2019,
+  nearestStation: '小田急線 経堂駅',
+  walkMinutes: 6,
   prefecture: '新潟県',
   city: '長岡市',
   deals: ['sale'],
@@ -40,7 +42,7 @@ const listingBody = {
   purchaseOption: false,
   summary: '審査中。',
   sellerName: '審査農園',
-  sellerKind: '農業法人',
+  sellerKind: '宅建業者',
   contactEmail: 'seller@example.com',
 }
 
@@ -61,7 +63,7 @@ describe('/api/admin/queue', () => {
   it('requires a signed-in admin', async () => {
     const body = JSON.stringify({
       kind: 'listing',
-      id: 'trc-001',
+      id: 'apt-001',
       status: 'approved',
     })
     auth.mockResolvedValue(null)
@@ -111,16 +113,17 @@ describe('/api/admin/queue', () => {
 
   it('rejects a pending transport request', async () => {
     const created = await createJob(
-      new Request('http://localhost/api/transport/requests', {
+      new Request('http://localhost/api/requests/requests', {
         method: 'POST',
         body: JSON.stringify({
-          item: '審査中コンバイン',
-          from: '秋田県 大仙市',
-          to: '山形県 天童市',
-          distanceKm: '120',
-          weight: '約2.4t',
-          desiredDate: '相談',
-          reward: '38000',
+          title: '駅徒歩10分以内の2LDKを借りたい',
+          deal: 'rent',
+          category: 'マンション',
+          layout: '2LDK',
+          prefecture: '東京都',
+          city: '世田谷区',
+          budget: '38000',
+          moveInDate: '2026-12-01',
           contactEmail: 'owner@example.com',
         }),
       }),

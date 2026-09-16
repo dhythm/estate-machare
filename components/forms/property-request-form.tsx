@@ -23,7 +23,7 @@ export type PropertyRequestInitial = {
   city?: string
 }
 
-export type PropertyRequestValues = {
+type PropertyRequestValues = {
   title: string
   deal: string
   category: string
@@ -177,7 +177,9 @@ export function PropertyRequestForm({
         <TextField
           id="budget"
           label={
-            form.values.deal === 'rent' ? '月額賃料の上限（円）' : '予算の上限（円）'
+            form.values.deal === 'rent'
+              ? '月額賃料の上限（円）'
+              : '予算の上限（円）'
           }
           inputMode="numeric"
           value={form.values.budget}

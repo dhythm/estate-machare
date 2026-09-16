@@ -29,8 +29,7 @@ async function resolveSource(
     return {
       listingId: lease.listingId,
       reviewerUserId: lease.tenantUserId,
-      reviewable:
-        lease.status === 'completed' || lease.status === 'converted',
+      reviewable: lease.status === 'completed' || lease.status === 'converted',
     }
   }
   if (kind === 'order') {

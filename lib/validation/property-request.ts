@@ -1,4 +1,4 @@
-import { isLayout, layouts, type Layout } from '@/lib/data'
+import { isLayout, type Layout } from '@/lib/data'
 import { listingCategories } from './listing-submission'
 import {
   asRecord,
@@ -16,7 +16,7 @@ import {
 
 export const agentKinds = ['個人', '宅建業者', '管理会社', '法人'] as const
 
-export const requestDeals = ['sale', 'rent'] as const
+const requestDeals = ['sale', 'rent'] as const
 
 export type RequestProposal = {
   name: string
@@ -130,5 +130,3 @@ export function validatePropertyRequest(
   if (value.category === '土地') value.layout = undefined
   return finish(errors, value)
 }
-
-export const requestLayouts = layouts

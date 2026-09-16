@@ -25,25 +25,30 @@ function setup(
 }
 
 const existing = {
-  listingId: 'trc-001',
+  listingId: 'apt-001',
   values: {
-    name: 'クボタ トラクター 45馬力',
-    category: 'トラクター',
-    maker: 'クボタ',
-    year: '2019',
-    hours: '620',
-    condition: '目立った傷なし',
-    prefecture: '新潟県',
-    city: '長岡市',
+    name: 'シティタワー 世田谷区 3LDK',
+    category: 'マンション',
+    zoning: '第一種住居地域',
+    layout: '3LDK',
+    floorArea: '74.2',
+    builtYear: '2019',
+    nearestStation: '小田急線 経堂駅',
+    walkMinutes: '6',
+    prefecture: '東京都',
+    city: '世田谷区',
     deals: ['sale', 'rent'] as ('sale' | 'rent')[],
-    salePrice: '18800000',
-    rentPerMonth: '22000',
+    salePrice: '88000000',
+    rentPerMonth: '220000',
+    depositMonths: '2',
+    keyMoneyMonths: '1',
+    leaseType: '普通借家',
     purchaseOption: true,
     purchaseOptionCreditRate: '50',
     purchaseOptionCreditCap: '5000000',
-    summary: 'キャビン付き',
+    summary: '南向き角住戸',
     sellerName: '中村不動産',
-    sellerKind: '農業法人',
+    sellerKind: '宅建業者',
     contactEmail: 'seller@example.com',
   },
   images: ['data:image/jpeg;base64,one', 'data:image/jpeg;base64,two'],
@@ -58,10 +63,10 @@ describe('ListingForm', () => {
     vi.stubGlobal('fetch', fetchMock)
     const user = setup()
     await user.click(screen.getByRole('button', { name: '出品を申し込む' }))
-    const name = screen.getByLabelText('農機具名')
+    const name = screen.getByLabelText('物件名')
     expect(name).toHaveFocus()
-    await user.type(name, 'トラクター')
-    expect(name).toHaveValue('トラクター')
+    await user.type(name, 'マンション')
+    expect(name).toHaveValue('マンション')
     expect(name).toHaveFocus()
     expect(fetchMock).not.toHaveBeenCalled()
   })
@@ -69,25 +74,25 @@ describe('ListingForm', () => {
   it('edits an existing listing with PUT, keeping remaining pictures', async () => {
     resizeDataUrl.mockResolvedValue('data:image/jpeg;base64,thumbtwo')
     const fetchMock = vi.fn(async () =>
-      Response.json({ id: 'trc-001', updatedAt: '2026-09-13T00:00:00.000Z' }),
+      Response.json({ id: 'apt-001', updatedAt: '2026-09-13T00:00:00.000Z' }),
     )
     vi.stubGlobal('fetch', fetchMock)
     const user = setup(undefined, existing)
-    expect(screen.getByLabelText('農機具名')).toHaveValue(
-      'クボタ トラクター 45馬力',
+    expect(screen.getByLabelText('物件名')).toHaveValue(
+      'シティタワー 世田谷区 3LDK',
     )
     expect(screen.getByLabelText('充当率（%）')).toHaveValue('50')
     expect(screen.getAllByRole('img', { name: /写真/ })).toHaveLength(2)
     await user.click(screen.getAllByRole('button', { name: '削除' })[0])
-    await user.clear(screen.getByLabelText('農機具名'))
-    await user.type(screen.getByLabelText('農機具名'), '更新後の名前')
+    await user.clear(screen.getByLabelText('物件名'))
+    await user.type(screen.getByLabelText('物件名'), '更新後の名前')
     await user.click(screen.getByRole('button', { name: '更新する' }))
     expect(await screen.findByRole('status')).toHaveTextContent('更新しました')
     expect(
-      screen.getByRole('link', { name: '農機具の詳細を見る' }),
-    ).toHaveAttribute('href', '/listings/trc-001')
+      screen.getByRole('link', { name: '物件の詳細を見る' }),
+    ).toHaveAttribute('href', '/listings/apt-001')
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/listings/trc-001',
+      '/api/listings/apt-001',
       expect.objectContaining({ method: 'PUT' }),
     )
     const body = JSON.parse(
@@ -113,24 +118,29 @@ describe('ListingForm', () => {
     )
     vi.stubGlobal('fetch', fetchMock)
     const user = setup({ name: '出品者デモ', email: 'seller@example.com' })
-    const file = new File(['x'], 'tractor.jpg', { type: 'image/jpeg' })
+    const file = new File(['x'], 'apartment.jpg', { type: 'image/jpeg' })
     await user.upload(screen.getByLabelText('写真（5枚まで）'), [file, file])
     expect(await screen.findAllByRole('img', { name: /写真/ })).toHaveLength(2)
     await user.click(screen.getAllByRole('button', { name: '削除' })[1])
     expect(screen.getAllByRole('img', { name: /写真/ })).toHaveLength(1)
 
-    await user.type(screen.getByLabelText('農機具名'), 'クボタ トラクター')
-    await user.selectOptions(screen.getByLabelText('カテゴリ'), 'トラクター')
-    await user.type(screen.getByLabelText('メーカー'), 'クボタ')
-    await user.type(screen.getByLabelText('年式'), '2018')
-    await user.type(screen.getByLabelText('稼働時間'), '500')
-    await user.selectOptions(screen.getByLabelText('状態'), '使用感あり')
-    await user.type(screen.getByLabelText('都道府県'), '新潟県')
-    await user.type(screen.getByLabelText('市区町村'), '長岡市')
-    await user.type(screen.getByLabelText('販売価格'), '1500000')
-    await user.type(screen.getByLabelText('レンタル料（1日）'), '12000')
-    await user.type(screen.getByLabelText('説明'), 'キャビン付き。')
-    await user.selectOptions(screen.getByLabelText('出品者の区分'), '農業法人')
+    await user.type(screen.getByLabelText('物件名'), 'パークサイド 杉並区 2LDK')
+    await user.selectOptions(screen.getByLabelText('カテゴリ'), 'マンション')
+    await user.selectOptions(screen.getByLabelText('用途地域'), '商業地域')
+    await user.selectOptions(screen.getByLabelText('間取り'), '2LDK')
+    await user.type(screen.getByLabelText('専有面積（㎡）'), '58.3')
+    await user.type(screen.getByLabelText('築年'), '2018')
+    await user.type(screen.getByLabelText('最寄駅'), 'JR中央線 荻窪駅')
+    await user.type(screen.getByLabelText('駅徒歩（分）'), '8')
+    await user.type(screen.getByLabelText('都道府県'), '東京都')
+    await user.type(screen.getByLabelText('市区町村'), '杉並区')
+    await user.type(screen.getByLabelText('販売価格'), '36500000')
+    await user.type(screen.getByLabelText('月額賃料'), '148000')
+    await user.type(screen.getByLabelText('敷金（月数）'), '1')
+    await user.type(screen.getByLabelText('礼金（月数）'), '1')
+    await user.selectOptions(screen.getByLabelText('借家種別'), '普通借家')
+    await user.type(screen.getByLabelText('説明'), 'リノベーション済み。')
+    await user.selectOptions(screen.getByLabelText('出品者の区分'), '宅建業者')
     await user.click(screen.getByRole('button', { name: '出品を申し込む' }))
     await screen.findByRole('status')
     const body = JSON.parse(
@@ -152,7 +162,7 @@ describe('ListingForm', () => {
   it('asks for credit terms only when purchase-option is enabled', async () => {
     const user = setup()
     expect(screen.queryByLabelText('充当率（%）')).toBeNull()
-    await user.click(screen.getByLabelText('レンタル購入を受け付ける'))
+    await user.click(screen.getByLabelText('買取オプションを付ける'))
     expect(screen.getByLabelText('充当率（%）')).toHaveValue('50')
     expect(screen.getByLabelText('充当上限（円）')).toBeInTheDocument()
   })
@@ -160,11 +170,11 @@ describe('ListingForm', () => {
   it('only asks for prices of the selected deals', async () => {
     const user = setup()
     expect(screen.getByLabelText('販売価格')).toBeInTheDocument()
-    expect(screen.getByLabelText('レンタル料（1日）')).toBeInTheDocument()
-    await user.click(screen.getByLabelText('販売する'))
+    expect(screen.getByLabelText('月額賃料')).toBeInTheDocument()
+    await user.click(screen.getByLabelText('売買する'))
     expect(screen.queryByLabelText('販売価格')).not.toBeInTheDocument()
     expect(
-      screen.queryByLabelText('レンタル購入を受け付ける'),
+      screen.queryByLabelText('買取オプションを付ける'),
     ).not.toBeInTheDocument()
   })
 
@@ -177,20 +187,25 @@ describe('ListingForm', () => {
     )
     vi.stubGlobal('fetch', fetchMock)
     const user = setup()
-    await user.type(screen.getByLabelText('農機具名'), 'クボタ トラクター')
-    await user.selectOptions(screen.getByLabelText('カテゴリ'), 'トラクター')
-    await user.type(screen.getByLabelText('メーカー'), 'クボタ')
-    await user.type(screen.getByLabelText('年式'), '2018')
-    await user.type(screen.getByLabelText('稼働時間'), '500')
-    await user.selectOptions(screen.getByLabelText('状態'), '使用感あり')
-    await user.type(screen.getByLabelText('都道府県'), '新潟県')
-    await user.type(screen.getByLabelText('市区町村'), '長岡市')
-    await user.type(screen.getByLabelText('販売価格'), '1500000')
-    await user.type(screen.getByLabelText('レンタル料（1日）'), '12000')
-    await user.click(screen.getByLabelText('レンタル購入を受け付ける'))
-    await user.type(screen.getByLabelText('説明'), 'キャビン付き。')
-    await user.type(screen.getByLabelText('出品者名'), 'テスト農園')
-    await user.selectOptions(screen.getByLabelText('出品者の区分'), '農業法人')
+    await user.type(screen.getByLabelText('物件名'), 'パークサイド 杉並区 2LDK')
+    await user.selectOptions(screen.getByLabelText('カテゴリ'), 'マンション')
+    await user.selectOptions(screen.getByLabelText('用途地域'), '商業地域')
+    await user.selectOptions(screen.getByLabelText('間取り'), '2LDK')
+    await user.type(screen.getByLabelText('専有面積（㎡）'), '58.3')
+    await user.type(screen.getByLabelText('築年'), '2018')
+    await user.type(screen.getByLabelText('最寄駅'), 'JR中央線 荻窪駅')
+    await user.type(screen.getByLabelText('駅徒歩（分）'), '8')
+    await user.type(screen.getByLabelText('都道府県'), '東京都')
+    await user.type(screen.getByLabelText('市区町村'), '杉並区')
+    await user.type(screen.getByLabelText('販売価格'), '36500000')
+    await user.type(screen.getByLabelText('月額賃料'), '148000')
+    await user.type(screen.getByLabelText('敷金（月数）'), '1')
+    await user.type(screen.getByLabelText('礼金（月数）'), '1')
+    await user.selectOptions(screen.getByLabelText('借家種別'), '普通借家')
+    await user.click(screen.getByLabelText('買取オプションを付ける'))
+    await user.type(screen.getByLabelText('説明'), 'リノベーション済み。')
+    await user.type(screen.getByLabelText('出品者名'), 'テスト不動産')
+    await user.selectOptions(screen.getByLabelText('出品者の区分'), '宅建業者')
     await user.type(
       screen.getByLabelText('メールアドレス'),
       'seller@example.com',
@@ -200,19 +215,19 @@ describe('ListingForm', () => {
       '受け付けました',
     )
     expect(
-      screen.getByRole('link', { name: '出品中の農機具を見る' }),
+      screen.getByRole('link', { name: '出品中の物件を見る' }),
     ).toHaveAttribute('href', '/listings')
     const body = JSON.parse(
       (fetchMock.mock.calls[0] as unknown as [string, RequestInit])[1]
         .body as string,
     )
     expect(body).toMatchObject({
-      name: 'クボタ トラクター',
+      name: 'パークサイド 杉並区 2LDK',
       deals: ['sale', 'rent'],
-      salePrice: '1500000',
+      salePrice: '36500000',
       purchaseOption: true,
-      sellerName: 'テスト農園',
-      sellerKind: '農業法人',
+      sellerName: 'テスト不動産',
+      sellerKind: '宅建業者',
     })
   })
 })

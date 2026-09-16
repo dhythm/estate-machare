@@ -28,7 +28,7 @@ export function Hero() {
       <div className="relative isolate overflow-hidden bg-primary">
         <Image
           src="/brand-field.webp"
-          alt="山々に囲まれた緑の畑で働くトラクター"
+          alt="夕暮れの街並みに並ぶ住宅とマンション"
           fill
           preload
           sizes="100vw"
@@ -41,20 +41,20 @@ export function Hero() {
             THE NEXT FIELD, TOGETHER.
           </p>
           <h1 className="mt-7 font-display text-[clamp(2.4rem,4.8vw,4.25rem)] font-bold leading-[1.4] tracking-[-0.035em] text-white">
-            農機の可能性を、
+            物件の可能性を、
             <br />
-            次の畑へ。
+            次の人へ。
           </h1>
           <p className="mt-5 text-sm font-medium leading-[2] tracking-wide text-white/85 sm:text-base">
             買う。借りる。使ってから決める。
             <br />
-            あなたの農業に合う一台を、運搬までつなぐ。
+            あなたの暮らしに合う一件を、提案が届くところまでつなぐ。
           </p>
           <Link
             href="/guide"
             className="mt-7 inline-flex items-center gap-3 border-b border-white/50 pb-2 text-xs font-medium text-white hover:border-white"
           >
-            Agri Machare について
+            Estate Machare について
             <ArrowUpRight className="size-4" />
           </Link>
           <div className="absolute bottom-28 right-10 hidden items-end gap-4 text-white/90 lg:flex">
@@ -101,7 +101,7 @@ export function Hero() {
             action="/listings"
             method="get"
             role="search"
-            aria-label="農機具を探す"
+            aria-label="物件を探す"
             className="mt-5 grid gap-3 sm:grid-cols-[1fr_1.5fr_auto]"
           >
             <input type="hidden" name="deal" value={deal} />
@@ -116,7 +116,7 @@ export function Hero() {
               >
                 {categories.map((category) => (
                   <option key={category} value={category}>
-                    {category === 'すべて' ? 'すべての農機具' : category}
+                    {category === 'すべて' ? 'すべての物件' : category}
                   </option>
                 ))}
               </select>
@@ -128,7 +128,7 @@ export function Hero() {
               <input
                 type="search"
                 name="q"
-                placeholder="メーカー・機種名・地域から探す"
+                placeholder="物件名・最寄駅・地域から探す"
                 maxLength={100}
                 className="min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground/70"
               />
@@ -138,27 +138,27 @@ export function Hero() {
               className="flex min-h-14 items-center justify-center gap-3 rounded-lg bg-primary px-8 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90"
             >
               <Search className="size-4" />
-              農機具を探す
+              物件を探す
             </button>
           </form>
         </div>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-xs text-muted-foreground sm:gap-x-7">
           <span className="inline-flex items-center gap-2">
             <Truck className="size-4 text-primary" />
-            運搬も、ここから。
+            物件リクエストも、ここから。
           </span>
           <Link
-            href="/transport/new"
+            href="/requests/new"
             className="inline-flex items-center gap-2 font-bold text-primary hover:underline"
           >
-            運搬を依頼する
+            希望条件を登録する
             <ArrowRight className="size-3.5" />
           </Link>
           <Link
-            href="/transport"
+            href="/requests"
             className="inline-flex items-center gap-2 font-bold text-primary hover:underline"
           >
-            運搬の仕事を探す
+            物件リクエストを探す
             <ArrowRight className="size-3.5" />
           </Link>
         </div>

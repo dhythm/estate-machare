@@ -13,7 +13,7 @@ export function CloseRequestButton({ requestId }: { requestId: string }) {
     setBusy(true)
     setError(undefined)
     try {
-      const response = await fetch(`/api/transport/requests/${requestId}/status`, {
+      const response = await fetch(`/api/requests/${requestId}/status`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ status: '完了' }),

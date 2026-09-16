@@ -3,7 +3,7 @@ import { AdminSection, dealTabs } from '@/components/admin/admin-section'
 import { OrderTable } from '@/components/admin/admin-tables'
 import { listAllOrders } from '@/lib/server/orders'
 
-export const metadata: Metadata = { title: '注文 | Agri Machare 運営' }
+export const metadata: Metadata = { title: '注文 | Estate Machare 運営' }
 
 export const dynamic = 'force-dynamic'
 

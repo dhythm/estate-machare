@@ -41,7 +41,11 @@ import {
 } from '@/lib/data'
 
 const modeIcon = { buy: ShoppingCart, rent: Calendar, purchaseOption: Repeat2 }
-const modeLabel = { buy: '購入', rent: '賃貸', purchaseOption: '住んでから買う' }
+const modeLabel = {
+  buy: '購入',
+  rent: '賃貸',
+  purchaseOption: '住んでから買う',
+}
 
 export function ListingDetail({
   listing,
@@ -76,7 +80,7 @@ export function ListingDetail({
   return (
     <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
       <div className="flex items-center justify-between gap-4">
-        <BackLink href="/listings" label="農機具一覧にもどる" />
+        <BackLink href="/listings" label="物件一覧にもどる" />
         {viewer.canEdit && (
           <Link
             href={`/listings/${listing.id}/edit`}
@@ -296,7 +300,7 @@ export function ListingDetail({
             <div className="border-t border-border bg-muted/35 p-5 sm:px-6">
               {listing.rentPerMonth === undefined ? (
                 <Link
-                  href="/requests/new"
+                  href={`/requests/new?listingId=${encodeURIComponent(listing.id)}`}
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
                 >
                   希望条件を登録して提案を受ける
@@ -310,7 +314,7 @@ export function ListingDetail({
                     keyMoneyMonths={listing.keyMoneyMonths}
                   />
                   <Link
-                    href="/requests/new"
+                    href={`/requests/new?listingId=${encodeURIComponent(listing.id)}`}
                     className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
                   >
                     希望条件を登録して提案を受ける
@@ -412,7 +416,7 @@ export function ListingDetail({
         <section className="mt-16 border-t border-border pt-10">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2 className="font-display text-2xl font-bold tracking-tight text-foreground">
-              こちらの農機具も
+              こちらの物件も
             </h2>
             <Link
               href={`/listings?category=${encodeURIComponent(listing.category)}`}

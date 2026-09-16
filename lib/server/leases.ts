@@ -81,8 +81,12 @@ export async function requestLease(
     keyMoney: cost.keyMoney,
     initialCost: cost.total,
     salePrice: listing.salePrice,
-    creditRate: listing.purchaseOption ? listing.purchaseOptionCreditRate : undefined,
-    creditCap: listing.purchaseOption ? listing.purchaseOptionCreditCap : undefined,
+    creditRate: listing.purchaseOption
+      ? listing.purchaseOptionCreditRate
+      : undefined,
+    creditCap: listing.purchaseOption
+      ? listing.purchaseOptionCreditCap
+      : undefined,
     status: 'requested',
     createdAt: now,
     updatedAt: now,
@@ -204,9 +208,7 @@ export async function listLeasesForTenant(
   userId: string,
 ): Promise<LeaseWithListing[]> {
   const leases = await getStore().leases.list()
-  return withListings(
-    leases.filter((lease) => lease.tenantUserId === userId),
-  )
+  return withListings(leases.filter((lease) => lease.tenantUserId === userId))
 }
 
 export async function listLeasesForOwner(

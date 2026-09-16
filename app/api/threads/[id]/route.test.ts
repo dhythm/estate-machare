@@ -21,7 +21,7 @@ async function openInquiry() {
     await acceptSubmission(
       'listingInquiry',
       { mode: 'rent', name: '利用者デモ', message: '借りたい' },
-      { targetId: 'trc-001', userId: 'demo-user' },
+      { targetId: 'apt-001', userId: 'demo-user' },
     )
   ).id
 }
@@ -32,10 +32,10 @@ async function openApplication() {
       'requestProposal',
       {
         name: '利用者デモ',
-        vehicle: '2tトラック',
+        vehicle: 'マンション',
         availableDate: '2026-10-03',
       },
-      { targetId: 'tj-01', userId: 'demo-user' },
+      { targetId: 'pr-01', userId: 'demo-user' },
     )
   ).id
 }
@@ -65,7 +65,7 @@ describe('GET /api/threads/[id]', () => {
     expect(body).toMatchObject({
       status: 'new',
       role: 'sender',
-      target: { kind: 'listing', listing: { id: 'trc-001' } },
+      target: { kind: 'listing', listing: { id: 'apt-001' } },
     })
     expect(body.messages.map((m: { body: string }) => m.body)).toEqual([
       '見に行けますか',
@@ -107,7 +107,7 @@ describe('PATCH /api/threads/[id]', () => {
     const response = await patch(id, { status: 'agreed' })
     expect(response.status).toBe(200)
     expect((await response.json()).status).toBe('agreed')
-    expect((await getPropertyRequest('tj-01'))?.status).toBe('調整中')
+    expect((await getPropertyRequest('pr-01'))?.status).toBe('調整中')
     signInAs(demoAdmin)
     expect((await patch(id, { status: 'declined' })).status).toBe(200)
     signInAs(null)

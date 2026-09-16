@@ -1,4 +1,10 @@
-import { categories, layouts, zonings, type Layout, type Zoning } from '@/lib/data'
+import {
+  categories,
+  layouts,
+  zonings,
+  type Layout,
+  type Zoning,
+} from '@/lib/data'
 import { leaseTypes, type LeaseType } from '@/lib/lease'
 import {
   asRecord,
@@ -20,7 +26,7 @@ export const listingCategories = categories.filter(
 
 /** Categories without rooms or a completion year: a layout and a built year
  * are neither asked for nor kept. */
-export const landCategories = ['土地'] as const
+const landCategories = ['土地'] as const
 
 export function hasBuilding(category: string): boolean {
   return !(landCategories as readonly string[]).includes(category)
@@ -28,7 +34,7 @@ export function hasBuilding(category: string): boolean {
 
 export const sellerKinds = ['個人', '宅建業者', '管理会社', '法人'] as const
 
-export const maxDepositMonths = 12
+const maxDepositMonths = 12
 
 const listingDeals = ['sale', 'rent'] as const
 
@@ -167,13 +173,7 @@ export function validateListingSubmission(
       { min: 1900, max: 2100 },
       withBuilding,
     ),
-    nearestStation: requireText(
-      errors,
-      source,
-      'nearestStation',
-      '最寄駅',
-      60,
-    ),
+    nearestStation: requireText(errors, source, 'nearestStation', '最寄駅', 60),
     walkMinutes: readInteger(errors, source, 'walkMinutes', '駅徒歩分', {
       min: 0,
       max: 60,

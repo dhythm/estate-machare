@@ -8,7 +8,7 @@ import { SubmitButton } from './submit-button'
 
 export function RequestInquiryForm({ requestId }: { requestId: string }) {
   const form = useSubmissionForm({
-    url: `/api/transport/requests/${requestId}/inquiries`,
+    url: `/api/requests/${requestId}/inquiries`,
     validate: validateRequestInquiry,
     initialValues: { message: '' },
   })
@@ -24,7 +24,7 @@ export function RequestInquiryForm({ requestId }: { requestId: string }) {
             href: `/account/threads/${form.receipt.id}`,
             label: 'やり取りを見る',
           },
-          { href: `/transport/${requestId}`, label: '案件の詳細にもどる' },
+          { href: `/requests/${requestId}`, label: '案件の詳細にもどる' },
         ]}
       />
     )

@@ -35,7 +35,10 @@ export default async function EditPropertyRequestPage({
             <span className="mb-6 flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
               <Pencil className="size-5" />
             </span>
-            <PageIntro title="リクエストを編集する" description={request.title} />
+            <PageIntro
+              title="リクエストを編集する"
+              description={request.title}
+            />
           </div>
           <div className="min-w-0 rounded-2xl border border-border bg-card p-5 sm:p-8">
             {user ? (

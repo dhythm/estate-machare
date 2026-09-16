@@ -17,7 +17,9 @@ export async function getPropertyRequests(): Promise<PropertyRequest[]> {
   )
 }
 
-export function getPropertyRequest(id: string): Promise<PropertyRequest | undefined> {
+export function getPropertyRequest(
+  id: string,
+): Promise<PropertyRequest | undefined> {
   return getStore().propertyRequests.get(id)
 }
 

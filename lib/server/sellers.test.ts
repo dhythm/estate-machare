@@ -11,11 +11,10 @@ vi.mock('server-only', () => ({}))
 beforeEach(() => resetStore())
 
 async function reviewCompletedLease(rating: number) {
-  const created = await requestLease(
-    (await getListing('trc-001'))!,
-    demoUser,
-    { startDate: '2026-10-01', endDate: '2026-10-07' },
-  )
+  const created = await requestLease((await getListing('apt-001'))!, demoUser, {
+    startDate: '2026-10-01',
+    endDate: '2026-10-07',
+  })
   const id = created.ok ? created.value.id : ''
   await updateLeaseStatus(id, demoSeller, 'active')
   await updateLeaseStatus(id, demoSeller, 'completed')
@@ -31,7 +30,7 @@ describe('getSellerProfile', () => {
   it('collects the live listings and the review average of a seller account', async () => {
     await reviewCompletedLease(5)
     await reviewCompletedLease(4)
-    await setListingStatus('cmb-002', 'withdrawn', demoSeller)
+    await setListingStatus('hse-002', 'withdrawn', demoSeller)
 
     const profile = await getSellerProfile('demo-seller')
 
@@ -42,9 +41,9 @@ describe('getSellerProfile', () => {
       reviewCount: 2,
     })
     expect(profile?.listings.map((listing) => listing.id)).not.toContain(
-      'cmb-002',
+      'hse-002',
     )
-    expect(profile?.listings.map((listing) => listing.id)).toContain('trc-001')
+    expect(profile?.listings.map((listing) => listing.id)).toContain('apt-001')
     expect(profile?.reviews.map((review) => review.rating)).toEqual([4, 5])
   })
 

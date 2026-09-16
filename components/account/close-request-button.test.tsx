@@ -11,14 +11,14 @@ afterEach(() => vi.unstubAllGlobals())
 
 describe('CloseRequestButton', () => {
   it('marks the request as completed', async () => {
-    const fetchMock = vi.fn(async () => Response.json({ status: '完了' }))
+    const fetchMock = vi.fn(async () => Response.json({ status: '成約' }))
     vi.stubGlobal('fetch', fetchMock)
     render(<CloseRequestButton requestId="tj-01" />)
     await userEvent
       .setup()
       .click(screen.getByRole('button', { name: '完了にする' }))
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/transport/requests/tj-01/status',
+      '/api/requests/tj-01/status',
       expect.objectContaining({ method: 'PATCH' }),
     )
     expect(refresh).toHaveBeenCalled()

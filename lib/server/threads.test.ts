@@ -22,7 +22,7 @@ async function openInquiry() {
   const receipt = await acceptSubmission(
     'listingInquiry',
     { mode: 'rent', name: '利用者デモ', message: '借りたい' },
-    { targetId: 'trc-001', userId: 'demo-user' },
+    { targetId: 'apt-001', userId: 'demo-user' },
   )
   return receipt.id
 }
@@ -30,8 +30,8 @@ async function openInquiry() {
 async function openApplication() {
   const receipt = await acceptSubmission(
     'requestProposal',
-    { name: '利用者デモ', vehicle: '2tトラック', availableDate: '2026-10-03' },
-    { targetId: 'tj-01', userId: 'demo-user' },
+    { name: '利用者デモ', vehicle: 'マンション', availableDate: '2026-10-03' },
+    { targetId: 'pr-01', userId: 'demo-user' },
   )
   return receipt.id
 }
@@ -86,7 +86,7 @@ describe('addMessage', () => {
   it('removes messages with their thread', async () => {
     const id = await openInquiry()
     await addMessage(id, demoSeller, '在庫あります')
-    await deleteListing('trc-001')
+    await deleteListing('apt-001')
     expect(await listMessages(id)).toEqual([])
   })
 })
@@ -96,7 +96,7 @@ describe('transport inquiries', () => {
     const { id } = await acceptSubmission(
       'requestInquiry',
       { name: '利用者デモ', message: '積載方法は？' },
-      { targetId: 'tj-01', userId: 'demo-user' },
+      { targetId: 'pr-01', userId: 'demo-user' },
     )
     const asOwner = await getThread(id, demoSeller)
     expect(asOwner.ok && asOwner.value.role).toBe('owner')
@@ -128,9 +128,9 @@ describe('updateThreadStatus', () => {
 
   it('accepting an application moves the request to 調整中', async () => {
     const id = await openApplication()
-    expect((await getPropertyRequest('tj-01'))?.status).toBe('募集中')
+    expect((await getPropertyRequest('pr-01'))?.status).toBe('募集中')
     const result = await updateThreadStatus(id, demoSeller, 'agreed')
     expect(result.ok && result.value.status).toBe('agreed')
-    expect((await getPropertyRequest('tj-01'))?.status).toBe('調整中')
+    expect((await getPropertyRequest('pr-01'))?.status).toBe('調整中')
   })
 })

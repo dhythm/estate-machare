@@ -15,7 +15,5 @@ export async function PUT(request: Request) {
   if (!authorized.ok) return authorized.response
   const parsed = await parseBody(request, validateAgentProfile)
   if (!parsed.ok) return parsed.response
-  return Response.json(
-    await upsertAgentProfile(authorized.user, parsed.value),
-  )
+  return Response.json(await upsertAgentProfile(authorized.user, parsed.value))
 }

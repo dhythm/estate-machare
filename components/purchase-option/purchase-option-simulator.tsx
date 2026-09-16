@@ -3,11 +3,18 @@
 import { useState } from 'react'
 import { Calculator } from 'lucide-react'
 import { formatYen } from '@/lib/data'
-import { calculatePurchaseOption, type PurchaseOptionTerms } from '@/lib/purchase-option'
+import {
+  calculatePurchaseOption,
+  type PurchaseOptionTerms,
+} from '@/lib/purchase-option'
 
-export function PurchaseOptionSimulator({ terms }: { terms: PurchaseOptionTerms }) {
-  const [days, setDays] = useState(30)
-  const estimate = calculatePurchaseOption(terms, Math.max(0, days))
+export function PurchaseOptionSimulator({
+  terms,
+}: {
+  terms: PurchaseOptionTerms
+}) {
+  const [months, setMonths] = useState(24)
+  const estimate = calculatePurchaseOption(terms, Math.max(0, months))
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-background">
       <div className="p-4">
@@ -17,27 +24,27 @@ export function PurchaseOptionSimulator({ terms }: { terms: PurchaseOptionTerms 
         </h3>
         <div className="mt-4 flex items-center justify-between gap-3">
           <label
-            htmlFor="purchase-option-days"
+            htmlFor="purchase-option-months"
             className="text-xs font-medium text-muted-foreground"
           >
-            レンタル日数
+            契約期間
           </label>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <input
-              id="purchase-option-days"
+              id="purchase-option-months"
               type="number"
               min={1}
-              max={3650}
-              value={days}
-              onChange={(event) => setDays(Number(event.target.value) || 0)}
+              max={360}
+              value={months}
+              onChange={(event) => setMonths(Number(event.target.value) || 0)}
               className="h-10 w-24 rounded-lg border border-border bg-card px-3 text-right text-sm font-medium tabular-nums text-foreground outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
             />
-            日
+            か月
           </div>
         </div>
         <dl className="mt-4 grid gap-3 text-xs">
           <div className="flex justify-between gap-3">
-            <dt className="text-muted-foreground">レンタル料合計</dt>
+            <dt className="text-muted-foreground">賃料合計</dt>
             <dd className="font-medium text-foreground">
               {formatYen(estimate.rentTotal)}
             </dd>

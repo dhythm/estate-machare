@@ -50,8 +50,8 @@ export function InquiryForm({
             href: `/account/threads/${form.receipt.id}`,
             label: 'やり取りを開く',
           },
-          { href: `/listings/${listing.id}`, label: '農機具の詳細にもどる' },
-          { href: '/listings', label: 'ほかの農機具を探す' },
+          { href: `/listings/${listing.id}`, label: '物件の詳細にもどる' },
+          { href: '/listings', label: 'ほかの物件を探す' },
         ]}
       />
     )

@@ -5,7 +5,7 @@ export function AgentMatches({ matches }: { matches: AgentMatch[] }) {
   if (matches.length === 0)
     return (
       <p className="text-sm text-muted-foreground">
-        対応地域が合う運搬者はまだいません
+        対応地域が合う担当者はまだいません
       </p>
     )
   return (
@@ -21,13 +21,11 @@ export function AgentMatches({ matches }: { matches: AgentMatch[] }) {
             <span className="text-xs text-muted-foreground">
               拠点 {profile.prefecture}
             </span>
-            {score >= 2 && (
-              <Badge variant="accent">出発地と届け先の両方に対応</Badge>
-            )}
+            {score >= 2 && <Badge variant="accent">希望エリアが拠点</Badge>}
           </div>
           <dl className="mt-2 grid gap-1 text-xs text-muted-foreground sm:grid-cols-2">
             <div>
-              <dt className="inline">車両: </dt>
+              <dt className="inline">取扱カテゴリ: </dt>
               <dd className="inline text-foreground">
                 {profile.handledCategories.join('・')}
               </dd>

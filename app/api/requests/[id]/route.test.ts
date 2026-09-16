@@ -15,22 +15,23 @@ beforeEach(() => {
 })
 
 const input = {
-  item: 'コンバイン 4条刈（更新）',
-  from: '秋田県 大仙市',
-  to: '山形県 天童市',
-  distanceKm: '120',
-  weight: '約2.4t',
-  desiredDate: '10/1 午前',
-  reward: '40000',
+  title: '駅徒歩10分以内の2LDKを借りたい',
+  deal: 'rent',
+  category: 'マンション',
+  layout: '2LDK',
+  prefecture: '東京都',
+  city: '世田谷区',
+  budget: '40000',
+  moveInDate: '2026-12-01',
   contactEmail: 'owner@example.com',
 }
 
 const context = (id: string) => ({ params: Promise.resolve({ id }) })
 
-describe('/api/transport/requests/[id]', () => {
+describe('/api/requests/[id]', () => {
   it('gets a request or 404', async () => {
     expect(
-      (await GET(new Request('http://localhost'), context('tj-01'))).status,
+      (await GET(new Request('http://localhost'), context('pr-01'))).status,
     ).toBe(200)
     expect(
       (await GET(new Request('http://localhost'), context('missing'))).status,
@@ -49,19 +50,19 @@ describe('/api/transport/requests/[id]', () => {
     const remove = (id: string) =>
       DELETE(new Request('http://localhost'), context(id))
     signInAs(null)
-    expect((await put('tj-01')).status).toBe(401)
-    expect((await remove('tj-01')).status).toBe(401)
+    expect((await put('pr-01')).status).toBe(401)
+    expect((await remove('pr-01')).status).toBe(401)
     signInAs(demoUser)
-    expect((await put('tj-01')).status).toBe(403)
-    expect((await remove('tj-03')).status).toBe(403)
+    expect((await put('pr-01')).status).toBe(403)
+    expect((await remove('pr-03')).status).toBe(403)
     signInAs(demoAdmin)
-    expect((await put('tj-03')).status).toBe(200)
-    expect((await remove('tj-03')).status).toBe(204)
+    expect((await put('pr-03')).status).toBe(200)
+    expect((await remove('pr-03')).status).toBe(204)
   })
 
   it('shows a pending request only to its owner or an admin', async () => {
     const created = await createJob(
-      new Request('http://localhost/api/transport/requests', {
+      new Request('http://localhost/api/requests/requests', {
         method: 'POST',
         body: JSON.stringify(input),
       }),
@@ -84,10 +85,10 @@ describe('/api/transport/requests/[id]', () => {
         method: 'PUT',
         body: JSON.stringify(input),
       }),
-      context('tj-01'),
+      context('pr-01'),
     )
     expect(response.status).toBe(200)
-    expect(await response.json()).toMatchObject({ id: 'tj-01', reward: 40_000 })
+    expect(await response.json()).toMatchObject({ id: 'pr-01', budget: 40_000 })
     expect(
       (
         await PUT(
@@ -108,23 +109,19 @@ describe('/api/transport/requests/[id]', () => {
         body: JSON.stringify({
           name: '高橋',
           email: 'k@example.com',
-          vehicle: '2tトラック',
+          vehicle: 'マンション',
           availableDate: '2026-10-03',
         }),
       }),
-      context('tj-01'),
+      context('pr-01'),
     )
-    expect(await listSubmissions('requestProposal', 'tj-01')).toHaveLength(
-      1,
-    )
+    expect(await listSubmissions('requestProposal', 'pr-01')).toHaveLength(1)
     expect(
-      (await DELETE(new Request('http://localhost'), context('tj-01'))).status,
+      (await DELETE(new Request('http://localhost'), context('pr-01'))).status,
     ).toBe(204)
-    expect(await listSubmissions('requestProposal', 'tj-01')).toHaveLength(
-      0,
-    )
+    expect(await listSubmissions('requestProposal', 'pr-01')).toHaveLength(0)
     expect(
-      (await DELETE(new Request('http://localhost'), context('tj-01'))).status,
+      (await DELETE(new Request('http://localhost'), context('pr-01'))).status,
     ).toBe(404)
   })
 })

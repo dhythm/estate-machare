@@ -141,22 +141,50 @@ const templates: Template[] = [
 type Location = { prefecture: string; city: string; station: string }
 
 const locations: Location[] = [
-  { prefecture: '北海道', city: '札幌市中央区', station: '地下鉄南北線 大通駅' },
+  {
+    prefecture: '北海道',
+    city: '札幌市中央区',
+    station: '地下鉄南北線 大通駅',
+  },
   { prefecture: '宮城県', city: '仙台市青葉区', station: 'JR仙山線 北仙台駅' },
-  { prefecture: '埼玉県', city: 'さいたま市浦和区', station: 'JR京浜東北線 浦和駅' },
+  {
+    prefecture: '埼玉県',
+    city: 'さいたま市浦和区',
+    station: 'JR京浜東北線 浦和駅',
+  },
   { prefecture: '千葉県', city: '船橋市', station: 'JR総武線 船橋駅' },
   { prefecture: '東京都', city: '世田谷区', station: '小田急線 経堂駅' },
   { prefecture: '東京都', city: '杉並区', station: 'JR中央線 荻窪駅' },
-  { prefecture: '東京都', city: '江東区', station: '東京メトロ東西線 門前仲町駅' },
-  { prefecture: '神奈川県', city: '横浜市港北区', station: '東急東横線 綱島駅' },
-  { prefecture: '神奈川県', city: '川崎市中原区', station: 'JR南武線 武蔵中原駅' },
-  { prefecture: '愛知県', city: '名古屋市千種区', station: '地下鉄東山線 今池駅' },
+  {
+    prefecture: '東京都',
+    city: '江東区',
+    station: '東京メトロ東西線 門前仲町駅',
+  },
+  {
+    prefecture: '神奈川県',
+    city: '横浜市港北区',
+    station: '東急東横線 綱島駅',
+  },
+  {
+    prefecture: '神奈川県',
+    city: '川崎市中原区',
+    station: 'JR南武線 武蔵中原駅',
+  },
+  {
+    prefecture: '愛知県',
+    city: '名古屋市千種区',
+    station: '地下鉄東山線 今池駅',
+  },
   { prefecture: '京都府', city: '京都市中京区', station: '阪急京都線 烏丸駅' },
   { prefecture: '大阪府', city: '大阪市北区', station: 'JR大阪環状線 天満駅' },
   { prefecture: '大阪府', city: '豊中市', station: '阪急宝塚線 曽根駅' },
   { prefecture: '兵庫県', city: '神戸市東灘区', station: 'JR神戸線 住吉駅' },
   { prefecture: '広島県', city: '広島市中区', station: '広電本線 八丁堀駅' },
-  { prefecture: '福岡県', city: '福岡市中央区', station: '地下鉄空港線 赤坂駅' },
+  {
+    prefecture: '福岡県',
+    city: '福岡市中央区',
+    station: '地下鉄空港線 赤坂駅',
+  },
   { prefecture: '静岡県', city: '静岡市葵区', station: 'JR東海道線 静岡駅' },
   { prefecture: '長野県', city: '長野市', station: 'JR信越線 長野駅' },
 ]

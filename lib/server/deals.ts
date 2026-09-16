@@ -65,9 +65,7 @@ function statusLabel(kind: DealKind, status: string): string {
   if (kind === 'order')
     return orderStatusLabels[status as keyof typeof orderStatusLabels] ?? status
   if (kind === 'lease')
-    return (
-      leaseStatusLabels[status as keyof typeof leaseStatusLabels] ?? status
-    )
+    return leaseStatusLabels[status as keyof typeof leaseStatusLabels] ?? status
   return jobStatusLabels[status] ?? status
 }
 
@@ -134,7 +132,11 @@ async function load(kind: DealKind, id: string): Promise<Loaded | undefined> {
   }
   const request = await store.propertyRequests.get(id)
   if (!request) return undefined
-  return { kind, request, parties: [request.ownerUserId, await agreedAgentOf(id)] }
+  return {
+    kind,
+    request,
+    parties: [request.ownerUserId, await agreedAgentOf(id)],
+  }
 }
 
 function summarize(loaded: Loaded, viewerId: string): DealSummary {
@@ -144,7 +146,7 @@ function summarize(loaded: Loaded, viewerId: string): DealSummary {
     return {
       kind: 'order',
       id: order.id,
-      title: listing?.name ?? '削除された農機具',
+      title: listing?.name ?? '削除された物件',
       href: `/listings/${order.listingId}`,
       amount: order.price,
       status: order.status,
@@ -166,7 +168,7 @@ function summarize(loaded: Loaded, viewerId: string): DealSummary {
     return {
       kind: 'lease',
       id: lease.id,
-      title: listing?.name ?? '削除された農機具',
+      title: listing?.name ?? '削除された物件',
       href: `/listings/${lease.listingId}`,
       amount: lease.purchasePrice ?? lease.rentTotal,
       status: lease.status,
@@ -188,7 +190,7 @@ function summarize(loaded: Loaded, viewerId: string): DealSummary {
     kind: 'propertyRequest',
     id: request.id,
     title: request.title,
-    href: `/transport/${request.id}`,
+    href: `/requests/${request.id}`,
     amount: request.budget,
     status: request.status,
     statusLabel: request.status,
@@ -249,7 +251,7 @@ export async function getDeal(
       relatedDeals.push({
         kind: 'order',
         id: order.id,
-        title: loaded.listing?.name ?? '削除された農機具',
+        title: loaded.listing?.name ?? '削除された物件',
         statusLabel: orderStatusLabels[order.status],
       })
   }
@@ -261,7 +263,7 @@ export async function getDeal(
       relatedDeals.push({
         kind: 'lease',
         id: lease.id,
-        title: loaded.listing?.name ?? '削除された農機具',
+        title: loaded.listing?.name ?? '削除された物件',
         statusLabel: leaseStatusLabels[lease.status],
       })
   }
@@ -338,7 +340,11 @@ export async function listDealsForUser(userId: string): Promise<DealSummary[]> {
     if (request.ownerUserId === userId || agent === userId)
       deals.push(
         summarize(
-          { kind: 'propertyRequest', request, parties: [request.ownerUserId, agent] },
+          {
+            kind: 'propertyRequest',
+            request,
+            parties: [request.ownerUserId, agent],
+          },
           userId,
         ),
       )

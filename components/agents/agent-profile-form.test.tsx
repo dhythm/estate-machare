@@ -22,7 +22,7 @@ describe('AgentProfileForm', () => {
     expect(screen.getByLabelText('お名前・屋号')).toHaveValue('利用者デモ')
     await user.selectOptions(screen.getByLabelText('区分'), '法人')
     await user.selectOptions(screen.getByLabelText('拠点の都道府県'), '秋田県')
-    await user.click(screen.getByLabelText('2tトラック'))
+    await user.click(screen.getByLabelText('マンション'))
     await user.click(
       screen.getByLabelText('秋田県', { selector: 'input[type="checkbox"]' }),
     )
@@ -31,7 +31,7 @@ describe('AgentProfileForm', () => {
     )
     await user.click(screen.getByRole('button', { name: '保存する' }))
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/transport/agent-profile',
+      '/api/agents/profile',
       expect.objectContaining({ method: 'PUT' }),
     )
     expect(
@@ -43,7 +43,7 @@ describe('AgentProfileForm', () => {
       name: '利用者デモ',
       kind: '法人',
       prefecture: '秋田県',
-      vehicles: ['2tトラック'],
+      handledCategories: ['マンション'],
       serviceAreas: ['秋田県', '山形県'],
       note: '',
     })
@@ -60,18 +60,18 @@ describe('AgentProfileForm', () => {
           name: '高橋運送',
           kind: '法人',
           prefecture: '秋田県',
-          vehicles: ['4tトラック'],
+          handledCategories: ['マンション'],
           serviceAreas: ['秋田県'],
           note: '',
         }}
       />,
     )
-    expect(screen.getByLabelText('4tトラック')).toBeChecked()
+    expect(screen.getByLabelText('マンション')).toBeChecked()
     const user = userEvent.setup()
-    await user.click(screen.getByLabelText('4tトラック'))
+    await user.click(screen.getByLabelText('マンション'))
     await user.click(screen.getByRole('button', { name: '保存する' }))
     expect(
-      screen.getByText('車両を1つ以上選択してください。'),
+      screen.getByText('取扱カテゴリを1つ以上選択してください。'),
     ).toBeInTheDocument()
     expect(fetchMock).not.toHaveBeenCalled()
   })

@@ -5,17 +5,17 @@ const steps = [
   {
     icon: CalendarDays,
     title: '必要な期間、借りる',
-    desc: '使う日を選んで、レンタルを申し込む。',
+    desc: '使う日を選んで、賃貸を申し込む。',
   },
   {
     icon: Tractor,
-    title: 'いつもの畑で、確かめる',
+    title: '実際に住んで、確かめる',
     desc: '操作感も、作業効率も。実際に使って判断。',
   },
   {
     icon: Check,
     title: '気に入ったら、その一台を',
-    desc: '出品条件に応じてレンタル料を購入価格に充当。',
+    desc: '出品条件に応じて賃料を購入価格に充当。',
   },
 ]
 
@@ -34,15 +34,15 @@ export function HowItWorks() {
             小さなお試しを。
           </h2>
           <p className="mt-5 max-w-sm text-sm leading-7 text-primary/75">
-            自分の畑に合うかは、使ってみてから。
+            暮らしに合うかは、住んでみてから。
             <br />
-            レンタルから購入へ、納得できる選び方。
+            賃貸から購入へ、納得できる選び方。
           </p>
           <Link
             href="/listings?deal=purchaseOption"
             className="mt-7 inline-flex items-center gap-3 rounded-full bg-primary px-6 py-3.5 text-sm font-bold text-white hover:bg-primary/85"
           >
-            レンタル購入できる農機具
+            買取オプション付きの物件
             <ArrowRight className="size-4" />
           </Link>
           <Link

@@ -14,7 +14,7 @@ async function openInquiry() {
     await acceptSubmission(
       'listingInquiry',
       { mode: 'rent', name: '利用者デモ', message: '借りたい' },
-      { targetId: 'trc-001', userId: 'demo-user' },
+      { targetId: 'apt-001', userId: 'demo-user' },
     )
   ).id
 }

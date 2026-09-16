@@ -12,7 +12,7 @@ import {
 export const contactTopics = [
   '取引について',
   '出品について',
-  '運搬について',
+  '物件リクエストについて',
   '不具合の報告',
   'その他',
 ] as const

@@ -6,7 +6,7 @@ import { PageIntro, PageShell } from '@/components/page-shell'
 import { getCurrentUser } from '@/lib/server/auth/session'
 import { listNotifications } from '@/lib/server/notifications'
 
-export const metadata: Metadata = { title: '通知 | Agri Machare' }
+export const metadata: Metadata = { title: '通知 | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 

@@ -39,7 +39,7 @@ export function Marketplace({ initialPage }: { initialPage: ListingPage }) {
             次の相棒を、見つけよう。
           </h2>
           <p className="mt-2 leading-relaxed text-muted-foreground">
-            畑に合う一台を、あなたに合う持ち方で。
+            暮らしに合う一件を、あなたに合う持ち方で。
           </p>
         </div>
         <DealFilterToggle value={deal} onChange={setDeal} />
@@ -56,7 +56,7 @@ export function Marketplace({ initialPage }: { initialPage: ListingPage }) {
           href={allHref}
           className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-transparent px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary"
         >
-          すべての農機具を見る
+          すべての物件を見る
           {query.data ? `（${query.data.total}件）` : ''}
           <ArrowRight className="size-4" />
         </Link>

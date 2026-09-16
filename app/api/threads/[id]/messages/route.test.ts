@@ -27,7 +27,7 @@ describe('POST /api/threads/[id]/messages', () => {
     const { id } = await acceptSubmission(
       'listingInquiry',
       { mode: 'rent', name: '利用者デモ', message: '借りたい' },
-      { targetId: 'trc-001', userId: 'demo-user' },
+      { targetId: 'apt-001', userId: 'demo-user' },
     )
     const response = await post(id, { body: '在庫あります' })
     expect(response.status).toBe(201)

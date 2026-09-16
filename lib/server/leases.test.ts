@@ -15,9 +15,9 @@ vi.mock('server-only', () => ({}))
 
 beforeEach(() => resetStore())
 
-const week = { startDate: '2026-10-01', endDate: '2026-10-07' }
+const term = { startDate: '2026-10-01', endDate: '2027-09-30' }
 
-async function request(listingId = 'trc-001', user = demoUser, range = week) {
+async function request(listingId = 'apt-001', user = demoUser, range = term) {
   const listing = (await getListing(listingId))!
   return requestLease(listing, user, range)
 }
@@ -28,39 +28,42 @@ describe('requestLease', () => {
     expect(result.ok).toBe(true)
     if (!result.ok) return
     expect(result.value).toMatchObject({
-      listingId: 'trc-001',
+      listingId: 'apt-001',
       tenantUserId: 'demo-user',
-      ...week,
-      days: 7,
-      rentPerMonth: 22_000,
-      rentTotal: 154_000,
-      salePrice: 18_800_000,
+      ...term,
+      months: 12,
+      rentPerMonth: 268_000,
+      rentTotal: 3_216_000,
+      deposit: 536_000,
+      keyMoney: 268_000,
+      initialCost: 1_340_000,
+      salePrice: 88_000_000,
       creditRate: 50,
       creditCap: 5_000_000,
       status: 'requested',
     })
-    expect(await listBookedRanges('trc-001')).toEqual([week])
+    expect(await listBookedRanges('apt-001')).toEqual([term])
   })
 
   it('rejects overlapping ranges, owners, and listings without rent', async () => {
     await request()
-    const overlap = await request('trc-001', demoUser, {
-      startDate: '2026-10-07',
-      endDate: '2026-10-09',
+    const overlap = await request('apt-001', demoUser, {
+      startDate: '2027-09-30',
+      endDate: '2028-09-29',
     })
     expect(!overlap.ok && overlap.reason).toBe('conflict')
-    const later = await request('trc-001', demoUser, {
-      startDate: '2026-10-08',
-      endDate: '2026-10-09',
+    const later = await request('apt-001', demoUser, {
+      startDate: '2027-10-01',
+      endDate: '2028-09-30',
     })
     expect(later.ok).toBe(true)
-    const own = await request('trc-001', demoSeller)
+    const own = await request('apt-001', demoSeller)
     expect(!own.ok && own.reason).toBe('forbidden')
-    const saleOnly = await request('trc-006')
+    const saleOnly = await request('lnd-004')
     expect(!saleOnly.ok && saleOnly.reason).toBe('unavailable')
-    const reversed = await request('trc-001', demoUser, {
-      startDate: '2026-11-09',
-      endDate: '2026-11-01',
+    const reversed = await request('apt-001', demoUser, {
+      startDate: '2029-11-09',
+      endDate: '2029-11-01',
     })
     expect(!reversed.ok && reversed.reason).toBe('invalid')
   })
@@ -83,9 +86,9 @@ describe('updateLeaseStatus', () => {
     const converted = await updateLeaseStatus(id, demoUser, 'converted')
     expect(converted.ok && converted.value).toMatchObject({
       status: 'converted',
-      purchasePrice: 18_800_000 - 77_000,
+      purchasePrice: 88_000_000 - 1_608_000,
     })
-    expect(await listBookedRanges('trc-001')).toEqual([])
+    expect(await listBookedRanges('apt-001')).toEqual([])
   })
 
   it('lets either side cancel a request and the owner complete a lease', async () => {
@@ -93,7 +96,7 @@ describe('updateLeaseStatus', () => {
     const firstId = first.ok ? first.value.id : ''
     const cancelled = await updateLeaseStatus(firstId, demoUser, 'cancelled')
     expect(cancelled.ok && cancelled.value.status).toBe('cancelled')
-    expect(await listBookedRanges('trc-001')).toEqual([])
+    expect(await listBookedRanges('apt-001')).toEqual([])
 
     const second = await request()
     const secondId = second.ok ? second.value.id : ''
@@ -106,7 +109,7 @@ describe('updateLeaseStatus', () => {
   })
 
   it('blocks conversion when the listing is not purchase-option', async () => {
-    const created = await request('til-004')
+    const created = await request('apt-003')
     expect(created.ok).toBe(true)
     const id = created.ok ? created.value.id : ''
     await updateLeaseStatus(id, demoSeller, 'active')
@@ -120,19 +123,17 @@ describe('admin cancellation', () => {
     const created = await request()
     const id = created.ok ? created.value.id : ''
     await updateLeaseStatus(id, demoSeller, 'active')
-    expect((await updateLeaseStatus(id, demoAdmin, 'completed')).ok).toBe(
-      false,
-    )
+    expect((await updateLeaseStatus(id, demoAdmin, 'completed')).ok).toBe(false)
     const cancelled = await updateLeaseStatus(id, demoAdmin, 'cancelled')
     expect(cancelled.ok && cancelled.value.status).toBe('cancelled')
-    expect(await listBookedRanges('trc-001')).toEqual([])
+    expect(await listBookedRanges('apt-001')).toEqual([])
     const titles = async (userId: string) =>
       (await listNotifications(userId)).map((n) => n.title)
     expect(await titles('demo-user')).toContain(
-      'レンタルが「キャンセル」になりました',
+      '賃貸借契約が「キャンセル」になりました',
     )
     expect(await titles('demo-seller')).toContain(
-      'レンタルが「キャンセル」になりました',
+      '賃貸借契約が「キャンセル」になりました',
     )
   })
 })
@@ -142,9 +143,9 @@ describe('lease lists', () => {
     await request()
     const mine = await listLeasesForTenant('demo-user')
     expect(mine).toHaveLength(1)
-    expect(mine[0].listing?.name).toContain('クボタ')
+    expect(mine[0].listing?.name).toContain('シティタワー')
     const incoming = await listLeasesForOwner('demo-seller')
-    expect(incoming.map((item) => item.lease.listingId)).toEqual(['trc-001'])
+    expect(incoming.map((item) => item.lease.listingId)).toEqual(['apt-001'])
     expect(await listLeasesForOwner('demo-user')).toEqual([])
   })
 })

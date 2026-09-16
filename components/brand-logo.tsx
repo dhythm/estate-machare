@@ -43,7 +43,7 @@ export function BrandLogo({
       {!compact && (
         <span className="flex flex-col">
           <span className="text-[18px] font-bold leading-none tracking-[-0.055em] sm:text-[21px]">
-            Agri Machare<span className="ml-0.5 text-xs">.</span>
+            Estate Machare<span className="ml-0.5 text-xs">.</span>
           </span>
           <span
             className={cn(
@@ -51,7 +51,7 @@ export function BrandLogo({
               inverse ? 'text-white/65' : 'text-muted-foreground',
             )}
           >
-            農機具と、次の可能性を。
+            不動産と、次の可能性を。
           </span>
         </span>
       )}

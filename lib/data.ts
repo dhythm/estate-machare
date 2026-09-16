@@ -98,14 +98,8 @@ export type Listing = {
   withdrawnAt?: string
 }
 
-export const propertyRequestStatuses = [
-  '募集中',
-  '調整中',
-  '紹介中',
-  '成約',
-] as const
-
-export type PropertyRequestStatus = (typeof propertyRequestStatuses)[number]
+/** Matching progress of a request: open, negotiating, showing, agreed. */
+type PropertyRequestStatus = '募集中' | '調整中' | '紹介中' | '成約'
 
 /** A seeker's public "looking for" post that owners and agents answer. */
 export type PropertyRequest = {

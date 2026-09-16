@@ -16,7 +16,10 @@ describe('SearchRefinements', () => {
     const user = userEvent.setup()
     await user.selectOptions(screen.getByLabelText('都道府県'), '新潟県')
     expect(onChange).toHaveBeenLastCalledWith({ prefecture: '新潟県' })
-    await user.selectOptions(screen.getByLabelText('並び替え'), '日額が安い順')
+    await user.selectOptions(
+      screen.getByLabelText('並び替え'),
+      '月額賃料が安い順',
+    )
     expect(onChange).toHaveBeenLastCalledWith({ sort: 'rentAsc' })
     await user.type(screen.getByLabelText('日額の下限'), '10000')
     await user.type(screen.getByLabelText('日額の上限'), '30000')

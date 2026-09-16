@@ -31,9 +31,7 @@ export function createMemoryStore(options: SeedOptions = {}): Store {
       notifications: createMemoryRepository<Notification>(rows.notifications),
       reviews: createMemoryRepository<Review>(rows.reviews),
       threadReads: createMemoryRepository<ThreadRead>(rows.threadReads),
-      agentProfiles: createMemoryRepository<AgentProfile>(
-        rows.agentProfiles,
-      ),
+      agentProfiles: createMemoryRepository<AgentProfile>(rows.agentProfiles),
       orders: createMemoryRepository<Order>(rows.orders),
       dealEvents: createMemoryRepository<DealEvent>(rows.dealEvents),
     }

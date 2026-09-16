@@ -12,7 +12,9 @@ import type { Listing } from '@/lib/data'
 
 export const dynamic = 'force-dynamic'
 
-function purchaseOptionTerms(listing: Listing): PurchaseOptionTerms | undefined {
+function purchaseOptionTerms(
+  listing: Listing,
+): PurchaseOptionTerms | undefined {
   if (
     !listing.purchaseOption ||
     !listing.rentPerMonth ||

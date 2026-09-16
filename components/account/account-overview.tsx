@@ -195,14 +195,14 @@ function OrderList({
                 {listing.name}
               </Link>
             ) : (
-              <span className="text-muted-foreground">削除された農機具</span>
+              <span className="text-muted-foreground">削除された物件</span>
             )}
             <Badge variant={order.status === 'requested' ? 'default' : 'muted'}>
               {orderStatusLabels[order.status]}
             </Badge>
             <span className="text-muted-foreground">
               {formatYen(order.price)}
-              {order.sourceLeaseId && '（レンタルから切替）'}
+              {order.sourceLeaseId && '（賃貸から切替）'}
             </span>
           </div>
           {order.message && (
@@ -219,10 +219,10 @@ function OrderList({
               (order.status === 'delivered' ||
                 order.status === 'completed') && (
                 <Link
-                  href={`/transport/new?listingId=${listing.id}`}
+                  href={`/requests/new?listingId=${listing.id}`}
                   className="text-sm font-medium text-primary hover:underline"
                 >
-                  運搬を依頼する
+                  希望条件を登録する
                 </Link>
               )}
           </div>
@@ -267,11 +267,9 @@ function LeaseList({
                 {listing.name}
               </Link>
             ) : (
-              <span className="text-muted-foreground">削除された農機具</span>
+              <span className="text-muted-foreground">削除された物件</span>
             )}
-            <Badge
-              variant={lease.status === 'requested' ? 'default' : 'muted'}
-            >
+            <Badge variant={lease.status === 'requested' ? 'default' : 'muted'}>
               {leaseStatusLabels[lease.status]}
             </Badge>
           </div>
@@ -286,10 +284,10 @@ function LeaseList({
           )}
           {lease.status === 'converted' && listing && party === 'tenant' && (
             <Link
-              href={`/transport/new?listingId=${listing.id}`}
+              href={`/requests/new?listingId=${listing.id}`}
               className="mt-2 inline-block text-sm font-medium text-primary hover:underline"
             >
-              運搬を依頼する
+              希望条件を登録する
             </Link>
           )}
           <div className="mt-4 border-t border-border pt-4">
@@ -298,8 +296,7 @@ function LeaseList({
               status={lease.status}
               party={party}
               canConvert={
-                lease.salePrice !== undefined &&
-                lease.creditRate !== undefined
+                lease.salePrice !== undefined && lease.creditRate !== undefined
               }
             />
           </div>
@@ -340,7 +337,7 @@ export function AccountOverviewView({
       icon: Inbox,
     },
     {
-      label: '承認待ちのレンタル',
+      label: '承認待ちの賃貸',
       value: overview.summary.requestedLeases,
       href: '#lending',
       icon: CalendarDays,
@@ -503,8 +500,8 @@ export function AccountOverviewView({
                       {deal.kind === 'order'
                         ? '注文'
                         : deal.kind === 'lease'
-                          ? 'レンタル'
-                          : '運搬'}
+                          ? '賃貸'
+                          : '物件リクエスト'}
                     </Badge>
                     <Link
                       href={`/account/deals/${deal.kind}/${deal.id}`}
@@ -530,7 +527,7 @@ export function AccountOverviewView({
 
           <Section
             id="purchases"
-            title="買った農機具"
+            title="買った物件"
             count={overview.orders.asBuyer.length}
           >
             <OrderList
@@ -542,7 +539,7 @@ export function AccountOverviewView({
 
           <Section
             id="sales"
-            title="売った農機具"
+            title="売った物件"
             count={overview.orders.asSeller.length}
           >
             <OrderList
@@ -554,7 +551,7 @@ export function AccountOverviewView({
 
           <Section
             id="leases"
-            title="借りている農機具"
+            title="借りている物件"
             count={overview.leases.asTenant.length}
           >
             <LeaseList
@@ -566,7 +563,7 @@ export function AccountOverviewView({
 
           <Section
             id="lending"
-            title="貸している農機具"
+            title="貸している物件"
             count={overview.leases.asOwner.length}
           >
             <LeaseList
@@ -578,18 +575,18 @@ export function AccountOverviewView({
 
           <Section
             id="transport"
-            title="自分の運搬依頼"
+            title="自分の物件リクエスト"
             count={overview.propertyRequests.length}
             action={
               <Link
-                href="/transport/new"
+                href="/requests/new"
                 className={cn(
                   buttonVariants({ variant: 'outline', size: 'sm' }),
                   'gap-1.5',
                 )}
               >
                 <Plus className="size-3.5" aria-hidden="true" />
-                運搬を依頼
+                物件リクエストを依頼
               </Link>
             }
           >
@@ -606,7 +603,7 @@ export function AccountOverviewView({
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-2">
                           <Link
-                            href={`/transport/${request.id}`}
+                            href={`/requests/${request.id}`}
                             className="font-semibold text-foreground hover:text-primary hover:underline"
                           >
                             {request.title}
@@ -615,12 +612,13 @@ export function AccountOverviewView({
                           <Badge variant="muted">{request.status}</Badge>
                         </div>
                         <span className="text-sm text-muted-foreground">
-                          {request.prefecture} {request.city}・{formatYen(request.budget)}
+                          {request.prefecture} {request.city}・
+                          {formatYen(request.budget)}
                         </span>
                       </div>
                       <div className="mt-3 flex items-center gap-3">
                         <Link
-                          href={`/transport/${request.id}/edit`}
+                          href={`/requests/${request.id}/edit`}
                           className="text-xs font-medium text-primary hover:underline"
                         >
                           編集
@@ -691,7 +689,7 @@ export function AccountOverviewView({
           </Section>
 
           {overview.agent && (
-            <Section id="agent" title="運搬者プロフィール">
+            <Section id="agent" title="担当者プロフィール">
               <div className="rounded-2xl border border-border bg-card p-5 text-sm">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-medium text-foreground">
@@ -702,14 +700,15 @@ export function AccountOverviewView({
                     拠点 {overview.agent.profile.prefecture}
                   </span>
                   <Link
-                    href="/transport/register"
+                    href="/requests/register"
                     className="ml-auto text-xs font-medium text-primary hover:underline"
                   >
                     プロフィールを編集
                   </Link>
                 </div>
                 <p className="mt-2 text-muted-foreground">
-                  車両: {overview.agent.profile.handledCategories.join('・')}
+                  取扱カテゴリ:{' '}
+                  {overview.agent.profile.handledCategories.join('・')}
                   ／対応地域: {overview.agent.profile.serviceAreas.join('・')}
                 </p>
                 <h3 className="mt-4 text-sm font-medium text-foreground">
@@ -722,13 +721,14 @@ export function AccountOverviewView({
                     {overview.agent.matchingRequests.map((request) => (
                       <li key={request.id} className="flex flex-wrap gap-2">
                         <Link
-                          href={`/transport/${request.id}`}
+                          href={`/requests/${request.id}`}
                           className="font-semibold text-foreground hover:text-primary hover:underline"
                         >
                           {request.title}
                         </Link>
                         <span className="text-muted-foreground">
-                          {request.prefecture} {request.city}・{formatYen(request.budget)}
+                          {request.prefecture} {request.city}・
+                          {formatYen(request.budget)}
                         </span>
                       </li>
                     ))}
@@ -740,12 +740,12 @@ export function AccountOverviewView({
 
           {!overview.agent && (
             <Link
-              href="/transport/register"
+              href="/requests/register"
               className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-muted/40 px-5 py-5 text-sm font-semibold text-primary"
             >
               <span className="flex items-center gap-3">
                 <Truck className="size-5" aria-hidden="true" />
-                運搬者として登録する
+                担当者として登録する
               </span>
               <ArrowUpRight className="size-4" aria-hidden="true" />
             </Link>
@@ -775,7 +775,7 @@ export function AccountOverviewView({
                         </Link>
                       ) : (
                         <span className="text-muted-foreground">
-                          削除された農機具
+                          削除された物件
                         </span>
                       )}
                       <span className="text-muted-foreground">
@@ -811,7 +811,7 @@ export function AccountOverviewView({
                     <div className="flex flex-wrap items-center gap-2">
                       {request ? (
                         <Link
-                          href={`/transport/${request.id}`}
+                          href={`/requests/${request.id}`}
                           className="font-semibold text-foreground hover:text-primary hover:underline"
                         >
                           {request.title}
@@ -821,7 +821,9 @@ export function AccountOverviewView({
                           削除された案件
                         </span>
                       )}
-                      {request && <Badge variant="muted">{request.status}</Badge>}
+                      {request && (
+                        <Badge variant="muted">{request.status}</Badge>
+                      )}
                       <span className="text-muted-foreground">
                         {receivedAt(submission)}
                       </span>
@@ -862,7 +864,7 @@ export function AccountOverviewView({
                     <div className="flex flex-wrap items-center gap-2">
                       {request ? (
                         <Link
-                          href={`/transport/${request.id}`}
+                          href={`/requests/${request.id}`}
                           className="font-semibold text-foreground hover:text-primary hover:underline"
                         >
                           {request.title}

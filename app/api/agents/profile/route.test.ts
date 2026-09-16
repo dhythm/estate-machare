@@ -12,10 +12,10 @@ beforeEach(() => {
 })
 
 const profile = {
-  name: '高橋運送',
+  name: '高橋不動産',
   kind: '法人',
   prefecture: '秋田県',
-  vehicles: ['2tトラック'],
+  handledCategories: ['マンション'],
   serviceAreas: ['秋田県', '山形県'],
 }
 
@@ -27,19 +27,21 @@ const put = (body: unknown) =>
     }),
   )
 
-describe('/api/transport/agent-profile', () => {
+describe('/api/agents/profile', () => {
   it('returns null before registration, then saves and returns the profile', async () => {
     expect(await (await GET()).json()).toEqual({ profile: null })
     const saved = await put(profile)
     expect(saved.status).toBe(200)
     expect(await saved.json()).toMatchObject({
       id: 'demo-user',
-      name: '高橋運送',
+      name: '高橋不動産',
     })
     expect((await (await GET()).json()).profile).toMatchObject({
-      vehicles: ['2tトラック'],
+      handledCategories: ['マンション'],
     })
-    expect((await put({ ...profile, vehicles: [] })).status).toBe(400)
+    expect(
+      (await put({ ...profile, handledCategories: ['トラクター'] })).status,
+    ).toBe(400)
     signInAs(null)
     expect((await GET()).status).toBe(401)
     expect((await put(profile)).status).toBe(401)

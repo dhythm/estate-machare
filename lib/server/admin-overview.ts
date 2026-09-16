@@ -91,12 +91,12 @@ export async function getAdminCounts(): Promise<AdminCounts> {
     pendingPropertyRequests: requests.filter(isPending).length,
     requestedLeases: leases.filter((lease) => lease.status === 'requested')
       .length,
-    activeLeases: leases.filter((lease) => lease.status === 'active')
-      .length,
+    activeLeases: leases.filter((lease) => lease.status === 'active').length,
     requestedOrders: orders.filter((order) => order.status === 'requested')
       .length,
-    introducingRequests: requests.filter((request) => request.status === '紹介中')
-      .length,
+    introducingRequests: requests.filter(
+      (request) => request.status === '紹介中',
+    ).length,
     openThreads: submissions.filter(
       (submission) =>
         isThreadKind(submission.kind) && (submission.status ?? 'new') === 'new',
@@ -191,7 +191,9 @@ export async function listAccountSummaries(): Promise<AccountSummary[]> {
     note: statusById.get(id)?.note,
     listingCount: listings.filter((listing) => listing.ownerUserId === id)
       .length,
-    propertyRequestCount: requests.filter((request) => request.ownerUserId === id).length,
+    propertyRequestCount: requests.filter(
+      (request) => request.ownerUserId === id,
+    ).length,
     leaseCount: leases.filter((lease) => lease.tenantUserId === id).length,
   }))
 }
@@ -222,9 +224,7 @@ function eventStatusLabel(kind: DealKind, status: string): string {
   if (kind === 'order')
     return orderStatusLabels[status as keyof typeof orderStatusLabels] ?? status
   if (kind === 'lease')
-    return (
-      leaseStatusLabels[status as keyof typeof leaseStatusLabels] ?? status
-    )
+    return leaseStatusLabels[status as keyof typeof leaseStatusLabels] ?? status
   return jobEventLabels[status] ?? status
 }
 

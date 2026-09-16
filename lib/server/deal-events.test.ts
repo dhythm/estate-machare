@@ -7,7 +7,10 @@ import { requestLease, updateLeaseStatus } from './leases'
 import { resetStore } from './store'
 import { acceptSubmission } from './submissions'
 import { updateThreadStatus } from './threads'
-import { createPropertyRequest, updatePropertyRequestStatus } from './property-requests'
+import {
+  createPropertyRequest,
+  updatePropertyRequestStatus,
+} from './property-requests'
 import { demoAdmin, demoSeller, demoUser } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
@@ -43,7 +46,7 @@ describe('deal events', () => {
 
   it('records the order lifecycle', async () => {
     const created = await requestOrder(
-      (await getListing('trc-001'))!,
+      (await getListing('apt-001'))!,
       demoUser,
       { message: '現金で' },
     )
@@ -63,7 +66,7 @@ describe('deal events', () => {
 
   it('records the lease lifecycle including the conversion order', async () => {
     const created = await requestLease(
-      (await getListing('trc-001'))!,
+      (await getListing('apt-001'))!,
       demoUser,
       {
         startDate: '2026-10-01',
@@ -85,13 +88,14 @@ describe('deal events', () => {
   it('records request creation, review, booking, haul, and completion', async () => {
     const request = await createPropertyRequest(
       {
-        item: 'トラクター',
-        from: '新潟県 長岡市',
-        to: '新潟県 上越市',
-        distanceKm: 40,
-        weight: '約1.2t',
-        desiredDate: '相談',
-        reward: 14_000,
+        title: '駅徒歩10分以内の2LDKを借りたい',
+        deal: 'rent',
+        category: 'マンション',
+        layout: '2LDK',
+        prefecture: '東京都',
+        city: '世田谷区',
+        budget: 14_000,
+        moveInDate: '2026-12-01',
         contactEmail: 'seller@example.com',
       },
       'demo-seller',
@@ -106,23 +110,23 @@ describe('deal events', () => {
       'requestProposal',
       {
         name: '利用者デモ',
-        vehicle: '2tトラック',
+        vehicle: 'マンション',
         availableDate: '2026-10-03',
       },
       { targetId: request.id, userId: 'demo-user' },
     )
     await updateThreadStatus(threadId, demoSeller, 'agreed')
     await later()
-    await updatePropertyRequestStatus(request.id, demoUser, '運搬中')
+    await updatePropertyRequestStatus(request.id, demoUser, '紹介中')
     await later()
-    await updatePropertyRequestStatus(request.id, demoSeller, '完了')
+    await updatePropertyRequestStatus(request.id, demoSeller, '成約')
     const events = await listDealEvents('propertyRequest', request.id)
     expect(events.map((e) => e.status)).toEqual([
       '募集中',
       'approved',
       '調整中',
-      '運搬中',
-      '完了',
+      '紹介中',
+      '成約',
     ])
     expect(events[1].note).toBe('掲載可')
     expect(events[2].actorUserId).toBe('demo-seller')

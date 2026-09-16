@@ -7,27 +7,29 @@ import type { Listing, ListingModeConfig } from '@/lib/data'
 import { InquiryForm } from './inquiry-form'
 
 const listing: Listing = {
-  id: 'trc-001',
+  id: 'apt-001',
   name: 'クボタ 45馬力',
-  category: 'トラクター',
-  maker: 'クボタ',
-  year: 2019,
-  hours: 620,
-  condition: '目立った傷なし',
+  category: 'マンション',
+  zoning: '第一種住居地域',
+  layout: '3LDK',
+  floorArea: 74.2,
+  builtYear: 2019,
+  nearestStation: '小田急線 経堂駅',
+  walkMinutes: 6,
   prefecture: '新潟県',
   city: '長岡市',
-  image: '/equipment/tractor.png',
+  image: '/properties/apartment.svg',
   summary: '',
   deals: ['sale', 'rent'],
-  salePrice: 18_800_000,
+  salePrice: 88_000_000,
   rentPerMonth: 22_000,
-  seller: { name: '中村不動産', kind: '農業法人', rating: 4.8, reviews: 34 },
+  seller: { name: '中村不動産', kind: '宅建業者', rating: 4.8, reviews: 34 },
   tags: [],
 }
 
 const modes: ListingModeConfig[] = [
-  { id: 'rent', title: 'レンタルする', price: '¥22,000/日', desc: '', cta: '' },
-  { id: 'buy', title: '購入する', price: '¥18,800,000', desc: '', cta: '' },
+  { id: 'rent', title: '借りる', price: '¥268,000/月', desc: '', cta: '' },
+  { id: 'buy', title: '購入する', price: '¥88,000,000', desc: '', cta: '' },
 ]
 
 function setup(initialMode: 'rent' | 'buy' | 'question' = 'rent') {
@@ -87,7 +89,7 @@ describe('InquiryForm', () => {
       message: '現物を見たいです',
     })
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/listings/trc-001/inquiries',
+      '/api/listings/apt-001/inquiries',
       expect.objectContaining({ method: 'POST' }),
     )
   })

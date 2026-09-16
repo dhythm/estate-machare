@@ -27,7 +27,7 @@ export function HomeStatus({
       href: '/account',
     },
     {
-      label: '申込中のレンタル',
+      label: '申込中の賃貸',
       value: status.requestedLeases,
       href: '/account',
     },
@@ -44,7 +44,7 @@ export function HomeStatus({
     {
       label: '対応地域の募集中案件',
       value: status.matchingRequests ?? 0,
-      href: '/transport',
+      href: '/requests',
       show: status.matchingRequests !== undefined,
     },
     {

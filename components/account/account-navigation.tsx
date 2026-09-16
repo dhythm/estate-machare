@@ -14,8 +14,8 @@ const navigationItems = [
   { label: '確認すること', href: '#activity', icon: Inbox },
   { label: '取引の履歴', href: '#deals', icon: History },
   { label: '出品管理', href: '#equipment', icon: Tractor },
-  { label: 'レンタル管理', href: '#leases', icon: CalendarDays },
-  { label: '運搬管理', href: '#transport', icon: Truck },
+  { label: '賃貸管理', href: '#leases', icon: CalendarDays },
+  { label: 'リクエスト管理', href: '#transport', icon: Truck },
   { label: '送信したやり取り', href: '#sent', icon: Send },
 ]
 
@@ -50,12 +50,12 @@ export function AccountNavigation({ isAgent }: { isAgent: boolean }) {
         </div>
       </nav>
       <Link
-        href={isAgent ? '#agent' : '/transport/register'}
+        href={isAgent ? '#agent' : '/requests/register'}
         className="mt-4 hidden rounded-2xl bg-primary p-5 text-primary-foreground transition-opacity hover:opacity-90 lg:block"
       >
         <Truck className="size-6" aria-hidden="true" />
         <span className="mt-5 flex items-center justify-between gap-2 text-sm font-semibold">
-          {isAgent ? '運搬者プロフィール' : '運搬者として参加する'}
+          {isAgent ? '担当者プロフィール' : '担当者として参加する'}
           <ArrowUpRight className="size-4" aria-hidden="true" />
         </span>
       </Link>

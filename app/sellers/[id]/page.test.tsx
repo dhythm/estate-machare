@@ -22,11 +22,11 @@ vi.mock('@/lib/server/sellers', () => ({
           name: '出品者デモ',
           rating: 4.5,
           reviewCount: 2,
-          listings: [await getListing('trc-001'), await getListing('cmb-002')],
+          listings: [await getListing('apt-001'), await getListing('hse-002')],
           reviews: [
             {
               id: 'rv-1',
-              listingId: 'trc-001',
+              listingId: 'apt-001',
               sellerUserId: 'demo-seller',
               reviewerUserId: 'demo-user',
               sourceKind: 'lease',
@@ -49,19 +49,21 @@ describe('SellerPage', () => {
       screen.getByRole('heading', { level: 1, name: '出品者デモ' }),
     ).toBeInTheDocument()
     expect(screen.getByText('4.5')).toBeInTheDocument()
-    const listings = screen.getByRole('region', { name: '出品中の農機具' })
+    const listings = screen.getByRole('region', { name: '出品中の物件' })
     expect(within(listings).getAllByRole('link')).toHaveLength(2)
     expect(
-      within(listings).getByRole('link', { name: /クボタ トラクター 45馬力/ }),
-    ).toHaveAttribute('href', '/listings/trc-001')
+      within(listings).getByRole('link', {
+        name: /シティタワー 世田谷区 3LDK/,
+      }),
+    ).toHaveAttribute('href', '/listings/apt-001')
     const reviews = screen.getByRole('region', { name: 'レビュー' })
     expect(within(reviews).getByText('対応が丁寧でした')).toBeInTheDocument()
     expect(
       within(reviews).getByRole('img', { name: '評価 4' }),
     ).toBeInTheDocument()
     expect(
-      within(reviews).getByRole('link', { name: /クボタ トラクター 45馬力/ }),
-    ).toHaveAttribute('href', '/listings/trc-001')
+      within(reviews).getByRole('link', { name: /シティタワー 世田谷区 3LDK/ }),
+    ).toHaveAttribute('href', '/listings/apt-001')
   })
 
   it('is not found for an unknown seller', async () => {

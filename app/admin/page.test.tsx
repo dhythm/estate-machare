@@ -31,7 +31,7 @@ vi.mock('@/lib/server/admin-overview', () => ({
     {
       review: {
         id: 'rv-1',
-        listingId: 'trc-001',
+        listingId: 'apt-001',
         sellerUserId: 'demo-seller',
         reviewerUserId: 'demo-user',
         sourceKind: 'order',
@@ -58,10 +58,10 @@ describe('AdminDashboardPage', () => {
       '/admin/deals/leases',
       '/admin/deals/inquiries',
       '/admin/deals/reviews',
-      '/admin/transport',
-      '/admin/transport/applications',
-      '/admin/transport/inquiries',
-      '/admin/transport/agents',
+      '/admin/requests',
+      '/admin/requests/proposals',
+      '/admin/requests/inquiries',
+      '/admin/requests/agents',
       '/admin/accounts',
     ]) {
       expect(
@@ -75,7 +75,7 @@ describe('AdminDashboardPage', () => {
   it('shows order and haul metrics, recent activity, and recent reviews', async () => {
     render(await AdminDashboardPage())
     expect(screen.getByText('承諾待ちの注文')).toBeInTheDocument()
-    expect(screen.getByText('運搬中の案件')).toBeInTheDocument()
+    expect(screen.getByText('紹介中のリクエスト')).toBeInTheDocument()
     const activity = screen.getByRole('region', { name: '直近の取引の動き' })
     expect(
       within(activity).getByRole('link', { name: /クボタ 45馬力/ }),

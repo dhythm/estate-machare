@@ -16,10 +16,8 @@ export async function POST(
     return notFound('リクエストが見つかりません。')
   if (propertyRequest.status !== '募集中')
     return conflict('募集中のリクエストにのみ提案できます。')
-  return handleSubmission(
-    request,
-    'requestProposal',
-    validateRequestProposal,
-    { targetId: id, userId: authorized.user.id },
-  )
+  return handleSubmission(request, 'requestProposal', validateRequestProposal, {
+    targetId: id,
+    userId: authorized.user.id,
+  })
 }

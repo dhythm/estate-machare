@@ -14,11 +14,11 @@ describe('AdminTabs', () => {
       <AdminTabs
         items={[
           { href: '/admin/deals', label: '出品' },
-          { href: '/admin/deals/leases', label: 'レンタル' },
+          { href: '/admin/deals/leases', label: '賃貸' },
         ]}
       />,
     )
-    expect(screen.getByRole('link', { name: 'レンタル' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: '賃貸' })).toHaveAttribute(
       'aria-current',
       'page',
     )

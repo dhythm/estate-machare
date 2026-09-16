@@ -8,13 +8,13 @@ describe('Hero search', () => {
   it('submits the selected deal, category and keyword to the existing listing search', async () => {
     const user = userEvent.setup()
     render(<Hero />)
-    const form = screen.getByRole('search', { name: '農機具を探す' })
+    const form = screen.getByRole('search', { name: '物件を探す' })
     expect(form).toHaveAttribute('action', '/listings')
     expect(form).toHaveAttribute('method', 'get')
     await user.click(screen.getByRole('button', { name: '借りる' }))
     await user.selectOptions(
       screen.getByRole('combobox', { name: 'カテゴリ' }),
-      'トラクター',
+      'マンション',
     )
     await user.type(
       screen.getByRole('searchbox', { name: 'キーワード' }),
@@ -23,20 +23,22 @@ describe('Hero search', () => {
     const data = new FormData(form as HTMLFormElement)
     expect(Object.fromEntries(data)).toEqual({
       deal: 'rent',
-      category: 'トラクター',
+      category: 'マンション',
       q: 'クボタ',
     })
     await user.click(screen.getByRole('button', { name: '借りてから買う' }))
-    expect(new FormData(form as HTMLFormElement).get('deal')).toBe('purchaseOption')
+    expect(new FormData(form as HTMLFormElement).get('deal')).toBe(
+      'purchaseOption',
+    )
   })
 
   it('keeps transport requests and available requests reachable from the first screen', () => {
     render(<Hero />)
     expect(
-      screen.getByRole('link', { name: /運搬を依頼する/ }),
-    ).toHaveAttribute('href', '/transport/new')
+      screen.getByRole('link', { name: /希望条件を登録する/ }),
+    ).toHaveAttribute('href', '/requests/new')
     expect(
-      screen.getByRole('link', { name: /運搬の仕事を探す/ }),
-    ).toHaveAttribute('href', '/transport')
+      screen.getByRole('link', { name: /物件リクエストを探す/ }),
+    ).toHaveAttribute('href', '/requests')
   })
 })

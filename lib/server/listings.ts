@@ -123,7 +123,8 @@ function matches(listing: Listing, filter: ListingFilter, terms: string[]) {
     return false
   if (filter.layout && listing.layout !== filter.layout) return false
   if (!withinPrice(listing, filter)) return false
-  if (filter.deal === 'purchaseOption' && listing.purchaseOption !== true) return false
+  if (filter.deal === 'purchaseOption' && listing.purchaseOption !== true)
+    return false
   if (
     filter.deal !== 'all' &&
     filter.deal !== 'purchaseOption' &&

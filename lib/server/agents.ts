@@ -61,7 +61,9 @@ export async function matchAgentsForRequest(
   const profiles = await listAgentProfiles()
   return profiles
     .map((profile) => ({ profile, score: areaScore(profile, request) }))
-    .filter((match) => match.score > 0 && handlesCategory(match.profile, request))
+    .filter(
+      (match) => match.score > 0 && handlesCategory(match.profile, request),
+    )
     .sort((a, b) => b.score - a.score)
 }
 

@@ -77,7 +77,7 @@ export function AgentProfileForm({
     }
     setIsSubmitting(true)
     try {
-      const response = await fetch('/api/transport/agent-profile', {
+      const response = await fetch('/api/agents/profile', {
         method: 'PUT',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(values),
@@ -148,7 +148,9 @@ export function AgentProfileForm({
           ))}
         </div>
         {errors.handledCategories && (
-          <p className="mt-1 text-xs text-destructive">{errors.handledCategories}</p>
+          <p className="mt-1 text-xs text-destructive">
+            {errors.handledCategories}
+          </p>
         )}
       </fieldset>
       <fieldset>

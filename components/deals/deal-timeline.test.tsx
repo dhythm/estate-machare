@@ -12,8 +12,8 @@ describe('DealTimeline', () => {
             kind: 'order',
             id: 'o-1',
             title: 'クボタ 45馬力',
-            href: '/listings/trc-001',
-            amount: 18_800_000,
+            href: '/listings/apt-001',
+            amount: 88_000_000,
             status: 'accepted',
             statusLabel: '承諾',
             role: '買い手',
@@ -51,9 +51,9 @@ describe('DealTimeline', () => {
     )
     expect(screen.getByRole('link', { name: 'クボタ 45馬力' })).toHaveAttribute(
       'href',
-      '/listings/trc-001',
+      '/listings/apt-001',
     )
-    expect(screen.getByText('¥18,800,000')).toBeInTheDocument()
+    expect(screen.getByText('¥88,000,000')).toBeInTheDocument()
     const timeline = screen.getByRole('list', { name: '履歴' })
     const items = within(timeline).getAllByRole('listitem')
     expect(items).toHaveLength(2)
@@ -64,7 +64,7 @@ describe('DealTimeline', () => {
       'href',
       '/account/threads/t-1',
     )
-    expect(screen.getByRole('link', { name: /レンタル/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /賃貸/ })).toHaveAttribute(
       'href',
       '/account/deals/lease/r-1',
     )

@@ -14,14 +14,14 @@ export async function POST(
   if (!authorized.ok) return authorized.response
   const listing = await getListing(id)
   if (!listing || !isApproved(listing))
-    return notFound('農機具が見つかりません。')
+    return notFound('物件が見つかりません。')
   const offered = buildModes(listing).map((mode) => mode.id)
   return handleSubmission(request, 'listingInquiry', validateListingInquiry, {
     targetId: id,
     userId: authorized.user.id,
     refine: (value) =>
       value.mode !== 'question' && !offered.includes(value.mode)
-        ? { mode: 'この農機具では選択できない取引方法です。' }
+        ? { mode: 'この物件では選択できない取引方法です。' }
         : undefined,
   })
 }

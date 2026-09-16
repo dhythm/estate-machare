@@ -14,7 +14,7 @@ import {
   type InquiryMode,
 } from '@/lib/validation/listing-inquiry'
 
-export const metadata: Metadata = { title: '出品者に連絡する | Agri Machare' }
+export const metadata: Metadata = { title: '出品者に連絡する | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 
@@ -46,10 +46,7 @@ export default async function InquiryPage({
   return (
     <PageShell>
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-        <BackLink
-          href={`/listings/${listing.id}`}
-          label="農機具の詳細にもどる"
-        />
+        <BackLink href={`/listings/${listing.id}`} label="物件の詳細にもどる" />
         <div className="mt-6 flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
           <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-muted">
             <Image

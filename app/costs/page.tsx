@@ -38,7 +38,11 @@ export default function InitialCostPage() {
       value: example.keyMoney,
       months: categoryInitialCostMonths[exampleCategory].keyMoneyMonths,
     },
-    { label: '仲介手数料', value: example.brokerageFee, months: brokerageFeeMonths },
+    {
+      label: '仲介手数料',
+      value: example.brokerageFee,
+      months: brokerageFeeMonths,
+    },
   ]
 
   return (
@@ -84,10 +88,16 @@ export default function InitialCostPage() {
                     <th scope="col" className="px-4 py-4 font-medium">
                       カテゴリ
                     </th>
-                    <th scope="col" className="px-4 py-4 text-right font-medium">
+                    <th
+                      scope="col"
+                      className="px-4 py-4 text-right font-medium"
+                    >
                       敷金
                     </th>
-                    <th scope="col" className="px-4 py-4 text-right font-medium">
+                    <th
+                      scope="col"
+                      className="px-4 py-4 text-right font-medium"
+                    >
                       礼金
                     </th>
                   </tr>
@@ -185,7 +195,10 @@ export default function InitialCostPage() {
             </p>
           </div>
           <div className="flex flex-col items-start gap-3">
-            <Link href="/requests" className={cn(buttonVariants(), 'h-11 px-4')}>
+            <Link
+              href="/requests"
+              className={cn(buttonVariants(), 'h-11 px-4')}
+            >
               募集中のリクエストを見る
               <ArrowRight className="size-4" />
             </Link>

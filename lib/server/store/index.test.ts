@@ -23,7 +23,9 @@ describe('store selection', { timeout: 20_000 }, () => {
     vi.stubEnv('PGLITE_DATA_DIR', 'memory://')
     const store = getStore()
     expect(store.kind).toBe('pglite')
-    expect((await store.propertyRequests.list()).length).toBeGreaterThanOrEqual(10)
+    expect((await store.propertyRequests.list()).length).toBeGreaterThanOrEqual(
+      10,
+    )
   })
 
   it('rejects unknown store names', () => {
@@ -33,9 +35,9 @@ describe('store selection', { timeout: 20_000 }, () => {
 
   it('returns the same instance until reset, and reset reseeds', async () => {
     vi.stubEnv('DATA_STORE', 'memory')
-    await getStore().listings.delete('trc-001')
-    expect(await getStore().listings.get('trc-001')).toBeUndefined()
+    await getStore().listings.delete('apt-001')
+    expect(await getStore().listings.get('apt-001')).toBeUndefined()
     await resetStore()
-    expect(await getStore().listings.get('trc-001')).toBeDefined()
+    expect(await getStore().listings.get('apt-001')).toBeDefined()
   })
 })

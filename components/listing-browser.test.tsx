@@ -8,19 +8,21 @@ import type { Listing, ListingPage } from '@/lib/data'
 
 const listing: Listing = {
   id: 'initial',
-  name: '初期トラクター',
-  category: 'トラクター',
-  maker: 'メーカー',
-  year: 2020,
-  hours: 100,
-  condition: '目立った傷なし',
+  name: '初期レジデンス',
+  category: 'マンション',
+  zoning: '第一種住居地域',
+  layout: '3LDK',
+  floorArea: 74.2,
+  builtYear: 2019,
+  nearestStation: '小田急線 経堂駅',
+  walkMinutes: 6,
   prefecture: '新潟県',
   city: '長岡市',
-  image: '/equipment/tractor.png',
+  image: '/properties/apartment.svg',
   summary: '説明',
   deals: ['sale'],
   salePrice: 100000,
-  seller: { name: '農家', kind: '個人農家', rating: 4, reviews: 1 },
+  seller: { name: '農家', kind: '個人', rating: 4, reviews: 1 },
   tags: [],
 }
 
@@ -54,7 +56,7 @@ describe('ListingBrowser', () => {
     vi.stubGlobal('fetch', vi.fn())
     setup()
     expect(
-      screen.getByRole('heading', { name: '初期トラクター' }),
+      screen.getByRole('heading', { name: '初期レジデンス' }),
     ).toBeVisible()
     expect(screen.getByText(/30件/)).toBeInTheDocument()
     expect(

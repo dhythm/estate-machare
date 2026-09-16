@@ -15,13 +15,13 @@ beforeEach(() => {
 const application = {
   name: '高橋 健',
   email: 'ken@example.com',
-  vehicle: '2tトラック',
+  vehicle: 'マンション',
   availableDate: '2026-10-03',
 }
 
 function post(id: string, body: unknown) {
   return POST(
-    new Request(`http://localhost/api/transport/requests/${id}/applications`, {
+    new Request(`http://localhost/api/requests/${id}/applications`, {
       method: 'POST',
       body: JSON.stringify(body),
     }),
@@ -29,21 +29,21 @@ function post(id: string, body: unknown) {
   )
 }
 
-describe('POST /api/transport/requests/[id]/applications', () => {
+describe('POST /api/requests/[id]/applications', () => {
   it('accepts an application for an open request', async () => {
-    expect((await post('tj-01', application)).status).toBe(201)
+    expect((await post('pr-01', application)).status).toBe(201)
   })
 
   it('requires login', async () => {
     signInAs(null)
-    expect((await post('tj-01', application)).status).toBe(401)
+    expect((await post('pr-01', application)).status).toBe(401)
   })
 
   it('rejects an application unless the request is open', async () => {
-    const response = await post('tj-03', application)
+    const response = await post('pr-03', application)
     expect(response.status).toBe(409)
     expect((await response.json()).error).toBe(
-      '募集中の案件にのみ応募できます。',
+      '募集中のリクエストにのみ提案できます。',
     )
   })
 
@@ -53,16 +53,17 @@ describe('POST /api/transport/requests/[id]/applications', () => {
 
   it('rejects an application for a pending request', async () => {
     const created = await createJob(
-      new Request('http://localhost/api/transport/requests', {
+      new Request('http://localhost/api/requests/requests', {
         method: 'POST',
         body: JSON.stringify({
-          item: '審査中トラクター',
-          from: '長野県 松本市',
-          to: '長野県 諏訪市',
-          distanceKm: '40',
-          weight: '約1.2t',
-          desiredDate: '相談',
-          reward: '14000',
+          title: '駅徒歩10分以内の2LDKを借りたい',
+          deal: 'rent',
+          category: 'マンション',
+          layout: '2LDK',
+          prefecture: '東京都',
+          city: '世田谷区',
+          budget: '14000',
+          moveInDate: '2026-12-01',
           contactEmail: 'owner@example.com',
         }),
       }),
@@ -72,7 +73,7 @@ describe('POST /api/transport/requests/[id]/applications', () => {
   })
 
   it('returns field errors', async () => {
-    const response = await post('tj-01', { ...application, availableDate: '' })
+    const response = await post('pr-01', { ...application, availableDate: '' })
     expect(response.status).toBe(400)
     expect((await response.json()).errors).toHaveProperty('availableDate')
   })

@@ -101,7 +101,7 @@ export async function createOrderFromLease(input: {
     dealId: order.id,
     status: 'delivered',
     actorUserId: input.buyerUserId,
-    note: 'レンタルから購入に切り替え',
+    note: '賃貸から購入に切り替え',
   })
   return order
 }

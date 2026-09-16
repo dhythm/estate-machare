@@ -23,16 +23,16 @@ describe('migrate', { timeout: 20_000 }, () => {
       'account_statuses',
       'agent_profiles',
       'deal_events',
+      'leases',
       'listings',
       'messages',
       'notifications',
       'orders',
-      'leases',
+      'property_requests',
       'reviews',
       'schema_migrations',
       'submissions',
       'thread_reads',
-      'property_requests',
     ])
     expect(await migrate(db)).toEqual([])
   })

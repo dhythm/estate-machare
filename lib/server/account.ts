@@ -155,7 +155,10 @@ export async function getAccountOverview(
 
   const incoming = [
     ...ownedListings.flatMap((item) => item.inquiries),
-    ...ownedRequests.flatMap((item) => [...item.applications, ...item.inquiries]),
+    ...ownedRequests.flatMap((item) => [
+      ...item.applications,
+      ...item.inquiries,
+    ]),
   ]
 
   return {
@@ -195,13 +198,17 @@ export async function getAccountOverview(
       .filter((submission) => submission.kind === 'requestProposal')
       .map((submission) => ({
         submission,
-        request: submission.targetId ? jobById.get(submission.targetId) : undefined,
+        request: submission.targetId
+          ? jobById.get(submission.targetId)
+          : undefined,
       })),
     sentJobInquiries: sent
       .filter((submission) => submission.kind === 'requestInquiry')
       .map((submission) => ({
         submission,
-        request: submission.targetId ? jobById.get(submission.targetId) : undefined,
+        request: submission.targetId
+          ? jobById.get(submission.targetId)
+          : undefined,
       })),
   }
 }

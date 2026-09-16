@@ -103,18 +103,18 @@ describe('authenticate', () => {
   it('signs personas in with the shared persona password', () => {
     clearAccountEnv()
     vi.stubEnv('NODE_ENV', 'test')
-    expect(authenticate('nakamura-farm@example.com', 'dev-persona')).toEqual({
+    expect(authenticate('nakamura-estate@example.com', 'dev-persona')).toEqual({
       id: 'nakamura-estate',
-      email: 'nakamura-farm@example.com',
+      email: 'nakamura-estate@example.com',
       name: '中村不動産',
       role: 'user',
     })
     vi.stubEnv('DEMO_PERSONA_PASSWORD', 'shared-pass')
     expect(
-      authenticate('nakamura-farm@example.com', 'dev-persona'),
+      authenticate('nakamura-estate@example.com', 'dev-persona'),
     ).toBeUndefined()
     expect(
-      authenticate('nakamura-farm@example.com', 'shared-pass'),
+      authenticate('nakamura-estate@example.com', 'shared-pass'),
     ).toBeDefined()
   })
 
@@ -123,7 +123,7 @@ describe('authenticate', () => {
     vi.stubEnv('NODE_ENV', 'production')
     expect(configuredAccounts().map((a) => a.id)).toContain('nakamura-estate')
     expect(
-      authenticate('nakamura-farm@example.com', 'dev-persona'),
+      authenticate('nakamura-estate@example.com', 'dev-persona'),
     ).toBeUndefined()
   })
 

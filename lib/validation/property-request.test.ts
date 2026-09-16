@@ -1,20 +1,27 @@
 import { describe, expect, it } from 'vitest'
-import { validateRequestProposal, validatePropertyRequest } from './property-request'
+import {
+  validatePropertyRequest,
+  validateRequestProposal,
+} from './property-request'
 
 describe('validateRequestProposal', () => {
   const valid = {
     name: '高橋 健',
     email: 'ken@example.com',
-    vehicle: '2tトラック',
+    listingId: 'apt-001',
     availableDate: '2026-10-03',
     message: '',
   }
 
-  it('accepts an application', () => {
+  it('accepts a proposal', () => {
     expect(validateRequestProposal(valid).ok).toBe(true)
   })
 
-  it('requires a name, email, vehicle, and date', () => {
+  it('accepts a proposal without a listing of its own', () => {
+    expect(validateRequestProposal({ ...valid, listingId: '' }).ok).toBe(true)
+  })
+
+  it('requires a name, email, and date', () => {
     const result = validateRequestProposal({})
     expect(result.ok).toBe(false)
     if (!result.ok)
@@ -22,43 +29,49 @@ describe('validateRequestProposal', () => {
         'availableDate',
         'email',
         'name',
-        'vehicle',
       ])
   })
 })
 
 describe('validatePropertyRequest', () => {
   const valid = {
-    item: 'トラクター 25馬力',
-    from: '長野県 松本市',
-    to: '長野県 諏訪市',
-    distanceKm: '40',
-    weight: '約1.2t',
-    desiredDate: '相談',
-    reward: '14000',
-    contactEmail: 'owner@example.com',
+    title: '駅徒歩10分以内の2LDKを借りたい',
+    deal: 'rent',
+    category: 'マンション',
+    layout: '2LDK',
+    prefecture: '東京都',
+    city: '世田谷区',
+    budget: '140,000',
+    moveInDate: '2026-12-01',
+    contactEmail: 'seeker@example.com',
   }
 
-  it('accepts a request request and normalizes numbers', () => {
+  it('accepts a request and normalizes numbers', () => {
     const result = validatePropertyRequest(valid)
     expect(result.ok).toBe(true)
     if (result.ok)
-      expect(result.value).toMatchObject({ distanceKm: 40, reward: 14_000 })
+      expect(result.value).toMatchObject({ budget: 140_000, layout: '2LDK' })
   })
 
-  it('requires every field with numeric distance and reward', () => {
+  it('drops the layout for land, which has no rooms', () => {
+    const result = validatePropertyRequest({ ...valid, category: '土地' })
+    expect(result.ok).toBe(true)
+    if (result.ok) expect(result.value.layout).toBeUndefined()
+  })
+
+  it('reports an invalid title, budget and layout', () => {
     const result = validatePropertyRequest({
       ...valid,
-      distanceKm: '-1',
-      reward: 'abc',
-      item: '',
+      title: '',
+      budget: 'abc',
+      layout: '5LDK',
     })
     expect(result.ok).toBe(false)
     if (!result.ok)
       expect(Object.keys(result.errors).sort()).toEqual([
-        'distanceKm',
-        'item',
-        'reward',
+        'budget',
+        'layout',
+        'title',
       ])
   })
 })

@@ -14,10 +14,10 @@ export function StartIntroductionButton({ requestId }: { requestId: string }) {
     setBusy(true)
     setError(undefined)
     try {
-      const response = await fetch(`/api/transport/requests/${requestId}/status`, {
+      const response = await fetch(`/api/requests/${requestId}/status`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ status: '運搬中' }),
+        body: JSON.stringify({ status: '物件リクエスト中' }),
       })
       if (!response.ok) {
         const payload = (await response.json()) as { error?: string }
@@ -40,7 +40,7 @@ export function StartIntroductionButton({ requestId }: { requestId: string }) {
         disabled={busy}
         onClick={() => void start()}
       >
-        運搬を開始
+        物件リクエストを開始
       </Button>
       {error && <span className="text-xs text-destructive">{error}</span>}
     </span>

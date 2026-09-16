@@ -22,11 +22,17 @@ describe('admin tables', () => {
           {
             lease: {
               id: 'r-1',
-              listingId: 'trc-001',
+              listingId: 'apt-001',
               tenantUserId: 'demo-user',
               startDate: '2026-10-01',
               endDate: '2026-10-07',
-              days: 7,
+              months: 7,
+
+              deposit: 0,
+
+              keyMoney: 0,
+
+              initialCost: 0,
               rentPerMonth: 22_000,
               rentTotal: 154_000,
               status: 'requested',
@@ -52,7 +58,7 @@ describe('admin tables', () => {
           {
             id: 't-1',
             kind: 'listingInquiry',
-            targetId: 'trc-001',
+            targetId: 'apt-001',
             targetName: 'クボタ 45馬力',
             senderName: '利用者デモ',
             status: 'in_progress',
@@ -65,7 +71,7 @@ describe('admin tables', () => {
     )
     expect(screen.getByRole('link', { name: 'クボタ 45馬力' })).toHaveAttribute(
       'href',
-      '/listings/trc-001',
+      '/listings/apt-001',
     )
     expect(screen.getByRole('link', { name: '開く' })).toHaveAttribute(
       'href',
@@ -83,10 +89,10 @@ describe('admin tables', () => {
           {
             order: {
               id: 'o-1',
-              listingId: 'trc-001',
+              listingId: 'apt-001',
               buyerUserId: 'demo-user',
               sellerUserId: 'demo-seller',
-              price: 18_800_000,
+              price: 88_000_000,
               status: 'accepted',
               createdAt: '2026-09-13T00:00:00.000Z',
               updatedAt: '2026-09-13T00:00:00.000Z',
@@ -96,7 +102,7 @@ describe('admin tables', () => {
         ]}
       />,
     )
-    expect(screen.getByText('¥18,800,000')).toBeInTheDocument()
+    expect(screen.getByText('¥88,000,000')).toBeInTheDocument()
     expect(screen.getByText('承諾')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '取り消す' })).toBeInTheDocument()
   })
@@ -108,7 +114,7 @@ describe('admin tables', () => {
           {
             review: {
               id: 'rv-1',
-              listingId: 'trc-001',
+              listingId: 'apt-001',
               sellerUserId: 'demo-seller',
               reviewerUserId: 'demo-user',
               sourceKind: 'lease',
@@ -136,7 +142,7 @@ describe('admin tables', () => {
             name: '高橋運送',
             kind: '法人',
             prefecture: '秋田県',
-            vehicles: ['4tトラック'],
+            handledCategories: ['マンション'],
             serviceAreas: ['秋田県', '山形県'],
             createdAt: '2026-09-13T00:00:00.000Z',
             updatedAt: '2026-09-13T00:00:00.000Z',
@@ -145,7 +151,7 @@ describe('admin tables', () => {
       />,
     )
     expect(screen.getByText('高橋運送')).toBeInTheDocument()
-    expect(screen.getByText('4tトラック')).toBeInTheDocument()
+    expect(screen.getByText('マンション')).toBeInTheDocument()
     render(
       <AccountTable
         items={[

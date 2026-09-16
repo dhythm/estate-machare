@@ -24,7 +24,7 @@ const post = (body: unknown) =>
 describe('POST /api/reviews', () => {
   it('creates a review for a completed lease and maps failures', async () => {
     const created = await requestLease(
-      (await getListing('trc-001'))!,
+      (await getListing('apt-001'))!,
       demoUser,
       {
         startDate: '2026-10-01',
@@ -56,8 +56,7 @@ describe('POST /api/reviews', () => {
       (await post({ sourceKind: 'lease', sourceId: id, rating: 4 })).status,
     ).toBe(403)
     expect(
-      (await post({ sourceKind: 'lease', sourceId: 'nope', rating: 4 }))
-        .status,
+      (await post({ sourceKind: 'lease', sourceId: 'nope', rating: 4 })).status,
     ).toBe(404)
     signInAs(null)
     expect(

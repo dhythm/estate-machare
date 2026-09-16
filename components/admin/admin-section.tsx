@@ -40,14 +40,14 @@ export function AdminSection({
 export const dealTabs = [
   { href: '/admin/deals', label: '出品' },
   { href: '/admin/deals/orders', label: '注文' },
-  { href: '/admin/deals/leases', label: 'レンタル' },
+  { href: '/admin/deals/leases', label: '賃貸' },
   { href: '/admin/deals/inquiries', label: '問い合わせ' },
   { href: '/admin/deals/reviews', label: 'レビュー' },
 ]
 
 export const transportTabs = [
-  { href: '/admin/transport', label: '運搬依頼' },
-  { href: '/admin/transport/applications', label: '応募' },
-  { href: '/admin/transport/inquiries', label: '質問' },
-  { href: '/admin/transport/agents', label: '運搬者' },
+  { href: '/admin/requests', label: '物件リクエスト' },
+  { href: '/admin/requests/proposals', label: '応募' },
+  { href: '/admin/requests/inquiries', label: '質問' },
+  { href: '/admin/requests/agents', label: '担当者' },
 ]

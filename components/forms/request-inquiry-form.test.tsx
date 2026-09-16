@@ -35,7 +35,7 @@ describe('RequestInquiryForm', () => {
       screen.getByRole('link', { name: 'やり取りを見る' }),
     ).toHaveAttribute('href', '/account/threads/t-9')
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/transport/requests/tj-01/inquiries',
+      '/api/requests/tj-01/inquiries',
       expect.objectContaining({ method: 'POST' }),
     )
   })

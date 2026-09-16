@@ -38,7 +38,9 @@ export async function getModerationQueue(
   ])
   return {
     listings: listings.filter((listing) => matchesFilter(listing, status)),
-    propertyRequests: propertyRequests.filter((request) => matchesFilter(request, status)),
+    propertyRequests: propertyRequests.filter((request) =>
+      matchesFilter(request, status),
+    ),
   }
 }
 
@@ -74,7 +76,7 @@ export async function applyModeration(
       kind: 'moderation',
       title: `${label}が${decision.status === 'approved' ? '承認' : '却下'}されました`,
       body: decision.note ? `${name}: ${decision.note}` : name,
-      href: kind === 'listing' ? `/listings/${id}` : `/transport/${id}`,
+      href: kind === 'listing' ? `/listings/${id}` : `/requests/${id}`,
     })
   }
   return updated

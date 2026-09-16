@@ -15,8 +15,8 @@ import { prefectureNames } from '@/lib/prefectures'
 const dealFilters: { id: DealFilter; label: string }[] = [
   { id: 'all', label: 'すべて' },
   { id: 'sale', label: '購入できる' },
-  { id: 'rent', label: 'レンタルできる' },
-  { id: 'purchaseOption', label: 'レンタル購入可' },
+  { id: 'rent', label: '賃貸できる' },
+  { id: 'purchaseOption', label: '買取オプション可' },
 ]
 
 export function DealFilterToggle({

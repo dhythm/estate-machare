@@ -40,10 +40,10 @@ describe('demoActivity', () => {
       expect(userIds).toContain(lease.tenantUserId)
       const listing = listingById.get(lease.listingId)
       expect(listing?.rentPerMonth).toBe(lease.rentPerMonth)
-      expect(lease.days).toBe(
+      expect(lease.months).toBe(
         countLeaseMonths(lease.startDate, lease.endDate),
       )
-      expect(lease.rentTotal).toBe(lease.days * lease.rentPerMonth)
+      expect(lease.rentTotal).toBe(lease.months * lease.rentPerMonth)
     }
     for (const submission of submissions) {
       expect(isThreadKind(submission.kind)).toBe(true)
@@ -96,7 +96,7 @@ describe('demoActivity', () => {
 
   it('gives the hauling request an agreed agent and the dashboard something to show', () => {
     const hauling = demoActivity.propertyRequests.filter(
-      (request) => request.status === '運搬中',
+      (request) => request.status === '紹介中',
     )
     expect(hauling.length).toBeGreaterThan(0)
     for (const request of hauling)

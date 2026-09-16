@@ -35,7 +35,7 @@ const items = [
     id: 'n-2',
     userId: 'demo-user',
     kind: 'lease' as const,
-    title: 'レンタルが「レンタル中」になりました',
+    title: '賃貸借契約が「入居中」になりました',
     href: '/account',
     createdAt: '2026-09-13T05:00:00.000Z',
     readAt: '2026-09-13T05:30:00.000Z',
@@ -50,10 +50,10 @@ describe('NotificationList', () => {
     expect(
       screen.getByRole('button', { name: /返信が届きました/ }),
     ).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /レンタルが/ })).toBeNull()
+    expect(screen.queryByRole('button', { name: /賃貸借契約が/ })).toBeNull()
     await user.click(screen.getByRole('button', { name: /^すべて 2/ }))
     expect(
-      screen.getByRole('button', { name: /レンタルが/ }),
+      screen.getByRole('button', { name: /賃貸借契約が/ }),
     ).toBeInTheDocument()
   })
 

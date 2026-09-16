@@ -9,9 +9,7 @@ describe('validateLeaseRequest', () => {
       ok: true,
       value: { startDate: '2026-10-01', endDate: '2026-10-07' },
     })
-    expect(validateLeaseRequest({ startDate: '', endDate: 'x' }).ok).toBe(
-      false,
-    )
+    expect(validateLeaseRequest({ startDate: '', endDate: 'x' }).ok).toBe(false)
   })
 })
 
