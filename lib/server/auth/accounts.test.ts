@@ -28,7 +28,7 @@ describe('configuredAccounts', () => {
       expect.objectContaining({
         id: 'demo-seller',
         email: 'seller@example.com',
-        name: '出品者デモ',
+        name: '掲載者デモ',
         role: 'user',
       }),
       expect.objectContaining({
@@ -106,7 +106,7 @@ describe('authenticate', () => {
     expect(authenticate('nakamura-farm@example.com', 'dev-persona')).toEqual({
       id: 'nakamura-farm',
       email: 'nakamura-farm@example.com',
-      name: '中村ファーム',
+      name: '中村不動産',
       role: 'user',
     })
     vi.stubEnv('DEMO_PERSONA_PASSWORD', 'shared-pass')

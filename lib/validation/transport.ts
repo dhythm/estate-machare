@@ -95,7 +95,7 @@ export function validateTransportJob(
       min: 1,
       max: 3000,
     }) as number,
-    weight: requireText(errors, source, 'weight', '重量', 30),
+    weight: requireText(errors, source, 'weight', '荷物量', 30),
     desiredDate: requireText(errors, source, 'desiredDate', '希望日', 30),
     reward: readInteger(errors, source, 'reward', '報酬', {
       min: 1,

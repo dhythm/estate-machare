@@ -40,7 +40,7 @@ describe('transport jobs', () => {
   })
 
   it('finds a job and handles an unknown id', async () => {
-    expect((await getTransportJob('tj-01'))?.item).toContain('コンバイン')
+    expect((await getTransportJob('tj-01'))?.item).toContain('引越し')
     expect(await getTransportJob('missing')).toBeUndefined()
   })
 

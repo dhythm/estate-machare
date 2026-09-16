@@ -195,14 +195,14 @@ function OrderList({
                 {listing.name}
               </Link>
             ) : (
-              <span className="text-muted-foreground">削除された農機具</span>
+              <span className="text-muted-foreground">削除された物件</span>
             )}
             <Badge variant={order.status === 'requested' ? 'default' : 'muted'}>
               {orderStatusLabels[order.status]}
             </Badge>
             <span className="text-muted-foreground">
               {formatYen(order.price)}
-              {order.sourceRentalId && '（レンタルから切替）'}
+              {order.sourceRentalId && '（賃貸から切替）'}
             </span>
           </div>
           {order.message && (
@@ -222,7 +222,7 @@ function OrderList({
                   href={`/transport/new?listingId=${listing.id}`}
                   className="text-sm font-medium text-primary hover:underline"
                 >
-                  運搬を依頼する
+                  引越しを依頼する
                 </Link>
               )}
           </div>
@@ -267,7 +267,7 @@ function RentalList({
                 {listing.name}
               </Link>
             ) : (
-              <span className="text-muted-foreground">削除された農機具</span>
+              <span className="text-muted-foreground">削除された物件</span>
             )}
             <Badge
               variant={rental.status === 'requested' ? 'default' : 'muted'}
@@ -289,7 +289,7 @@ function RentalList({
               href={`/transport/new?listingId=${listing.id}`}
               className="mt-2 inline-block text-sm font-medium text-primary hover:underline"
             >
-              運搬を依頼する
+              引越しを依頼する
             </Link>
           )}
           <div className="mt-4 border-t border-border pt-4">
@@ -340,13 +340,13 @@ export function AccountOverviewView({
       icon: Inbox,
     },
     {
-      label: '承認待ちのレンタル',
+      label: '承認待ちの賃貸',
       value: overview.summary.requestedRentals,
       href: '#lending',
       icon: CalendarDays,
     },
     {
-      label: '審査待ちの出品',
+      label: '審査待ちの掲載',
       value: overview.summary.pendingListings,
       href: '#equipment',
       icon: Clock3,
@@ -389,7 +389,7 @@ export function AccountOverviewView({
           <AccountActivity overview={overview} />
           <Section
             id="equipment"
-            title="自分の出品"
+            title="自分の掲載"
             count={overview.listings.length}
             action={
               <Link
@@ -400,7 +400,7 @@ export function AccountOverviewView({
                 )}
               >
                 <Plus className="size-3.5" aria-hidden="true" />
-                出品する
+                掲載する
               </Link>
             }
           >
@@ -503,8 +503,8 @@ export function AccountOverviewView({
                       {deal.kind === 'order'
                         ? '注文'
                         : deal.kind === 'rental'
-                          ? 'レンタル'
-                          : '運搬'}
+                          ? '賃貸'
+                          : '引越し'}
                     </Badge>
                     <Link
                       href={`/account/deals/${deal.kind}/${deal.id}`}
@@ -530,7 +530,7 @@ export function AccountOverviewView({
 
           <Section
             id="purchases"
-            title="買った農機具"
+            title="買った物件"
             count={overview.orders.asBuyer.length}
           >
             <OrderList
@@ -542,7 +542,7 @@ export function AccountOverviewView({
 
           <Section
             id="sales"
-            title="売った農機具"
+            title="売った物件"
             count={overview.orders.asSeller.length}
           >
             <OrderList
@@ -554,7 +554,7 @@ export function AccountOverviewView({
 
           <Section
             id="rentals"
-            title="借りている農機具"
+            title="借りている物件"
             count={overview.rentals.asRenter.length}
           >
             <RentalList
@@ -566,7 +566,7 @@ export function AccountOverviewView({
 
           <Section
             id="lending"
-            title="貸している農機具"
+            title="貸している物件"
             count={overview.rentals.asOwner.length}
           >
             <RentalList
@@ -578,7 +578,7 @@ export function AccountOverviewView({
 
           <Section
             id="transport"
-            title="自分の運搬依頼"
+            title="自分の引越し依頼"
             count={overview.transportJobs.length}
             action={
               <Link
@@ -589,7 +589,7 @@ export function AccountOverviewView({
                 )}
               >
                 <Plus className="size-3.5" aria-hidden="true" />
-                運搬を依頼
+                引越しを依頼
               </Link>
             }
           >
@@ -691,7 +691,7 @@ export function AccountOverviewView({
           </Section>
 
           {overview.carrier && (
-            <Section id="carrier" title="運搬者プロフィール">
+            <Section id="carrier" title="引越しパートナープロフィール">
               <div className="rounded-2xl border border-border bg-card p-5 text-sm">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-medium text-foreground">
@@ -745,7 +745,7 @@ export function AccountOverviewView({
             >
               <span className="flex items-center gap-3">
                 <Truck className="size-5" aria-hidden="true" />
-                運搬者として登録する
+                引越しパートナーとして登録する
               </span>
               <ArrowUpRight className="size-4" aria-hidden="true" />
             </Link>
@@ -775,7 +775,7 @@ export function AccountOverviewView({
                         </Link>
                       ) : (
                         <span className="text-muted-foreground">
-                          削除された農機具
+                          削除された物件
                         </span>
                       )}
                       <span className="text-muted-foreground">

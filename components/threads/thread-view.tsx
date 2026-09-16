@@ -24,8 +24,9 @@ import { cn } from '@/lib/utils'
 
 const inquiryModeLabels: Record<string, string> = {
   buy: '購入したい',
-  rent: 'レンタルしたい',
-  rentToOwn: 'レンタル購入したい',
+  rent: '賃貸したい',
+  rentToOwn: '購入相談付き賃貸したい',
+  viewing: '内見したい',
   question: '質問',
 }
 
@@ -41,7 +42,7 @@ function TargetCard({ target }: { target: Thread['target'] }) {
   if (!target)
     return (
       <p className="text-sm text-muted-foreground">
-        対象の農機具・案件は削除されました。
+        対象の物件・案件は削除されました。
       </p>
     )
   if (target.kind === 'listing') {
@@ -74,17 +75,24 @@ function TargetCard({ target }: { target: Thread['target'] }) {
           {listing.prefecture} {listing.city}
         </p>
         <dl className="mt-5 space-y-3 border-t border-border pt-4">
-          {listing.rentPerDay && (
+          {listing.property?.monthlyRent ? (
             <div className="flex items-center justify-between gap-3">
-              <dt className="text-xs text-muted-foreground">レンタル / 日</dt>
+              <dt className="text-xs text-muted-foreground">月額賃料</dt>
+              <dd className="font-semibold tabular-nums">
+                {formatYen(listing.property.monthlyRent)}
+              </dd>
+            </div>
+          ) : listing.rentPerDay ? (
+            <div className="flex items-center justify-between gap-3">
+              <dt className="text-xs text-muted-foreground">短期利用 / 日</dt>
               <dd className="font-semibold tabular-nums">
                 {formatYen(listing.rentPerDay)}
               </dd>
             </div>
-          )}
+          ) : null}
           {listing.salePrice && (
             <div className="flex items-center justify-between gap-3">
-              <dt className="text-xs text-muted-foreground">販売価格</dt>
+              <dt className="text-xs text-muted-foreground">売買価格</dt>
               <dd className="font-semibold tabular-nums">
                 {formatYen(listing.salePrice)}
               </dd>
@@ -120,7 +128,7 @@ function TargetCard({ target }: { target: Thread['target'] }) {
         </p>
       </div>
       <p className="mt-4 flex justify-between gap-3">
-        <span className="text-xs text-muted-foreground">運搬報酬</span>
+        <span className="text-xs text-muted-foreground">引越し報酬</span>
         <span className="font-semibold tabular-nums">
           {formatYen(job.reward)}
         </span>
@@ -373,7 +381,7 @@ export function ThreadView({
                 className={cn(buttonVariants(), 'mt-5 h-10 w-full')}
               >
                 <Truck className="size-4" aria-hidden="true" />
-                運搬を依頼する
+                引越しを依頼する
               </Link>
             )}
         </section>

@@ -1,3 +1,4 @@
+import { seedLegacyRentalListings } from '@/test/legacy-listings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getAccountOverview } from './account'
 import { createListing, getListing } from './listings'
@@ -19,12 +20,15 @@ import type { TransportJobInput } from '@/lib/validation/transport'
 
 vi.mock('server-only', () => ({}))
 
-beforeEach(() => resetStore())
+beforeEach(async () => {
+  await resetStore()
+  await seedLegacyRentalListings()
+})
 
 const listingInput: ListingSubmission = {
   images: [],
-  name: '買い手の出品',
-  category: 'トラクター',
+  name: '買い手の掲載',
+  category: 'マンション',
   maker: 'クボタ',
   year: 2018,
   hours: 500,
@@ -36,12 +40,12 @@ const listingInput: ListingSubmission = {
   rentToOwn: false,
   summary: '説明',
   sellerName: '利用者デモ',
-  sellerKind: '個人農家',
+  sellerKind: '個人オーナー',
   contactEmail: 'user@example.com',
 }
 
 const jobInput: TransportJobInput = {
-  item: 'トラクター',
+  item: 'マンション',
   from: '長野県 松本市',
   to: '長野県 諏訪市',
   distanceKm: 40,

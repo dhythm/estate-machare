@@ -9,9 +9,9 @@ export function ListingCard({ listing }: { listing: Listing }) {
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-[box-shadow,transform] duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_-18px_rgba(23,63,53,0.3)]"
+      className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card transition-[box-shadow,transform] duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_-18px_rgba(23,63,53,0.3)]"
     >
-      <div className="relative aspect-[1.55] overflow-hidden bg-muted">
+      <div className="relative aspect-[1.4] overflow-hidden bg-muted">
         <Image
           src={listing.image || '/placeholder.svg'}
           alt={listing.name}
@@ -22,12 +22,12 @@ export function ListingCard({ listing }: { listing: Listing }) {
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5 text-[10px] font-bold">
           {canBuy && (
             <span className="rounded-md bg-white/95 px-2.5 py-1 text-primary">
-              販売
+              売買
             </span>
           )}
           {canRent && (
             <span className="rounded-md bg-accent px-2.5 py-1 text-accent-foreground">
-              レンタル
+              賃貸
             </span>
           )}
         </div>
@@ -37,16 +37,16 @@ export function ListingCard({ listing }: { listing: Listing }) {
       </div>
       <div className="flex flex-1 flex-col p-5">
         <p className="text-[10px] font-bold tracking-wider text-muted-foreground">
-          {listing.maker} <span className="mx-1.5 text-border">/</span>{' '}
-          {listing.category}
+          {listing.property?.floorPlan ?? listing.maker}{' '}
+          <span className="mx-1.5 text-border">/</span> {listing.category}
         </p>
         <h3 className="mt-2 line-clamp-2 text-base font-bold leading-relaxed text-foreground">
           {listing.name}
         </h3>
         <p className="mt-2 text-xs text-muted-foreground">
-          {listing.year}年式 <span className="mx-1.5">·</span>{' '}
-          {listing.hours.toLocaleString('ja-JP')}時間{' '}
-          <span className="mx-1.5">·</span> {listing.condition}
+          {listing.property
+            ? `${listing.property.areaSqm}㎡ · ${listing.category === '土地' ? '' : `${listing.property.builtYear}年築 · `}${listing.property.access}`
+            : '詳細はお問い合わせください'}
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
           <MapPin className="size-3.5" />
@@ -54,7 +54,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
           {listing.rentToOwn && (
             <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-bold text-primary">
               <Repeat2 className="size-3" />
-              レンタル購入可
+              購入相談可
             </span>
           )}
         </div>
@@ -62,26 +62,28 @@ export function ListingCard({ listing }: { listing: Listing }) {
           {canBuy && listing.salePrice !== undefined && (
             <p className="flex items-baseline justify-between gap-2">
               <span className="text-[11px] text-muted-foreground">
-                販売価格
+                売買価格
               </span>
               <span className="font-display text-[22px] font-bold tracking-tight text-primary">
                 {formatYen(listing.salePrice)}
               </span>
             </p>
           )}
-          {canRent && listing.rentPerDay !== undefined && (
-            <p className="flex items-baseline justify-between gap-2">
-              <span className="text-[11px] text-muted-foreground">
-                レンタル
-              </span>
-              <span className="font-display text-lg font-bold text-primary">
-                {formatYen(listing.rentPerDay)}
-                <span className="ml-1 text-xs font-normal text-muted-foreground">
-                  / 日
+          {canRent &&
+            (listing.property?.monthlyRent ?? listing.rentPerDay) !==
+              undefined && (
+              <p className="flex items-baseline justify-between gap-2">
+                <span className="text-[11px] text-muted-foreground">賃貸</span>
+                <span className="font-display text-lg font-bold text-primary">
+                  {formatYen(
+                    listing.property?.monthlyRent ?? listing.rentPerDay ?? 0,
+                  )}
+                  <span className="ml-1 text-xs font-normal text-muted-foreground">
+                    / {listing.property ? '月' : '日'}
+                  </span>
                 </span>
-              </span>
-            </p>
-          )}
+              </p>
+            )}
         </div>
         <div className="mt-4 flex items-center justify-between gap-2 text-[10px] text-muted-foreground">
           <span className="truncate">{listing.seller.name}</span>

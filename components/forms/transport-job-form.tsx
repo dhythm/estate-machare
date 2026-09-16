@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { validateTransportJob } from '@/lib/validation/transport'
-import { listingCategories } from '@/lib/validation/listing-submission'
 import {
+  transportBaseRates,
   estimateDistanceKm,
   estimateTransportFee,
   prefectureNames,
@@ -20,6 +20,8 @@ export type TransportJobInitial = {
   category?: string
   fromPrefecture?: string
   fromCity?: string
+  toPrefecture?: string
+  toCity?: string
   weight?: string
 }
 
@@ -70,8 +72,8 @@ export function TransportJobForm({
     category: initial?.category ?? '',
     fromPrefecture: editFrom?.prefecture ?? initial?.fromPrefecture ?? '',
     fromCity: editFrom?.city ?? initial?.fromCity ?? '',
-    toPrefecture: editTo?.prefecture ?? '',
-    toCity: editTo?.city ?? '',
+    toPrefecture: editTo?.prefecture ?? initial?.toPrefecture ?? '',
+    toCity: editTo?.city ?? initial?.toCity ?? '',
   })
   const form = useSubmissionForm({
     url: edit ? `/api/transport/jobs/${edit.jobId}` : '/api/transport/jobs',
@@ -80,7 +82,7 @@ export function TransportJobForm({
     initialValues: edit?.values ?? {
       item: initial?.item ?? '',
       from: joinPlace(initial?.fromPrefecture ?? '', initial?.fromCity ?? ''),
-      to: '',
+      to: joinPlace(initial?.toPrefecture ?? '', initial?.toCity ?? ''),
       distanceKm: '',
       weight: initial?.weight ?? '',
       desiredDate: '',
@@ -117,7 +119,7 @@ export function TransportJobForm({
     return (
       <ReceiptPanel
         receipt={form.receipt}
-        title={edit ? '運搬依頼の更新' : '運搬の依頼'}
+        title={edit ? '引越し依頼の更新' : '引越しの依頼'}
         description={
           edit ? '更新しました。' : '審査後に案件ボードへ掲載します。'
         }
@@ -140,7 +142,7 @@ export function TransportJobForm({
         <TextField
           id="item"
           label="運ぶもの"
-          placeholder="例: トラクター 45馬力"
+          placeholder="例: 単身引越し・家具と家電一式"
           value={form.values.item}
           onChange={(e) => form.setValue('item', e.target.value)}
           error={form.errors.item}
@@ -148,7 +150,7 @@ export function TransportJobForm({
         <SelectField
           id="category"
           label="種類"
-          options={listingCategories}
+          options={Object.keys(transportBaseRates)}
           value={places.category}
           onChange={(e) => updatePlaces({ category: e.target.value })}
         />
@@ -208,8 +210,8 @@ export function TransportJobForm({
         />
         <TextField
           id="weight"
-          label="重量"
-          placeholder="例: 約1.8t"
+          label="荷物量"
+          placeholder="例: 段ボール20箱・ベッド・冷蔵庫"
           value={form.values.weight}
           onChange={(e) => form.setValue('weight', e.target.value)}
           error={form.errors.weight}
@@ -241,7 +243,7 @@ export function TransportJobForm({
       />
       <div>
         <SubmitButton
-          label={edit ? '更新する' : '運搬を依頼する'}
+          label={edit ? '更新する' : '引越しを依頼する'}
           isSubmitting={form.isSubmitting}
         />
       </div>

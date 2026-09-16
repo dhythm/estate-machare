@@ -1,4 +1,4 @@
-import { categories } from '@/lib/data'
+import { categories, type PropertyDetails } from '@/lib/data'
 import {
   asRecord,
   finish,
@@ -23,11 +23,17 @@ export const listingConditions = [
   '要整備',
 ] as const
 
-export const sellerKinds = ['個人農家', '法人', '農業法人', '販売店'] as const
+export const sellerKinds = [
+  '個人オーナー',
+  '不動産会社',
+  '管理会社',
+  '法人',
+] as const
 
 const listingDeals = ['sale', 'rent'] as const
 
 export type ListingSubmission = {
+  property?: PropertyDetails
   name: string
   category: (typeof listingCategories)[number]
   maker: string
@@ -113,7 +119,18 @@ function readDeals(
 export function validateListingSubmission(
   input: unknown,
 ): ValidationResult<ListingSubmission> {
-  const source = asRecord(input)
+  const raw = asRecord(input)
+  const isProperty = raw?.areaSqm !== undefined
+  const source =
+    raw && isProperty
+      ? {
+          ...raw,
+          maker: raw.floorPlan,
+          year: raw.category === '土地' ? 2000 : raw.builtYear,
+          hours: 0,
+          rentToOwn: false,
+        }
+      : raw
   if (!source) return invalidInput
   const errors: FieldErrors = {}
 
@@ -125,7 +142,7 @@ export function validateListingSubmission(
     errors.rentToOwn = 'レンタル購入には販売とレンタルの両方が必要です。'
 
   const value: ListingSubmission = {
-    name: requireText(errors, source, 'name', '農機具名', 80),
+    name: requireText(errors, source, 'name', '物件名', 80),
     category: requireChoice(
       errors,
       source,
@@ -133,10 +150,10 @@ export function validateListingSubmission(
       'カテゴリ',
       listingCategories,
     ) as ListingSubmission['category'],
-    maker: requireText(errors, source, 'maker', 'メーカー', 40),
-    year: readInteger(errors, source, 'year', '年式', {
-      min: 1980,
-      max: 2030,
+    maker: requireText(errors, source, 'maker', '間取り', 40),
+    year: readInteger(errors, source, 'year', '築年', {
+      min: 1900,
+      max: new Date().getFullYear() + 5,
     }) as number,
     hours: readInteger(errors, source, 'hours', '稼働時間', {
       min: 0,
@@ -166,7 +183,7 @@ export function validateListingSubmission(
       'rentPerDay',
       'レンタル料（1日）',
       { min: 1, max: 10_000_000 },
-      canRent,
+      canRent && !isProperty,
     ),
     rentToOwn,
     rentToOwnCreditRate: readInteger(
@@ -198,6 +215,27 @@ export function validateListingSubmission(
     ) as ListingSubmission['sellerKind'],
     contactEmail: requireEmail(errors, source, 'contactEmail'),
   }
+  if (isProperty) {
+    const areaSqm = Number(source.areaSqm)
+    if (!Number.isFinite(areaSqm) || areaSqm <= 0 || areaSqm > 1000000)
+      errors.areaSqm = '面積を正しく入力してください。'
+    value.property = {
+      areaSqm,
+      floorPlan: requireText(errors, source, 'floorPlan', '間取り・区画', 40),
+      builtYear: source.category === '土地' ? undefined : value.year,
+      access: requireText(errors, source, 'access', '交通アクセス', 100),
+      monthlyRent: readInteger(
+        errors,
+        source,
+        'monthlyRent',
+        '月額賃料',
+        { min: 1, max: 10000000 },
+        canRent,
+      ),
+    }
+    if (!canRent) value.property.monthlyRent = undefined
+    value.rentPerDay = undefined
+  }
   if (!canSell) value.salePrice = undefined
   if (!canRent) value.rentPerDay = undefined
   if (!rentToOwn) {
@@ -205,5 +243,13 @@ export function validateListingSubmission(
     value.rentToOwnCreditCap = undefined
   }
 
+  if (isProperty && errors.year) {
+    errors.builtYear = errors.year
+    delete errors.year
+  }
+  if (isProperty && errors.maker) {
+    errors.floorPlan = errors.maker
+    delete errors.maker
+  }
   return finish(errors, value)
 }

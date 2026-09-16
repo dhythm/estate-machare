@@ -19,7 +19,16 @@ export function isApproved(entity: {
   )
 }
 
+export type PropertyDetails = {
+  areaSqm: number
+  floorPlan: string
+  builtYear?: number
+  monthlyRent?: number
+  access: string
+}
+
 export type Listing = {
+  property?: PropertyDetails
   id: string
   name: string
   category: string
@@ -43,7 +52,14 @@ export type Listing = {
   rentToOwnCreditCap?: number
   seller: {
     name: string
-    kind: '個人農家' | '法人' | '農業法人' | '販売店'
+    kind:
+      | '個人オーナー'
+      | '不動産会社'
+      | '管理会社'
+      | '法人'
+      | '個人農家'
+      | '農業法人'
+      | '販売店'
     rating: number
     reviews: number
   }
@@ -79,11 +95,11 @@ export type TransportJob = {
 
 export const categories = [
   'すべて',
-  'トラクター',
-  'コンバイン',
-  '田植機',
-  '耕運機',
-  'ドローン',
+  'マンション',
+  '戸建て',
+  '土地',
+  'オフィス',
+  '店舗',
 ] as const
 
 export function formatYen(value: number): string {
@@ -103,9 +119,9 @@ export type ListingSort = (typeof listingSorts)[number]
 
 export const listingSortLabels: Record<ListingSort, string> = {
   newest: '新着順',
-  priceAsc: '販売価格が安い順',
-  priceDesc: '販売価格が高い順',
-  rentAsc: '日額が安い順',
+  priceAsc: '売買価格が安い順',
+  priceDesc: '売買価格が高い順',
+  rentAsc: '月額賃料が安い順',
 }
 
 export function isListingSort(value: string): value is ListingSort {

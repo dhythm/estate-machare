@@ -26,13 +26,13 @@ describe('parseListingSearchParams', () => {
   it('reads valid values and trims keywords', () => {
     expect(
       parseListingSearchParams({
-        category: 'ドローン',
+        category: '店舗',
         deal: 'rent',
         page: '3',
-        q: ' DJI ',
+        q: ' 横浜 ',
       }),
     ).toEqual({
-      filter: { category: 'ドローン', deal: 'rent', keyword: 'DJI' },
+      filter: { category: '店舗', deal: 'rent', keyword: '横浜' },
       page: 3,
     })
   })
@@ -124,11 +124,9 @@ describe('buildListingSearchParams', () => {
     ).toBe('')
     expect(
       buildListingSearchParams(
-        { category: 'ドローン', deal: 'rent', keyword: 'DJI' },
+        { category: '店舗', deal: 'rent', keyword: '横浜' },
         3,
       ),
-    ).toBe(
-      'q=DJI&category=%E3%83%89%E3%83%AD%E3%83%BC%E3%83%B3&deal=rent&page=3',
-    )
+    ).toBe('q=%E6%A8%AA%E6%B5%9C&category=%E5%BA%97%E8%88%97&deal=rent&page=3')
   })
 })

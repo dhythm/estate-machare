@@ -89,11 +89,11 @@ export function estimateDistanceKm(
 }
 
 export const transportBaseRates: Record<string, number> = {
-  トラクター: 30_000,
-  コンバイン: 42_000,
-  田植機: 18_000,
-  耕運機: 6_000,
-  ドローン: 4_000,
+  単身引越し: 30_000,
+  ふたり暮らし: 42_000,
+  家族の引越し: 60_000,
+  家具配送: 6_000,
+  小口配送: 4_000,
 }
 
 export const transportDefaultRate = 20_000

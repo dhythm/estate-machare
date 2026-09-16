@@ -12,7 +12,7 @@ export async function POST(
   if (!authorized.ok) return authorized.response
   const listing = await getListing((await params).id)
   if (!listing || !canView(authorized.user, listing))
-    return notFound('農機具が見つかりません。')
+    return notFound('物件が見つかりません。')
   const parsed = await parseBody(request, validateOrderRequest)
   if (!parsed.ok) return parsed.response
   const result = await requestOrder(listing, authorized.user, parsed.value)

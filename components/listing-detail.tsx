@@ -6,9 +6,9 @@ import Link from 'next/link'
 import {
   MapPin,
   Star,
-  Gauge,
+  Ruler,
   Calendar,
-  Wrench,
+  LayoutGrid,
   ShieldCheck,
   Repeat2,
   ShoppingCart,
@@ -38,7 +38,7 @@ import {
 } from '@/lib/data'
 
 const modeIcon = { buy: ShoppingCart, rent: Calendar, rentToOwn: Repeat2 }
-const modeLabel = { buy: '購入', rent: 'レンタル', rentToOwn: '試して購入' }
+const modeLabel = { buy: '購入', rent: '借りる', rentToOwn: '試して購入' }
 
 export function ListingDetail({
   listing,
@@ -73,7 +73,7 @@ export function ListingDetail({
   return (
     <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
       <div className="flex items-center justify-between gap-4">
-        <BackLink href="/listings" label="農機具一覧にもどる" />
+        <BackLink href="/listings" label="物件一覧にもどる" />
         {viewer.canEdit && (
           <Link
             href={`/listings/${listing.id}/edit`}
@@ -93,7 +93,7 @@ export function ListingDetail({
             {listing.category}
           </Link>
           <span aria-hidden="true">/</span>
-          <span>{listing.maker}</span>
+          <span>{listing.property?.floorPlan ?? listing.maker}</span>
         </div>
         <h1 className="mt-3 text-balance font-display text-2xl font-bold leading-snug tracking-tight text-foreground sm:text-3xl lg:text-4xl">
           {listing.name}
@@ -105,7 +105,7 @@ export function ListingDetail({
       </header>
 
       <div className="mt-7 grid items-start gap-7 lg:grid-cols-[minmax(0,1.5fr)_minmax(350px,1fr)] lg:gap-x-9">
-        <section aria-label="農機具の写真と仕様" className="min-w-0">
+        <section aria-label="物件の写真と仕様" className="min-w-0">
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted">
             <Image
               src={mainPicture || '/placeholder.svg'}
@@ -124,7 +124,7 @@ export function ListingDetail({
               )}
               {listing.deals.includes('rent') && (
                 <Badge className="bg-accent text-accent-foreground shadow-sm">
-                  レンタル
+                  賃貸
                 </Badge>
               )}
               {listing.rentToOwn && (
@@ -168,25 +168,39 @@ export function ListingDetail({
           <dl className="mt-5 grid grid-cols-2 overflow-hidden rounded-2xl border border-border bg-card sm:grid-cols-4">
             <Spec
               icon={<Calendar className="size-4" />}
-              label="年式"
-              value={`${listing.year}年`}
+              label={listing.category === '土地' ? '交通' : '築年'}
+              value={
+                listing.property
+                  ? listing.category === '土地'
+                    ? listing.property.access
+                    : `${listing.property.builtYear}年`
+                  : '要確認'
+              }
             />
             <Spec
-              icon={<Gauge className="size-4" />}
-              label="稼働時間"
-              value={`${listing.hours.toLocaleString('ja-JP')}h`}
+              icon={<Ruler className="size-4" />}
+              label="専有・土地面積"
+              value={
+                listing.property ? `${listing.property.areaSqm}㎡` : '要確認'
+              }
             />
             <Spec
-              icon={<Wrench className="size-4" />}
-              label="状態"
-              value={listing.condition}
+              icon={<LayoutGrid className="size-4" />}
+              label="間取り"
+              value={listing.property?.floorPlan ?? '要確認'}
             />
             <Spec
               icon={<MapPin className="size-4" />}
               label="所在地"
-              value={listing.prefecture}
+              value={`${listing.prefecture} ${listing.city}`}
             />
           </dl>
+          {listing.property && listing.category !== '土地' && (
+            <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+              <MapPin className="size-4" />
+              {listing.property.access}
+            </p>
+          )}
         </section>
 
         <aside
@@ -250,9 +264,17 @@ export function ListingDetail({
                 </div>
               )}
               <div className="mt-6 flex flex-col gap-2">
-                {active.id !== 'buy' &&
-                listing.rentPerDay &&
-                !viewer.isOwner ? (
+                {listing.property ? (
+                  <Link
+                    href={`/listings/${listing.id}/inquiry?mode=${active.id}`}
+                    className={cn(buttonVariants(), 'h-12 gap-2')}
+                  >
+                    {active.cta}
+                    <ArrowRight className="size-4" />
+                  </Link>
+                ) : active.id !== 'buy' &&
+                  listing.rentPerDay &&
+                  !viewer.isOwner ? (
                   <RentalRequestForm
                     listingId={listing.id}
                     rentPerDay={listing.rentPerDay}
@@ -282,34 +304,36 @@ export function ListingDetail({
                   className={cn(buttonVariants({ variant: 'outline' }), 'h-11')}
                 >
                   <MessageSquare className="size-4" />
-                  出品者に質問する
+                  掲載者に質問する
                 </Link>
               </div>
             </div>
             <div className="border-t border-border bg-muted/35 p-5 sm:px-6">
-              <TransportEstimate
-                category={listing.category}
-                fromPrefecture={listing.prefecture}
-              />
+              {!listing.property && (
+                <TransportEstimate
+                  category={listing.category}
+                  fromPrefecture={listing.prefecture}
+                />
+              )}
               <Link
                 href={`/transport/new?listingId=${encodeURIComponent(listing.id)}`}
                 className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
               >
-                この農機具の運搬を依頼する
+                引越しを相談する
                 <ArrowRight className="size-3.5" />
               </Link>
             </div>
           </div>
           <p className="mt-4 flex items-start gap-2 px-2 text-xs leading-6 text-muted-foreground">
             <ShieldCheck className="mt-1 size-4 shrink-0 text-primary" />
-            申込みと出品者とのやり取りは、マイページで確認できます。
+            申込みと掲載者とのやり取りは、マイページで確認できます。
           </p>
         </aside>
 
         <div className="min-w-0 lg:col-start-1">
           <section className="border-b border-border pb-8">
             <h2 className="font-display text-xl font-bold text-foreground">
-              この農機具について
+              この物件について
             </h2>
             <p className="mt-4 whitespace-pre-line text-sm leading-8 text-muted-foreground">
               {listing.summary}
@@ -322,9 +346,9 @@ export function ListingDetail({
               ))}
             </div>
           </section>
-          <section className="mt-8" aria-label="出品者情報">
+          <section className="mt-8" aria-label="掲載者情報">
             <h2 className="font-display text-xl font-bold text-foreground">
-              出品者
+              掲載者
             </h2>
             <div className="mt-4 flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-card p-5">
               <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-secondary font-display text-lg font-bold text-primary">
@@ -342,7 +366,7 @@ export function ListingDetail({
                     href={`/sellers/${listing.ownerUserId}`}
                     className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
                   >
-                    出品者ページ
+                    掲載者ページ
                     <ArrowUpRight className="size-3.5" aria-hidden="true" />
                   </Link>
                 )}
@@ -365,7 +389,7 @@ export function ListingDetail({
           {sellerReviews.length > 0 && (
             <section className="mt-8">
               <h2 className="font-display text-lg font-bold text-foreground">
-                出品者へのレビュー
+                掲載者へのレビュー
               </h2>
               <ul className="mt-4 divide-y divide-border">
                 {sellerReviews.map((review) => (
@@ -392,7 +416,7 @@ export function ListingDetail({
         <section className="mt-16 border-t border-border pt-10">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2 className="font-display text-2xl font-bold tracking-tight text-foreground">
-              こちらの農機具も
+              こちらの物件も
             </h2>
             <Link
               href={`/listings?category=${encodeURIComponent(listing.category)}`}

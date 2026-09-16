@@ -8,35 +8,35 @@ describe('Hero search', () => {
   it('submits the selected deal, category and keyword to the existing listing search', async () => {
     const user = userEvent.setup()
     render(<Hero />)
-    const form = screen.getByRole('search', { name: '農機具を探す' })
+    const form = screen.getByRole('search', { name: '物件を探す' })
     expect(form).toHaveAttribute('action', '/listings')
     expect(form).toHaveAttribute('method', 'get')
-    await user.click(screen.getByRole('button', { name: '借りる' }))
+    await user.click(screen.getByRole('button', { name: /借りる/ }))
     await user.selectOptions(
-      screen.getByRole('combobox', { name: 'カテゴリ' }),
-      'トラクター',
+      screen.getByRole('combobox', { name: '物件種別' }),
+      'マンション',
     )
     await user.type(
-      screen.getByRole('searchbox', { name: 'キーワード' }),
-      'クボタ',
+      screen.getByRole('searchbox', { name: 'エリア・キーワード' }),
+      '横浜',
     )
     const data = new FormData(form as HTMLFormElement)
     expect(Object.fromEntries(data)).toEqual({
       deal: 'rent',
-      category: 'トラクター',
-      q: 'クボタ',
+      category: 'マンション',
+      q: '横浜',
     })
-    await user.click(screen.getByRole('button', { name: '借りてから買う' }))
-    expect(new FormData(form as HTMLFormElement).get('deal')).toBe('rentToOwn')
+    await user.click(screen.getByRole('button', { name: /買う/ }))
+    expect(new FormData(form as HTMLFormElement).get('deal')).toBe('sale')
   })
 
-  it('keeps transport requests and available jobs reachable from the first screen', () => {
+  it('links to listing creation and moving support', () => {
     render(<Hero />)
     expect(
-      screen.getByRole('link', { name: /運搬を依頼する/ }),
+      screen.getByRole('link', { name: /新居への引越しを相談/ }),
     ).toHaveAttribute('href', '/transport/new')
     expect(
-      screen.getByRole('link', { name: /運搬の仕事を探す/ }),
-    ).toHaveAttribute('href', '/transport')
+      screen.getByRole('link', { name: /売りたい・貸したい/ }),
+    ).toHaveAttribute('href', '/listings/new')
   })
 })

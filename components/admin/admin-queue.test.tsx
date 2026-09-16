@@ -76,13 +76,13 @@ describe('AdminQueue', () => {
       transportJobs: [job],
     })
     await user.type(
-      screen.getByRole('searchbox', { name: '出品を検索' }),
+      screen.getByRole('searchbox', { name: '掲載を検索' }),
       '審査農園',
     )
     expect(screen.getByText('審査中トラクター')).toBeInTheDocument()
     expect(screen.queryByText('田植機')).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: '承認' })).toBeInTheDocument()
-    await user.clear(screen.getByRole('searchbox', { name: '出品を検索' }))
+    await user.clear(screen.getByRole('searchbox', { name: '掲載を検索' }))
     expect(screen.getByText('田植機')).toBeInTheDocument()
   })
 

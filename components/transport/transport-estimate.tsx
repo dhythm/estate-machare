@@ -24,7 +24,7 @@ export function TransportEstimate({
     <div>
       <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
         <Truck className="size-4 text-primary" />
-        運搬料金のめやす
+        引越し料金のめやす
       </h3>
       <div className="mt-4 grid grid-cols-[1fr_1.3fr] items-end gap-3">
         <div className="min-w-0 pb-3">

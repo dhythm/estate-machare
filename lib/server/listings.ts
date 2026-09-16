@@ -17,11 +17,11 @@ import { getStore } from './store'
 import { deleteSubmissionsFor } from './submissions'
 
 const imageByCategory: Record<string, string> = {
-  トラクター: '/equipment/tractor.png',
-  コンバイン: '/equipment/combine.png',
-  田植機: '/equipment/rice-planter.png',
-  耕運機: '/equipment/tiller.png',
-  ドローン: '/equipment/drone.png',
+  マンション: '/properties/apartment.webp',
+  戸建て: '/properties/house.webp',
+  土地: '/properties/land.webp',
+  オフィス: '/properties/office.webp',
+  店舗: '/properties/shop.webp',
 }
 
 /** Lists carry only the thumbnail; the detail page loads the full pictures. */
@@ -46,6 +46,8 @@ function searchableText(listing: Listing): string {
   return normalize(
     [
       listing.name,
+      listing.property?.floorPlan ?? '',
+      listing.property?.access ?? '',
       listing.maker,
       listing.category,
       listing.prefecture,
@@ -58,7 +60,9 @@ function searchableText(listing: Listing): string {
 }
 
 function priceFor(listing: Listing, filter: ListingFilter): number | undefined {
-  return filter.deal === 'rent' ? listing.rentPerDay : listing.salePrice
+  return filter.deal === 'rent'
+    ? (listing.property?.monthlyRent ?? listing.rentPerDay)
+    : listing.salePrice
 }
 
 function withinPrice(listing: Listing, filter: ListingFilter): boolean {
@@ -93,7 +97,9 @@ function sortListings(listings: Listing[], sort: ListingFilter['sort']) {
     case 'priceDesc':
       return [...listings].sort(compareBy((l) => l.salePrice, -1))
     case 'rentAsc':
-      return [...listings].sort(compareBy((l) => l.rentPerDay, 1))
+      return [...listings].sort(
+        compareBy((l) => l.property?.monthlyRent ?? l.rentPerDay, 1),
+      )
     default:
       return listings
   }
@@ -207,6 +213,7 @@ export async function getListingIds(): Promise<string[]> {
 /** Public listing fields derived from a submission; contact details stay out. */
 function listingFields(submission: ListingSubmission) {
   return {
+    property: submission.property,
     name: submission.name,
     category: submission.category,
     maker: submission.maker,
@@ -314,7 +321,7 @@ export async function setListingStatus(
     await notify({
       userId: listing.ownerUserId,
       kind: 'moderation',
-      title: '出品が運営により取り下げられました',
+      title: '掲載が運営により取り下げられました',
       body: listing.name,
       href: `/listings/${id}`,
     })

@@ -16,7 +16,7 @@ export function AdminSection({
     <>
       <div className="mb-7">
         <p className="mb-3 text-[10px] font-semibold tracking-[0.2em] text-muted-foreground">
-          AGRI MACHARE / OPERATIONS
+          ESTATE MACHARE / OPERATIONS
         </p>
         <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           {title}
@@ -38,16 +38,16 @@ export function AdminSection({
 }
 
 export const dealTabs = [
-  { href: '/admin/deals', label: '出品' },
+  { href: '/admin/deals', label: '掲載' },
   { href: '/admin/deals/orders', label: '注文' },
-  { href: '/admin/deals/rentals', label: 'レンタル' },
+  { href: '/admin/deals/rentals', label: '賃貸' },
   { href: '/admin/deals/inquiries', label: '問い合わせ' },
   { href: '/admin/deals/reviews', label: 'レビュー' },
 ]
 
 export const transportTabs = [
-  { href: '/admin/transport', label: '運搬依頼' },
+  { href: '/admin/transport', label: '引越し依頼' },
   { href: '/admin/transport/applications', label: '応募' },
   { href: '/admin/transport/inquiries', label: '質問' },
-  { href: '/admin/transport/carriers', label: '運搬者' },
+  { href: '/admin/transport/carriers', label: '引越しパートナー' },
 ]

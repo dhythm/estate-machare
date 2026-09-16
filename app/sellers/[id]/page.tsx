@@ -8,7 +8,7 @@ import { PageShell } from '@/components/page-shell'
 import { StarRating } from '@/components/reviews/star-rating'
 import { getSellerProfile } from '@/lib/server/sellers'
 
-export const metadata: Metadata = { title: '出品者 | Agri Machare' }
+export const metadata: Metadata = { title: '掲載者 | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 
@@ -27,7 +27,7 @@ export default async function SellerPage({
   return (
     <PageShell>
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <BackLink href="/listings" label="農機具一覧にもどる" />
+        <BackLink href="/listings" label="物件一覧にもどる" />
         <header className="mt-6 flex flex-wrap items-center gap-5 rounded-2xl border border-border bg-card p-6">
           <span className="flex size-16 shrink-0 items-center justify-center rounded-full bg-secondary font-display text-2xl font-bold text-primary">
             {profile.name.charAt(0)}
@@ -63,11 +63,11 @@ export default async function SellerPage({
             id="seller-listings"
             className="font-display text-xl font-bold text-foreground"
           >
-            出品中の農機具
+            出品中の物件
           </h2>
           {profile.listings.length === 0 ? (
             <p className="mt-4 text-sm text-muted-foreground">
-              現在出品中の農機具はありません
+              現在出品中の物件はありません
             </p>
           ) : (
             <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

@@ -5,7 +5,7 @@ export function CarrierMatches({ matches }: { matches: CarrierMatch[] }) {
   if (matches.length === 0)
     return (
       <p className="text-sm text-muted-foreground">
-        対応地域が合う運搬者はまだいません
+        対応地域が合う引越しパートナーはまだいません
       </p>
     )
   return (

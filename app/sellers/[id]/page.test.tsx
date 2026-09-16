@@ -19,7 +19,7 @@ vi.mock('@/lib/server/sellers', () => ({
     id === 'demo-seller'
       ? {
           id: 'demo-seller',
-          name: '出品者デモ',
+          name: '掲載者デモ',
           rating: 4.5,
           reviewCount: 2,
           listings: [await getListing('trc-001'), await getListing('cmb-002')],
@@ -46,13 +46,15 @@ describe('SellerPage', () => {
     render(await SellerPage({ params: Promise.resolve({ id: 'demo-seller' }) }))
 
     expect(
-      screen.getByRole('heading', { level: 1, name: '出品者デモ' }),
+      screen.getByRole('heading', { level: 1, name: '掲載者デモ' }),
     ).toBeInTheDocument()
     expect(screen.getByText('4.5')).toBeInTheDocument()
-    const listings = screen.getByRole('region', { name: '出品中の農機具' })
+    const listings = screen.getByRole('region', { name: '出品中の物件' })
     expect(within(listings).getAllByRole('link')).toHaveLength(2)
     expect(
-      within(listings).getByRole('link', { name: /クボタ トラクター 45馬力/ }),
+      within(listings).getByRole('link', {
+        name: /光と風が通う、南向きの住まい/,
+      }),
     ).toHaveAttribute('href', '/listings/trc-001')
     const reviews = screen.getByRole('region', { name: 'レビュー' })
     expect(within(reviews).getByText('対応が丁寧でした')).toBeInTheDocument()
@@ -60,7 +62,9 @@ describe('SellerPage', () => {
       within(reviews).getByRole('img', { name: '評価 4' }),
     ).toBeInTheDocument()
     expect(
-      within(reviews).getByRole('link', { name: /クボタ トラクター 45馬力/ }),
+      within(reviews).getByRole('link', {
+        name: /光と風が通う、南向きの住まい/,
+      }),
     ).toHaveAttribute('href', '/listings/trc-001')
   })
 

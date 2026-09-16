@@ -55,9 +55,9 @@ describe('POST /api/listings/[id]/inquiries', () => {
       new Request('http://localhost/api/listings', {
         method: 'POST',
         body: JSON.stringify({
-          name: '審査中トラクター',
-          category: 'トラクター',
-          maker: 'クボタ',
+          name: '審査中マンション',
+          category: 'マンション',
+          maker: '世田谷',
           year: '2018',
           hours: '500',
           condition: '目立った傷なし',
@@ -69,7 +69,7 @@ describe('POST /api/listings/[id]/inquiries', () => {
           rentToOwn: false,
           summary: '審査中。',
           sellerName: '審査農園',
-          sellerKind: '農業法人',
+          sellerKind: '不動産会社',
           contactEmail: 'seller@example.com',
         }),
       }),

@@ -68,6 +68,36 @@ afterEach(() => {
 })
 
 describe('ThreadView', () => {
+  it('shows monthly property rent without reinterpreting the legacy daily rate', () => {
+    if (thread.target?.kind !== 'listing')
+      throw new Error('Expected listing fixture')
+    render(
+      <ThreadView
+        currentUserId="demo-user"
+        thread={{
+          ...thread,
+          target: {
+            ...thread.target,
+            listing: {
+              ...thread.target.listing,
+              property: {
+                areaSqm: 62,
+                floorPlan: '2LDK',
+                builtYear: 2019,
+                monthlyRent: 125000,
+                access: '駅徒歩8分',
+              },
+            },
+          },
+        }}
+      />,
+    )
+    expect(screen.getByText('月額賃料')).toBeInTheDocument()
+    expect(screen.getByText('¥125,000')).toBeInTheDocument()
+    expect(screen.queryByText('短期利用 / 日')).not.toBeInTheDocument()
+    expect(screen.queryByText('¥22,000')).not.toBeInTheDocument()
+  })
+
   it('shows the opening message, replies, and posts a new reply', async () => {
     const fetchMock = vi.fn(async () =>
       Response.json({ id: 'm-2' }, { status: 201 }),
@@ -124,7 +154,7 @@ describe('ThreadView', () => {
       />,
     )
     expect(
-      screen.getByRole('link', { name: '運搬を依頼する' }),
+      screen.getByRole('link', { name: '引越しを依頼する' }),
     ).toHaveAttribute('href', '/transport/new?listingId=trc-001')
   })
 

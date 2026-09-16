@@ -1,3 +1,4 @@
+import { seedLegacyRentalListings } from '@/test/legacy-listings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   getAdminCounts,
@@ -21,9 +22,10 @@ import { demoSeller, demoUser } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.stubEnv('NODE_ENV', 'test')
-  return resetStore()
+  await resetStore()
+  await seedLegacyRentalListings()
 })
 
 async function seedActivity() {
@@ -53,7 +55,7 @@ async function seedActivity() {
   await createListing(
     {
       name: '審査中',
-      category: 'トラクター',
+      category: 'マンション',
       maker: 'クボタ',
       year: 2018,
       hours: 500,
@@ -65,8 +67,8 @@ async function seedActivity() {
       rentToOwn: false,
       images: [],
       summary: '説明',
-      sellerName: '出品者デモ',
-      sellerKind: '農業法人',
+      sellerName: '掲載者デモ',
+      sellerKind: '不動産会社',
       contactEmail: 'seller@example.com',
     },
     'demo-seller',
@@ -100,7 +102,7 @@ describe('recent activity', () => {
     const activity = await listRecentActivity(8)
     expect(activity[0]).toMatchObject({
       kind: 'order',
-      title: expect.stringContaining('ヤンマー'),
+      title: expect.stringContaining('一戸建て'),
       statusLabel: '申込中',
       actorName: '利用者デモ',
     })
@@ -129,7 +131,7 @@ describe('lists', () => {
     expect(threads).toHaveLength(1)
     expect(threads[0]).toMatchObject({
       id,
-      targetName: expect.stringContaining('クボタ'),
+      targetName: expect.stringContaining('南向き'),
       senderName: '利用者デモ',
       status: 'new',
       replyCount: 1,
@@ -140,7 +142,7 @@ describe('lists', () => {
   it('lists applications with the job and carriers from registrations', async () => {
     await seedActivity()
     const applications = await listTransportApplications()
-    expect(applications[0].targetName).toContain('コンバイン')
+    expect(applications[0].targetName).toContain('引越し')
     const carriers = await listCarriers()
     expect(carriers).toHaveLength(1)
     expect(carriers[0].name).toBe('高橋運送')
@@ -158,7 +160,7 @@ describe('lists', () => {
     const seller = accounts.find((account) => account.id === 'demo-seller')
     expect(seller).toMatchObject({
       role: 'user',
-      listingCount: 3,
+      listingCount: 45,
       rentalCount: 0,
     })
     expect(

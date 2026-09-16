@@ -1,3 +1,4 @@
+import { seedLegacyRentalListings } from '@/test/legacy-listings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { PATCH } from './route'
 import { getListing } from '@/lib/server/listings'
@@ -8,9 +9,10 @@ import { demoAdmin, demoSeller, demoUser, signInAs } from '@/test/mock-auth'
 vi.mock('server-only', () => ({}))
 vi.mock('@/auth', () => import('@/test/mock-auth'))
 
-beforeEach(() => {
+beforeEach(async () => {
   signInAs(demoSeller)
-  return resetStore()
+  await resetStore()
+  await seedLegacyRentalListings()
 })
 
 const patch = (id: string, body: unknown) =>

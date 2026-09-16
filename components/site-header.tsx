@@ -7,8 +7,8 @@ import { AccountMenu } from '@/components/auth/account-menu'
 import { BrandLogo } from '@/components/brand-logo'
 
 const links = [
-  { href: '/listings', label: '農機具を探す' },
-  { href: '/transport', label: '運搬マッチング' },
+  { href: '/listings', label: '物件を探す' },
+  { href: '/transport', label: '引越しサポート' },
   { href: '/guide', label: 'はじめての方へ' },
 ]
 
@@ -17,7 +17,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-[1360px] items-center justify-between gap-3 px-4 sm:px-8 lg:px-10">
-        <Link href="/" aria-label="Agri Machare ホーム">
+        <Link href="/" aria-label="Estate Machare ホーム">
           <BrandLogo />
         </Link>
         <nav
@@ -43,10 +43,10 @@ export function SiteHeader() {
           <AccountMenu />
           <Link
             href="/listings/new"
-            className="hidden h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/85 sm:inline-flex"
+            className="hidden h-11 items-center gap-2 rounded-sm bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/85 sm:inline-flex"
           >
             <Plus className="size-4" />
-            出品する
+            物件を掲載
           </Link>
         </div>
       </div>
@@ -72,7 +72,7 @@ export function SiteHeader() {
           href="/listings/new"
           className="inline-flex shrink-0 items-center gap-1 py-3.5 text-primary sm:hidden"
         >
-          出品する
+          物件を掲載
           <ArrowUpRight className="size-3" />
         </Link>
       </nav>

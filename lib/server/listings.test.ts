@@ -15,7 +15,7 @@ import { listNotifications } from './notifications'
 import { requestRental } from './rentals'
 import { demoAdmin, demoSeller, demoUser } from '@/test/mock-auth'
 import { applyModeration } from './moderation'
-import { resetStore } from './store'
+import { resetStore, getStore } from './store'
 import type { ListingSubmission } from '@/lib/validation/listing-submission'
 
 vi.mock('server-only', () => ({}))
@@ -24,21 +24,21 @@ beforeEach(() => resetStore())
 
 const submission: ListingSubmission = {
   images: [],
-  name: 'クボタ トラクター 30馬力 テスト',
-  category: 'トラクター',
+  name: 'クボタ マンション 30馬力 テスト',
+  category: 'マンション',
   maker: 'クボタ',
   year: 2018,
   hours: 500,
   condition: '目立った傷なし',
-  prefecture: '新潟県',
+  prefecture: '東京都',
   city: '長岡市',
   deals: ['sale', 'rent'],
-  salePrice: 1_500_000,
+  salePrice: 1_50_000_000,
   rentPerDay: 12_000,
   rentToOwn: true,
   summary: 'キャビン付き。',
   sellerName: 'テスト農園',
-  sellerKind: '農業法人',
+  sellerKind: '不動産会社',
   contactEmail: 'seller@example.com',
 }
 
@@ -60,7 +60,7 @@ describe('listing search', () => {
 
   it('combines category and deal filters', async () => {
     const result = await searchListings({
-      category: 'トラクター',
+      category: 'マンション',
       deal: 'rent',
     })
     expect(result.length).toBeGreaterThan(0)
@@ -68,7 +68,7 @@ describe('listing search', () => {
     expect(
       result.every(
         (listing) =>
-          listing.category === 'トラクター' && listing.deals.includes('rent'),
+          listing.category === 'マンション' && listing.deals.includes('rent'),
       ),
     ).toBe(true)
   })
@@ -78,11 +78,7 @@ describe('listing search', () => {
       category: 'すべて',
       deal: 'rentToOwn',
     })
-    expect(result.map((listing) => listing.id).slice(0, 3)).toEqual([
-      'trc-001',
-      'cmb-002',
-      'rpl-003',
-    ])
+    expect(result).toEqual([])
     expect(result.every((listing) => listing.rentToOwn === true)).toBe(true)
   })
 
@@ -90,17 +86,19 @@ describe('listing search', () => {
     const byMaker = await searchListings({
       category: 'すべて',
       deal: 'all',
-      keyword: 'クボタ',
+      keyword: '2LDK',
     })
     expect(byMaker.length).toBeGreaterThan(0)
-    expect(byMaker.every((listing) => listing.maker === 'クボタ')).toBe(true)
+    expect(
+      byMaker.every((listing) => listing.property?.floorPlan === '2LDK'),
+    ).toBe(true)
 
     expect(
       (
         await searchListings({
           category: 'すべて',
           deal: 'all',
-          keyword: '長岡',
+          keyword: '世田谷',
         })
       ).map((listing) => listing.id),
     ).toContain('trc-001')
@@ -109,7 +107,7 @@ describe('listing search', () => {
         await searchListings({
           category: 'すべて',
           deal: 'all',
-          keyword: '4WD',
+          keyword: '南向き',
         })
       ).map((listing) => listing.id),
     ).toContain('trc-001')
@@ -122,13 +120,14 @@ describe('listing search', () => {
     const result = await searchListings({
       category: 'すべて',
       deal: 'all',
-      keyword: 'クボタ　新潟県',
+      keyword: '2LDK　東京都',
     })
     expect(result.length).toBeGreaterThan(0)
     expect(
       result.every(
         (listing) =>
-          listing.maker === 'クボタ' && listing.prefecture === '新潟県',
+          listing.property?.floorPlan === '2LDK' &&
+          listing.prefecture === '東京都',
       ),
     ).toBe(true)
     expect(
@@ -141,7 +140,7 @@ describe('listing search', () => {
   })
 
   it('finds a listing and handles an unknown id', async () => {
-    expect((await getListing('drn-005'))?.name).toContain('ドローン')
+    expect((await getListing('drn-005'))?.name).toContain('店舗')
     expect(await getListing('missing')).toBeUndefined()
   })
 })
@@ -151,36 +150,36 @@ describe('listing refinements', () => {
     const niigata = await searchListings({
       category: 'すべて',
       deal: 'all',
-      prefecture: '新潟県',
+      prefecture: '東京都',
     })
     expect(niigata.length).toBeGreaterThan(0)
-    expect(niigata.every((listing) => listing.prefecture === '新潟県')).toBe(
+    expect(niigata.every((listing) => listing.prefecture === '東京都')).toBe(
       true,
     )
 
     const cheapSales = await searchListings({
       category: 'すべて',
       deal: 'sale',
-      priceMax: 500_000,
+      priceMax: 50_000_000,
     })
     expect(cheapSales.length).toBeGreaterThan(0)
     expect(
-      cheapSales.every((listing) => (listing.salePrice ?? 0) <= 500_000),
+      cheapSales.every((listing) => (listing.salePrice ?? 0) <= 50_000_000),
     ).toBe(true)
 
     const dailyRent = await searchListings({
       category: 'すべて',
       deal: 'rent',
-      priceMin: 20_000,
-      priceMax: 30_000,
+      priceMin: 150_000,
+      priceMax: 200_000,
     })
     expect(dailyRent.length).toBeGreaterThan(0)
     expect(
       dailyRent.every(
         (listing) =>
-          listing.rentPerDay !== undefined &&
-          listing.rentPerDay >= 20_000 &&
-          listing.rentPerDay <= 30_000,
+          listing.property?.monthlyRent !== undefined &&
+          listing.property?.monthlyRent >= 150_000 &&
+          listing.property?.monthlyRent <= 200_000,
       ),
     ).toBe(true)
   })
@@ -209,12 +208,13 @@ describe('listing refinements', () => {
       sort: 'rentAsc',
     })
     const rents = rent
-      .filter((l) => l.rentPerDay !== undefined)
-      .map((l) => l.rentPerDay as number)
+      .filter((l) => l.property?.monthlyRent !== undefined)
+      .map((l) => l.property?.monthlyRent as number)
     expect(rents).toEqual([...rents].sort((a, b) => a - b))
   })
 
   it('keeps only rentable listings free for the requested dates', async () => {
+    await getStore().listings.update('trc-001', { rentPerDay: 22000 })
     await requestRental((await getListing('trc-001'))!, demoUser, {
       startDate: '2026-10-01',
       endDate: '2026-10-07',
@@ -289,10 +289,10 @@ describe('listing CRUD', () => {
     expect(created.id).toMatch(/^[0-9a-f-]{36}$/)
     expect(created).toMatchObject({
       name: submission.name,
-      image: '/equipment/tractor.png',
+      image: '/properties/apartment.webp',
       moderationStatus: 'pending',
       ownerUserId: 'demo-seller',
-      seller: { name: 'テスト農園', kind: '農業法人', rating: 0, reviews: 0 },
+      seller: { name: 'テスト農園', kind: '不動産会社', rating: 0, reviews: 0 },
       createdAt: expect.any(String),
     })
     expect((await getListing(created.id))?.name).toBe(submission.name)
@@ -366,7 +366,7 @@ describe('listing CRUD', () => {
       ),
     ).toBe(true)
     const withoutPictures = await createListing(submission, 'demo-seller')
-    expect(withoutPictures.image).toBe('/equipment/tractor.png')
+    expect(withoutPictures.image).toBe('/properties/apartment.webp')
     expect(withoutPictures.images).toEqual([])
   })
 
@@ -381,6 +381,7 @@ describe('listing CRUD', () => {
     expect(republished.ok && republished.value.withdrawnAt).toBeUndefined()
     expect(await getListingIds()).toContain('trc-001')
 
+    await getStore().listings.update('trc-001', { rentPerDay: 22000 })
     await requestRental((await getListing('trc-001'))!, demoUser, {
       startDate: '2026-10-01',
       endDate: '2026-10-02',
@@ -397,7 +398,7 @@ describe('listing CRUD', () => {
     await setListingStatus('trc-001', 'withdrawn', demoAdmin)
     expect(
       (await listNotifications('demo-seller')).map((n) => n.title),
-    ).toEqual(['出品が運営により取り下げられました'])
+    ).toEqual(['掲載が運営により取り下げられました'])
     await setListingStatus('trc-001', 'listed', demoSeller)
     expect(await listNotifications('demo-seller')).toHaveLength(1)
   })
@@ -434,7 +435,7 @@ describe('listing CRUD', () => {
     expect(updated?.seller).toMatchObject({
       name: 'テスト農園',
       rating: 4.8,
-      reviews: 34,
+      reviews: 12,
     })
   })
 

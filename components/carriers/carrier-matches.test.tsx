@@ -33,7 +33,7 @@ describe('CarrierMatches', () => {
   it('shows an empty state', () => {
     render(<CarrierMatches matches={[]} />)
     expect(
-      screen.getByText('対応地域が合う運搬者はまだいません'),
+      screen.getByText('対応地域が合う引越しパートナーはまだいません'),
     ).toBeInTheDocument()
   })
 })

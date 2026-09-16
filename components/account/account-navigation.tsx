@@ -5,7 +5,7 @@ import {
   CalendarDays,
   Inbox,
   Send,
-  Tractor,
+  Building2,
   Truck,
   History,
 } from 'lucide-react'
@@ -13,9 +13,9 @@ import {
 const navigationItems = [
   { label: '確認すること', href: '#activity', icon: Inbox },
   { label: '取引の履歴', href: '#deals', icon: History },
-  { label: '出品管理', href: '#equipment', icon: Tractor },
-  { label: 'レンタル管理', href: '#rentals', icon: CalendarDays },
-  { label: '運搬管理', href: '#transport', icon: Truck },
+  { label: '掲載管理', href: '#equipment', icon: Building2 },
+  { label: '賃貸管理', href: '#rentals', icon: CalendarDays },
+  { label: '引越し管理', href: '#transport', icon: Truck },
   { label: '送信したやり取り', href: '#sent', icon: Send },
 ]
 
@@ -55,7 +55,9 @@ export function AccountNavigation({ isCarrier }: { isCarrier: boolean }) {
       >
         <Truck className="size-6" aria-hidden="true" />
         <span className="mt-5 flex items-center justify-between gap-2 text-sm font-semibold">
-          {isCarrier ? '運搬者プロフィール' : '運搬者として参加する'}
+          {isCarrier
+            ? '引越しパートナープロフィール'
+            : '引越しパートナーとして参加する'}
           <ArrowUpRight className="size-4" aria-hidden="true" />
         </span>
       </Link>

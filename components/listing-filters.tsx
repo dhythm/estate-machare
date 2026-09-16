@@ -14,9 +14,8 @@ import { prefectureNames } from '@/lib/transport-fee'
 
 const dealFilters: { id: DealFilter; label: string }[] = [
   { id: 'all', label: 'すべて' },
-  { id: 'sale', label: '購入できる' },
-  { id: 'rent', label: 'レンタルできる' },
-  { id: 'rentToOwn', label: 'レンタル購入可' },
+  { id: 'sale', label: '買う' },
+  { id: 'rent', label: '借りる' },
 ]
 
 export function DealFilterToggle({
@@ -107,24 +106,13 @@ export function SearchRefinements({
 }) {
   const [priceMin, setPriceMin] = useState(yenText(value.priceMin))
   const [priceMax, setPriceMax] = useState(yenText(value.priceMax))
-  const [from, setFrom] = useState(value.availableFrom ?? '')
-  const [to, setTo] = useState(value.availableTo ?? '')
-  const priceLabel = value.deal === 'rent' ? '日額' : '販売価格'
+  const priceLabel = value.deal === 'rent' ? '月額賃料' : '売買価格'
   const active =
     value.prefecture !== undefined ||
     value.priceMin !== undefined ||
     value.priceMax !== undefined ||
     (value.sort !== undefined && value.sort !== 'newest') ||
     value.availableFrom !== undefined
-
-  const applyDates = (nextFrom: string, nextTo: string) => {
-    setFrom(nextFrom)
-    setTo(nextTo)
-    if (nextFrom && nextTo && nextFrom <= nextTo)
-      onChange({ availableFrom: nextFrom, availableTo: nextTo })
-    else if (!nextFrom && !nextTo)
-      onChange({ availableFrom: undefined, availableTo: undefined })
-  }
 
   return (
     <div className="flex flex-wrap items-end gap-4">
@@ -179,26 +167,6 @@ export function SearchRefinements({
           価格で絞り込む
         </button>
       </form>
-      <div className="flex items-end gap-2">
-        <label className="flex flex-col gap-1 text-xs font-medium text-foreground">
-          利用開始日
-          <input
-            type="date"
-            value={from}
-            onChange={(event) => applyDates(event.target.value, to)}
-            className={cn(controlClass, 'w-40')}
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-medium text-foreground">
-          利用終了日
-          <input
-            type="date"
-            value={to}
-            onChange={(event) => applyDates(from, event.target.value)}
-            className={cn(controlClass, 'w-40')}
-          />
-        </label>
-      </div>
       <label className="flex flex-col gap-1 text-xs font-medium text-foreground">
         並び替え
         <select
@@ -224,8 +192,6 @@ export function SearchRefinements({
           onClick={() => {
             setPriceMin('')
             setPriceMax('')
-            setFrom('')
-            setTo('')
             onChange(emptyRefinements)
           }}
           className="h-11 text-sm font-medium text-primary hover:underline"

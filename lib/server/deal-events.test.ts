@@ -1,3 +1,4 @@
+import { seedLegacyRentalListings } from '@/test/legacy-listings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { listDealEvents, recordDealEvent } from './deal-events'
 import { getListing } from './listings'
@@ -12,7 +13,10 @@ import { demoAdmin, demoSeller, demoUser } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
 
-beforeEach(() => resetStore())
+beforeEach(async () => {
+  await resetStore()
+  await seedLegacyRentalListings()
+})
 
 const later = () => new Promise((resolve) => setTimeout(resolve, 3))
 

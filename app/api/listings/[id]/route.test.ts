@@ -15,9 +15,9 @@ beforeEach(() => {
 })
 
 const submission = {
-  name: '更新後のトラクター',
-  category: 'トラクター',
-  maker: 'クボタ',
+  name: '更新後のマンション',
+  category: 'マンション',
+  maker: '世田谷',
   year: '2018',
   hours: '500',
   condition: '目立った傷なし',
@@ -29,7 +29,7 @@ const submission = {
   rentToOwn: false,
   summary: '更新しました。',
   sellerName: '中村ファーム',
-  sellerKind: '農業法人',
+  sellerKind: '不動産会社',
   contactEmail: 'seller@example.com',
 }
 
@@ -50,9 +50,9 @@ describe('GET /api/listings/[id]', () => {
       new Request('http://localhost/api/listings', {
         method: 'POST',
         body: JSON.stringify({
-          name: '審査中トラクター',
-          category: 'トラクター',
-          maker: 'クボタ',
+          name: '審査中マンション',
+          category: 'マンション',
+          maker: '世田谷',
           year: '2018',
           hours: '500',
           condition: '目立った傷なし',
@@ -64,7 +64,7 @@ describe('GET /api/listings/[id]', () => {
           rentToOwn: false,
           summary: '審査中。',
           sellerName: '審査農園',
-          sellerKind: '農業法人',
+          sellerKind: '不動産会社',
           contactEmail: 'seller@example.com',
         }),
       }),
@@ -98,7 +98,7 @@ describe('PUT /api/listings/[id]', () => {
     const body = await response.json()
     expect(body).toMatchObject({
       id: 'trc-001',
-      name: '更新後のトラクター',
+      name: '更新後のマンション',
       deals: ['rent'],
     })
     expect(body.salePrice).toBeUndefined()
@@ -108,7 +108,7 @@ describe('PUT /api/listings/[id]', () => {
           await GET(new Request('http://localhost'), context('trc-001'))
         ).json()
       ).name,
-    ).toBe('更新後のトラクター')
+    ).toBe('更新後のマンション')
   })
 
   it('validates the body and reports unknown ids', async () => {
@@ -121,9 +121,9 @@ describe('PUT /api/listings/[id]', () => {
     expect((await put('trc-001', submission)).status).toBe(401)
     signInAs(demoUser)
     expect((await put('trc-001', submission)).status).toBe(403)
-    expect((await put('trc-007', submission)).status).toBe(403)
+    expect((await put('property-007', submission)).status).toBe(403)
     signInAs(demoAdmin)
-    expect((await put('trc-007', submission)).status).toBe(200)
+    expect((await put('property-007', submission)).status).toBe(200)
   })
 })
 
@@ -165,6 +165,6 @@ describe('DELETE /api/listings/[id]', () => {
     signInAs(demoUser)
     expect((await remove('cmb-002')).status).toBe(403)
     signInAs(demoAdmin)
-    expect((await remove('trc-007')).status).toBe(204)
+    expect((await remove('property-007')).status).toBe(204)
   })
 })

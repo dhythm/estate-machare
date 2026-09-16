@@ -144,7 +144,7 @@ function summarize(loaded: Loaded, viewerId: string): DealSummary {
     return {
       kind: 'order',
       id: order.id,
-      title: listing?.name ?? '削除された農機具',
+      title: listing?.name ?? '削除された物件',
       href: `/listings/${order.listingId}`,
       amount: order.price,
       status: order.status,
@@ -152,7 +152,7 @@ function summarize(loaded: Loaded, viewerId: string): DealSummary {
       role: isBuyer
         ? '買い手'
         : order.sellerUserId === viewerId
-          ? '出品者'
+          ? '掲載者'
           : '運営',
       counterpart: accountName(
         isBuyer ? order.sellerUserId : order.buyerUserId,
@@ -166,7 +166,7 @@ function summarize(loaded: Loaded, viewerId: string): DealSummary {
     return {
       kind: 'rental',
       id: rental.id,
-      title: listing?.name ?? '削除された農機具',
+      title: listing?.name ?? '削除された物件',
       href: `/listings/${rental.listingId}`,
       amount: rental.purchasePrice ?? rental.rentTotal,
       status: rental.status,
@@ -192,7 +192,11 @@ function summarize(loaded: Loaded, viewerId: string): DealSummary {
     amount: job.reward,
     status: job.status,
     statusLabel: job.status,
-    role: isOwner ? '依頼者' : parties[1] === viewerId ? '運搬者' : '運営',
+    role: isOwner
+      ? '依頼者'
+      : parties[1] === viewerId
+        ? '引越しパートナー'
+        : '運営',
     counterpart: accountName(isOwner ? parties[1] : job.ownerUserId),
     updatedAt: job.updatedAt ?? job.createdAt ?? '',
   }
@@ -249,7 +253,7 @@ export async function getDeal(
       relatedDeals.push({
         kind: 'order',
         id: order.id,
-        title: loaded.listing?.name ?? '削除された農機具',
+        title: loaded.listing?.name ?? '削除された物件',
         statusLabel: orderStatusLabels[order.status],
       })
   }
@@ -261,7 +265,7 @@ export async function getDeal(
       relatedDeals.push({
         kind: 'rental',
         id: rental.id,
-        title: loaded.listing?.name ?? '削除された農機具',
+        title: loaded.listing?.name ?? '削除された物件',
         statusLabel: rentalStatusLabels[rental.status],
       })
   }

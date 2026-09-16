@@ -1,3 +1,4 @@
+import { seedLegacyRentalListings } from '@/test/legacy-listings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   countUnread,
@@ -17,7 +18,10 @@ import { demoSeller, demoUser } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
 
-beforeEach(() => resetStore())
+beforeEach(async () => {
+  await resetStore()
+  await seedLegacyRentalListings()
+})
 
 const titles = async (userId: string) =>
   (await listNotifications(userId)).map((n) => n.title)
@@ -124,7 +128,7 @@ describe('notification triggers', () => {
     const listing = await createListing(
       {
         name: '審査中',
-        category: 'トラクター',
+        category: 'マンション',
         maker: 'クボタ',
         year: 2018,
         hours: 500,
@@ -136,8 +140,8 @@ describe('notification triggers', () => {
         rentToOwn: false,
         images: [],
         summary: '説明',
-        sellerName: '出品者デモ',
-        sellerKind: '農業法人',
+        sellerName: '掲載者デモ',
+        sellerKind: '不動産会社',
         contactEmail: 'seller@example.com',
       },
       'demo-seller',
@@ -150,7 +154,7 @@ describe('notification triggers', () => {
     const items = await listNotifications('demo-seller')
     expect(items.map((n) => n.title)).toEqual([
       '運搬依頼が却下されました',
-      '出品が承認されました',
+      '掲載が承認されました',
     ])
     expect(items[0].body).toContain('区間が不明瞭')
     expect(items[1].href).toBe(`/listings/${listing.id}`)

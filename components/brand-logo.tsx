@@ -23,19 +23,19 @@ export function BrandLogo({
         <rect
           width="40"
           height="40"
-          rx="12"
-          fill={inverse ? '#D9EB8B' : '#173F35'}
+          rx="2"
+          fill={inverse ? '#e1c5ab' : '#203a43'}
         />
         <path
-          d="M10 29 20 10l10 19M15 23h10"
-          stroke={inverse ? '#173F35' : '#D9EB8B'}
+          d="M9 18 20 9l11 9v13H9V18Z M17 31V20h6v11"
+          stroke={inverse ? '#203a43' : '#e1c5ab'}
           strokeWidth="3.2"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M11 33h18"
-          stroke={inverse ? '#173F35' : '#D9EB8B'}
+          d="M6 35h28"
+          stroke={inverse ? '#203a43' : '#e1c5ab'}
           strokeWidth="2"
           strokeLinecap="round"
         />
@@ -43,7 +43,7 @@ export function BrandLogo({
       {!compact && (
         <span className="flex flex-col">
           <span className="text-[18px] font-bold leading-none tracking-[-0.055em] sm:text-[21px]">
-            Agri Machare<span className="ml-0.5 text-xs">.</span>
+            Estate Machare<span className="ml-0.5 text-xs">.</span>
           </span>
           <span
             className={cn(
@@ -51,7 +51,7 @@ export function BrandLogo({
               inverse ? 'text-white/65' : 'text-muted-foreground',
             )}
           >
-            農機具と、次の可能性を。
+            住まいと、次の可能性を。
           </span>
         </span>
       )}

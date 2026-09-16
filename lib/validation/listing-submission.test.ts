@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { validateListingSubmission } from './listing-submission'
 
 const valid = {
-  name: 'クボタ トラクター 30馬力',
-  category: 'トラクター',
+  name: 'クボタ マンション 30馬力',
+  category: 'マンション',
   maker: 'クボタ',
   year: '2018',
   hours: '500',
@@ -18,7 +18,7 @@ const valid = {
   rentToOwnCreditCap: '300000',
   summary: 'キャビン付き。まず借りて試せます。',
   sellerName: '中村ファーム',
-  sellerKind: '農業法人',
+  sellerKind: '不動産会社',
   contactEmail: 'seller@example.com',
 }
 
@@ -162,4 +162,65 @@ describe('validateListingSubmission', () => {
     expect(validateListingSubmission(null).ok).toBe(false)
     expect(validateListingSubmission('text').ok).toBe(false)
   })
+})
+
+describe('property submission', () => {
+  it('keeps monthly rent separate from legacy daily pricing and supports decimal area', () => {
+    const result = validateListingSubmission({
+      ...valid,
+      areaSqm: '68.5',
+      builtYear: '2019',
+      floorPlan: '2LDK',
+      access: '駅 徒歩8分',
+      monthlyRent: '168000',
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.value.property).toEqual({
+      areaSqm: 68.5,
+      builtYear: 2019,
+      floorPlan: '2LDK',
+      access: '駅 徒歩8分',
+      monthlyRent: 168000,
+    })
+    expect(result.value.rentPerDay).toBeUndefined()
+    expect(result.value.rentToOwn).toBe(false)
+  })
+  it('rejects missing monthly rent and nonpositive area', () => {
+    const result = validateListingSubmission({
+      ...valid,
+      areaSqm: '0',
+      builtYear: '2019',
+      floorPlan: '2LDK',
+      access: '駅 徒歩8分',
+      monthlyRent: '',
+    })
+    expect(result.ok).toBe(false)
+    if (result.ok) return
+    expect(result.errors).toHaveProperty('areaSqm')
+    expect(result.errors).toHaveProperty('monthlyRent')
+  })
+})
+
+it('does not require a construction year for land and returns building errors under the visible field', () => {
+  const property = {
+    ...valid,
+    areaSqm: '165',
+    floorPlan: '土地',
+    access: '駅 徒歩15分',
+    monthlyRent: '95000',
+    builtYear: '',
+  }
+  const land = validateListingSubmission({ ...property, category: '土地' })
+  expect(land.ok).toBe(true)
+  if (land.ok) expect(land.value.property?.builtYear).toBeUndefined()
+  const building = validateListingSubmission({
+    ...property,
+    category: '戸建て',
+  })
+  expect(building.ok).toBe(false)
+  if (!building.ok) {
+    expect(building.errors).toHaveProperty('builtYear')
+    expect(building.errors).not.toHaveProperty('year')
+  }
 })

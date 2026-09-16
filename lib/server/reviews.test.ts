@@ -1,3 +1,4 @@
+import { seedLegacyRentalListings } from '@/test/legacy-listings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   createReview,
@@ -14,7 +15,10 @@ import { demoAdmin, demoSeller, demoUser } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
 
-beforeEach(() => resetStore())
+beforeEach(async () => {
+  await resetStore()
+  await seedLegacyRentalListings()
+})
 
 async function completedRental() {
   const created = await requestRental(

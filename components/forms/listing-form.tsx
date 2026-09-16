@@ -28,6 +28,11 @@ type Deal = 'sale' | 'rent'
 type Picture = { full: string; thumb?: string }
 
 type ListingFormValues = {
+  areaSqm?: string
+  builtYear?: string
+  floorPlan?: string
+  access?: string
+  monthlyRent?: string
   name: string
   category: string
   maker: string
@@ -91,6 +96,11 @@ export function ListingForm({
         sellerKind: '',
         contactEmail: contact?.email ?? '',
       }),
+      areaSqm: edit?.values.areaSqm ?? '',
+      builtYear: edit?.values.builtYear ?? '',
+      floorPlan: edit?.values.floorPlan ?? '',
+      access: edit?.values.access ?? '',
+      monthlyRent: edit?.values.monthlyRent ?? '',
       images: edit?.images ?? ([] as string[]),
       thumbnail: edit?.thumbnail ?? '',
     },
@@ -180,18 +190,18 @@ export function ListingForm({
     return (
       <ReceiptPanel
         receipt={form.receipt}
-        title={edit ? '出品の更新' : '出品の申し込み'}
+        title={edit ? '掲載の更新' : '掲載の申し込み'}
         description={edit ? '更新しました。' : '審査後に掲載します。'}
         links={
           edit
             ? [
                 {
                   href: `/listings/${edit.listingId}`,
-                  label: '農機具の詳細を見る',
+                  label: '物件の詳細を見る',
                 },
                 { href: '/account', label: 'マイページにもどる' },
               ]
-            : [{ href: '/listings', label: '出品中の農機具を見る' }]
+            : [{ href: '/listings', label: '掲載中の物件を見る' }]
         }
       />
     )
@@ -207,12 +217,12 @@ export function ListingForm({
           className="mb-6 flex items-center gap-3 text-lg font-bold"
         >
           <span className="text-xs text-muted-foreground">01</span>
-          農機具の基本情報
+          物件の基本情報
         </h2>
         <TextField
           id="name"
-          label="農機具名"
-          placeholder="例: クボタ トラクター 45馬力 GLシリーズ"
+          label="物件名"
+          placeholder="例: 南向きの角部屋 2LDK"
           value={form.values.name}
           onChange={(e) => form.setValue('name', e.target.value)}
           error={form.errors.name}
@@ -227,29 +237,31 @@ export function ListingForm({
             error={form.errors.category}
           />
           <TextField
-            id="maker"
-            label="メーカー"
-            value={form.values.maker}
-            onChange={(e) => form.setValue('maker', e.target.value)}
-            error={form.errors.maker}
+            id="floorPlan"
+            label="間取り・区画"
+            value={form.values.floorPlan}
+            onChange={(e) => form.setValue('floorPlan', e.target.value)}
+            error={form.errors.floorPlan}
           />
+          {form.values.category !== '土地' && (
+            <TextField
+              id="builtYear"
+              label="築年（西暦）"
+              inputMode="numeric"
+              placeholder="例: 2019"
+              value={form.values.builtYear}
+              onChange={(e) => form.setValue('builtYear', e.target.value)}
+              error={form.errors.builtYear}
+            />
+          )}
           <TextField
-            id="year"
-            label="年式"
+            id="areaSqm"
+            label="専有・土地面積（㎡）"
             inputMode="numeric"
-            placeholder="例: 2019"
-            value={form.values.year}
-            onChange={(e) => form.setValue('year', e.target.value)}
-            error={form.errors.year}
-          />
-          <TextField
-            id="hours"
-            label="稼働時間"
-            inputMode="numeric"
-            placeholder="例: 620"
-            value={form.values.hours}
-            onChange={(e) => form.setValue('hours', e.target.value)}
-            error={form.errors.hours}
+            placeholder="例: 68.5"
+            value={form.values.areaSqm}
+            onChange={(e) => form.setValue('areaSqm', e.target.value)}
+            error={form.errors.areaSqm}
           />
           <SelectField
             id="condition"
@@ -276,6 +288,14 @@ export function ListingForm({
             />
           </div>
         </div>
+        <TextField
+          id="access"
+          label="交通アクセス"
+          placeholder="例: 自由が丘駅 徒歩8分"
+          value={form.values.access}
+          onChange={(event) => form.setValue('access', event.target.value)}
+          error={form.errors.access}
+        />
       </section>
       <fieldset className="page-form">
         <legend className="rounded-md bg-card px-3 text-base font-bold text-foreground">
@@ -284,13 +304,13 @@ export function ListingForm({
         <div className="flex flex-wrap gap-6">
           <CheckboxField
             id="deal-sale"
-            label="販売する"
+            label="売買"
             checked={canSell}
             onChange={() => toggleDeal('sale')}
           />
           <CheckboxField
             id="deal-rent"
-            label="レンタルする"
+            label="賃貸"
             checked={canRent}
             onChange={() => toggleDeal('rent')}
           />
@@ -302,7 +322,7 @@ export function ListingForm({
           {canSell && (
             <TextField
               id="salePrice"
-              label="販売価格"
+              label="売買価格"
               inputMode="numeric"
               placeholder="円"
               value={form.values.salePrice}
@@ -312,55 +332,16 @@ export function ListingForm({
           )}
           {canRent && (
             <TextField
-              id="rentPerDay"
-              label="レンタル料（1日）"
+              id="monthlyRent"
+              label="月額賃料（円）"
               inputMode="numeric"
               placeholder="円"
-              value={form.values.rentPerDay}
-              onChange={(e) => form.setValue('rentPerDay', e.target.value)}
-              error={form.errors.rentPerDay}
+              value={form.values.monthlyRent}
+              onChange={(e) => form.setValue('monthlyRent', e.target.value)}
+              error={form.errors.monthlyRent}
             />
           )}
         </div>
-        {canSell && canRent && (
-          <CheckboxField
-            id="rentToOwn"
-            label="レンタル購入を受け付ける"
-            className="mt-4"
-            checked={form.values.rentToOwn}
-            onChange={(e) => {
-              form.setValue('rentToOwn', e.target.checked)
-              if (e.target.checked && !form.values.rentToOwnCreditRate)
-                form.setValue('rentToOwnCreditRate', '50')
-            }}
-            error={form.errors.rentToOwn}
-          />
-        )}
-        {canSell && canRent && form.values.rentToOwn && (
-          <div className="mt-4 grid gap-5 sm:grid-cols-2">
-            <TextField
-              id="rentToOwnCreditRate"
-              label="充当率（%）"
-              inputMode="numeric"
-              value={form.values.rentToOwnCreditRate}
-              onChange={(e) =>
-                form.setValue('rentToOwnCreditRate', e.target.value)
-              }
-              error={form.errors.rentToOwnCreditRate}
-            />
-            <TextField
-              id="rentToOwnCreditCap"
-              label="充当上限（円）"
-              inputMode="numeric"
-              placeholder="任意"
-              value={form.values.rentToOwnCreditCap}
-              onChange={(e) =>
-                form.setValue('rentToOwnCreditCap', e.target.value)
-              }
-              error={form.errors.rentToOwnCreditCap}
-            />
-          </div>
-        )}
       </fieldset>
 
       <section className="page-form space-y-6" aria-labelledby="listing-photos">
@@ -369,7 +350,7 @@ export function ListingForm({
           className="flex items-center gap-3 text-lg font-bold"
         >
           <span className="text-xs text-muted-foreground">03</span>
-          写真・コンディション
+          写真・物件の特徴
         </h2>
         <fieldset>
           <label
@@ -427,7 +408,7 @@ export function ListingForm({
         <TextareaField
           id="summary"
           label="説明"
-          placeholder="装備、整備状況、貸し出し条件など"
+          placeholder="設備、リフォーム履歴、入居時期、契約条件など"
           value={form.values.summary}
           onChange={(e) => form.setValue('summary', e.target.value)}
           error={form.errors.summary}
@@ -438,20 +419,20 @@ export function ListingForm({
           id="listing-owner"
           className="mb-6 flex items-center gap-3 text-lg font-bold"
         >
-          <span className="text-xs text-muted-foreground">04</span>出品者情報
+          <span className="text-xs text-muted-foreground">04</span>掲載者情報
         </h2>
         <div className="grid gap-5 sm:grid-cols-2">
           <TextField
             id="sellerName"
-            label="出品者名"
-            placeholder="例: 中村ファーム"
+            label="掲載者名"
+            placeholder="例: まちの不動産"
             value={form.values.sellerName}
             onChange={(e) => form.setValue('sellerName', e.target.value)}
             error={form.errors.sellerName}
           />
           <SelectField
             id="sellerKind"
-            label="出品者の区分"
+            label="掲載者の区分"
             options={sellerKinds}
             value={form.values.sellerKind}
             onChange={(e) => form.setValue('sellerKind', e.target.value)}
@@ -469,7 +450,7 @@ export function ListingForm({
       </section>
       <div className="flex justify-end rounded-xl border border-border bg-card p-5">
         <SubmitButton
-          label={edit ? '更新する' : '出品を申し込む'}
+          label={edit ? '更新する' : '掲載を申し込む'}
           isSubmitting={form.isSubmitting}
         />
       </div>

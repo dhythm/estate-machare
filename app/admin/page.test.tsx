@@ -22,7 +22,7 @@ vi.mock('@/lib/server/admin-overview', () => ({
       dealId: 'o-1',
       title: 'クボタ 45馬力',
       statusLabel: '承諾',
-      actorName: '出品者デモ',
+      actorName: '掲載者デモ',
       createdAt: '2026-09-13T01:00:00.000Z',
       href: '/account/deals/order/o-1',
     },
@@ -81,7 +81,7 @@ describe('AdminDashboardPage', () => {
       within(activity).getByRole('link', { name: /クボタ 45馬力/ }),
     ).toHaveAttribute('href', '/account/deals/order/o-1')
     expect(within(activity).getByText('承諾')).toBeInTheDocument()
-    expect(within(activity).getByText('出品者デモ')).toBeInTheDocument()
+    expect(within(activity).getByText('掲載者デモ')).toBeInTheDocument()
     const reviews = screen.getByRole('region', { name: '直近のレビュー' })
     expect(within(reviews).getByText('助かりました')).toBeInTheDocument()
     expect(within(reviews).getByLabelText('評価 4')).toBeInTheDocument()

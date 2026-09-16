@@ -11,13 +11,13 @@ describe('SiteHeader', () => {
     render(<SiteHeader />)
     for (const name of ['メインナビゲーション', 'サービスナビゲーション']) {
       const nav = within(screen.getByRole('navigation', { name }))
-      expect(nav.getByRole('link', { name: '運搬マッチング' })).toHaveAttribute(
+      expect(nav.getByRole('link', { name: '引越しサポート' })).toHaveAttribute(
         'aria-current',
         'page',
       )
-      expect(
-        nav.getByRole('link', { name: '農機具を探す' }),
-      ).not.toHaveAttribute('aria-current')
+      expect(nav.getByRole('link', { name: '物件を探す' })).not.toHaveAttribute(
+        'aria-current',
+      )
       expect(nav.getByRole('link', { name: 'はじめての方へ' })).toHaveAttribute(
         'href',
         '/guide',
@@ -25,7 +25,7 @@ describe('SiteHeader', () => {
     }
     expect(
       screen
-        .getAllByRole('link', { name: '出品する' })
+        .getAllByRole('link', { name: '物件を掲載' })
         .every((link) => link.getAttribute('href') === '/listings/new'),
     ).toBe(true)
   })

@@ -29,8 +29,8 @@ function when(iso: string): string {
 export function RentalTable({ items }: { items: RentalWithListing[] }) {
   return (
     <AdminDataTable
-      title="レンタル"
-      headers={['農機具', '申込者', '期間', '金額', '状態', '購入価格', '']}
+      title="賃貸"
+      headers={['物件', '申込者', '期間', '金額', '状態', '購入価格', '']}
       rows={items.map(({ rental, listing }) => ({
         key: rental.id,
         searchText: `${rental.id} ${listing?.name ?? '削除済み'} ${rental.renterUserId} ${rentalStatusLabels[rental.status]} ${rental.startDate} ${rental.endDate}`,
@@ -129,8 +129,15 @@ export function ThreadTable({ items }: { items: ThreadSummary[] }) {
 export function CarrierTable({ items }: { items: CarrierProfile[] }) {
   return (
     <AdminDataTable
-      title="運搬者"
-      headers={['運搬者', '区分', '拠点', '車両', '対応地域', '更新日']}
+      title="引越しパートナー"
+      headers={[
+        '引越しパートナー',
+        '区分',
+        '拠点',
+        '車両',
+        '対応地域',
+        '更新日',
+      ]}
       rows={items.map((carrier) => ({
         key: carrier.id,
         searchText: `${carrier.id} ${carrier.name} ${carrier.kind} ${carrier.prefecture} ${carrier.vehicles.join(' ')} ${carrier.serviceAreas.join(' ')}`,
@@ -169,9 +176,9 @@ export function AccountTable({
       headers={[
         'アカウント',
         '役割',
-        '出品',
-        '運搬依頼',
-        'レンタル',
+        '掲載',
+        '引越し依頼',
+        '賃貸',
         '状態',
         '操作',
       ]}
@@ -225,7 +232,7 @@ export function ReviewTable({ items }: { items: ReviewRow[] }) {
   return (
     <AdminDataTable
       title="レビュー"
-      headers={['農機具', '出品者', 'レビュー者', '評価', 'コメント', '日時']}
+      headers={['物件', '掲載者', 'レビュー者', '評価', 'コメント', '日時']}
       rows={items.map(({ review, listingName }) => ({
         key: review.id,
         searchText: `${listingName} ${review.sellerUserId} ${review.reviewerUserId} ${review.comment ?? ''} ${review.rating}`,
@@ -255,7 +262,7 @@ export function OrderTable({ items }: { items: OrderWithListing[] }) {
   return (
     <AdminDataTable
       title="注文"
-      headers={['農機具', '買い手', '出品者', '価格', '状態', '日時', '']}
+      headers={['物件', '買い手', '掲載者', '価格', '状態', '日時', '']}
       rows={items.map(({ order, listing }) => ({
         key: order.id,
         searchText: `${order.id} ${listing?.name ?? '削除済み'} ${order.buyerUserId} ${order.sellerUserId} ${orderStatusLabels[order.status]}`,

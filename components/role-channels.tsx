@@ -14,13 +14,13 @@ export function RoleChannels() {
         <div className="flex-1">
           <p className="eyebrow">FOR OWNERS</p>
           <h2 className="mt-2 text-lg font-bold">
-            眠っている一台を、誰かの力に。
+            大切な場所に、次の出会いを。
           </h2>
           <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-            販売も、使わない期間の貸し出しも。
+            売却も、賃貸も。物件の魅力を、探している人へ。
           </p>
           <span className="mt-5 inline-flex items-center gap-3 text-sm font-bold text-primary">
-            農機具を出品する
+            物件を掲載する
             <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </span>
         </div>
@@ -33,15 +33,15 @@ export function RoleChannels() {
           <Truck className="size-5" />
         </span>
         <div className="flex-1">
-          <p className="eyebrow">FOR TRANSPORT PARTNERS</p>
+          <p className="eyebrow">FOR MOVING PARTNERS</p>
           <h2 className="mt-2 text-lg font-bold">
-            その帰り道が、農業をつなぐ。
+            新生活のはじまりを、支える。
           </h2>
           <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-            車両と対応エリアを登録して、運搬の仕事を。
+            対応エリアと車両を登録して、引越しの仕事を。
           </p>
           <span className="mt-5 inline-flex items-center gap-3 text-sm font-bold text-primary">
-            運搬者として登録する
+            引越しパートナーとして登録
             <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </span>
         </div>

@@ -1,3 +1,4 @@
+import { seedLegacyRentalListings } from '@/test/legacy-listings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getSellerProfile } from './sellers'
 import { getListing, setListingStatus } from './listings'
@@ -8,7 +9,10 @@ import { demoSeller, demoUser } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
 
-beforeEach(() => resetStore())
+beforeEach(async () => {
+  await resetStore()
+  await seedLegacyRentalListings()
+})
 
 async function reviewCompletedRental(rating: number) {
   const created = await requestRental(
@@ -37,7 +41,7 @@ describe('getSellerProfile', () => {
 
     expect(profile).toMatchObject({
       id: 'demo-seller',
-      name: '出品者デモ',
+      name: '掲載者デモ',
       rating: 4.5,
       reviewCount: 2,
     })

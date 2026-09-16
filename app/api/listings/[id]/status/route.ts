@@ -21,9 +21,9 @@ export async function PATCH(
   if (result.ok) return Response.json(result.value)
   switch (result.reason) {
     case 'not_found':
-      return notFound('農機具が見つかりません。')
+      return notFound('物件が見つかりません。')
     case 'forbidden':
-      return forbidden('この農機具を編集する権限がありません。')
+      return forbidden('この物件を編集する権限がありません。')
     case 'rental_open':
       return conflict('進行中のレンタルがあります。')
   }

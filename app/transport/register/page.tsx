@@ -8,7 +8,9 @@ import { getCurrentUser } from '@/lib/server/auth/session'
 import { getCarrierProfile } from '@/lib/server/carriers'
 import type { CarrierProfileInput } from '@/lib/validation/carrier'
 
-export const metadata: Metadata = { title: '運搬者登録 | Agri Machare' }
+export const metadata: Metadata = {
+  title: '引越しパートナー登録 | Estate Machare',
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -28,14 +30,14 @@ export default async function TransportRegisterPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:py-12">
-        <BackLink href="/transport" label="運搬案件にもどる" />
+        <BackLink href="/transport" label="引越し案件にもどる" />
         <div className="mt-8 grid items-start gap-8 lg:grid-cols-[280px_1fr] lg:gap-12">
           <div className="lg:sticky lg:top-36 xl:top-24">
             <span className="mb-6 flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
               <Truck className="size-5" />
             </span>
             <PageIntro
-              title="運搬者として登録する"
+              title="引越しパートナーとして登録する"
               description="空きトラックや帰り便を、次の仕事に。対応地域に合う案件がマイページに届きます。"
             />
           </div>
@@ -47,7 +49,7 @@ export default async function TransportRegisterPage() {
               />
             ) : (
               <LoginPrompt
-                action="運搬者として登録する"
+                action="引越しパートナーとして登録する"
                 callbackUrl="/transport/register"
               />
             )}

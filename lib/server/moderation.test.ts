@@ -12,8 +12,8 @@ beforeEach(() => resetStore())
 
 const listing: ListingSubmission = {
   images: [],
-  name: '審査用トラクター',
-  category: 'トラクター',
+  name: '審査用マンション',
+  category: 'マンション',
   maker: 'クボタ',
   year: 2018,
   hours: 500,
@@ -25,7 +25,7 @@ const listing: ListingSubmission = {
   rentToOwn: false,
   summary: '審査用。',
   sellerName: '審査農園',
-  sellerKind: '農業法人',
+  sellerKind: '不動産会社',
   contactEmail: 'review@example.com',
 }
 

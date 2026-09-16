@@ -16,21 +16,19 @@ describe('SearchRefinements', () => {
     const user = userEvent.setup()
     await user.selectOptions(screen.getByLabelText('都道府県'), '新潟県')
     expect(onChange).toHaveBeenLastCalledWith({ prefecture: '新潟県' })
-    await user.selectOptions(screen.getByLabelText('並び替え'), '日額が安い順')
+    await user.selectOptions(
+      screen.getByLabelText('並び替え'),
+      '月額賃料が安い順',
+    )
     expect(onChange).toHaveBeenLastCalledWith({ sort: 'rentAsc' })
-    await user.type(screen.getByLabelText('日額の下限'), '10000')
-    await user.type(screen.getByLabelText('日額の上限'), '30000')
+    await user.type(screen.getByLabelText('月額賃料の下限'), '10000')
+    await user.type(screen.getByLabelText('月額賃料の上限'), '30000')
     await user.click(screen.getByRole('button', { name: '価格で絞り込む' }))
     expect(onChange).toHaveBeenLastCalledWith({
       priceMin: 10_000,
       priceMax: 30_000,
     })
-    await user.type(screen.getByLabelText('利用開始日'), '2026-10-01')
-    await user.type(screen.getByLabelText('利用終了日'), '2026-10-07')
-    expect(onChange).toHaveBeenLastCalledWith({
-      availableFrom: '2026-10-01',
-      availableTo: '2026-10-07',
-    })
+    expect(screen.queryByLabelText('利用開始日')).toBeNull()
   })
 
   it('labels the price by sale when the deal is not rent and clears refinements', async () => {
@@ -48,7 +46,7 @@ describe('SearchRefinements', () => {
         onChange={onChange}
       />,
     )
-    expect(screen.getByLabelText('販売価格の上限')).toHaveValue('500000')
+    expect(screen.getByLabelText('売買価格の上限')).toHaveValue('500000')
     expect(screen.getByLabelText('都道府県')).toHaveValue('新潟県')
     await userEvent
       .setup()

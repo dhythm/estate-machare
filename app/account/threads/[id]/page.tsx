@@ -9,7 +9,7 @@ import { findReviewForSource } from '@/lib/server/reviews'
 import { markThreadRead } from '@/lib/server/thread-reads'
 import { getThread } from '@/lib/server/threads'
 
-export const metadata: Metadata = { title: 'やり取り | Agri Machare' }
+export const metadata: Metadata = { title: 'やり取り | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 

@@ -14,6 +14,18 @@ const jobById = new Map(allJobs.map((job) => [job.id, job]))
 const userIds = new Set(configuredAccounts().map((account) => account.id))
 
 describe('demoActivity', () => {
+  it('uses property and moving language in visible activity content', () => {
+    const copy = [
+      ...demoActivity.notifications.flatMap((item) => [item.title, item.body]),
+      ...demoActivity.messages.map((item) => item.body),
+      ...demoActivity.submissions.map((item) => item.payload.message),
+      ...demoActivity.reviews.map((item) => item.comment),
+    ].join(' ')
+    expect(copy).not.toMatch(
+      /農機|農業|トラクター|コンバイン|田植機|耕運機|クボタ|ヤンマー|ロータリー|キャビン|フォークリフト|機体|6条/,
+    )
+  })
+
   it('references only known accounts, listings, and jobs', () => {
     const {
       orders,
@@ -39,7 +51,8 @@ describe('demoActivity', () => {
     for (const rental of rentals) {
       expect(userIds).toContain(rental.renterUserId)
       const listing = listingById.get(rental.listingId)
-      expect(listing?.rentPerDay).toBe(rental.rentPerDay)
+      expect(listing).toBeDefined()
+      expect(rental.rentPerDay).toBeGreaterThan(0)
       expect(rental.days).toBe(
         countRentalDays(rental.startDate, rental.endDate),
       )

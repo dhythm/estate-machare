@@ -11,7 +11,7 @@ import { PageIntro, PageShell } from '@/components/page-shell'
 import { getCurrentUser } from '@/lib/server/auth/session'
 import { getListing } from '@/lib/server/listings'
 
-export const metadata: Metadata = { title: '運搬を依頼する | Agri Machare' }
+export const metadata: Metadata = { title: '引越しを依頼する | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 
@@ -22,10 +22,9 @@ async function initialFromListing(
   const listing = await getListing(listingId)
   if (!listing) return undefined
   return {
-    item: listing.name,
-    category: listing.category,
-    fromPrefecture: listing.prefecture,
-    fromCity: listing.city,
+    item: `${listing.name}への引越し`,
+    toPrefecture: listing.prefecture,
+    toCity: listing.city,
   }
 }
 
@@ -43,15 +42,15 @@ export default async function NewTransportJobPage({
   return (
     <PageShell>
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:py-12">
-        <BackLink href="/transport" label="運搬案件にもどる" />
+        <BackLink href="/transport" label="引越し案件にもどる" />
         <div className="mt-8 grid items-start gap-8 lg:grid-cols-[280px_1fr] lg:gap-12">
           <div className="lg:sticky lg:top-36 xl:top-24">
             <span className="mb-6 flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
               <Truck className="size-5" />
             </span>
             <PageIntro
-              title="運搬を依頼する"
-              description="大切な農機具を、必要な場所へ。希望の区間に合う運搬者を見つけましょう。"
+              title="引越しを依頼する"
+              description="家具・家電から家族の引越しまで。新しい住まいへの移動を相談できます。"
             />
             <Link
               href="/transport/pricing"
@@ -68,7 +67,10 @@ export default async function NewTransportJobPage({
                 initial={initial}
               />
             ) : (
-              <LoginPrompt action="運搬を依頼する" callbackUrl={callbackUrl} />
+              <LoginPrompt
+                action="引越しを依頼する"
+                callbackUrl={callbackUrl}
+              />
             )}
           </div>
         </div>

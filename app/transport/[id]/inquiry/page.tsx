@@ -8,7 +8,7 @@ import { formatYen } from '@/lib/data'
 import { canView, getCurrentUser } from '@/lib/server/auth/session'
 import { getTransportJob } from '@/lib/server/transport'
 
-export const metadata: Metadata = { title: '案件に質問する | Agri Machare' }
+export const metadata: Metadata = { title: '案件に質問する | Estate Machare' }
 
 export const dynamic = 'force-dynamic'
 

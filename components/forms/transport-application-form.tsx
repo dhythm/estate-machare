@@ -44,7 +44,10 @@ export function TransportApplicationForm({
             label: 'やり取りを開く',
           },
           { href: '/transport', label: 'ほかの案件を見る' },
-          { href: '/transport/register', label: '運搬者として登録する' },
+          {
+            href: '/transport/register',
+            label: '引越しパートナーとして登録する',
+          },
         ]}
       />
     )

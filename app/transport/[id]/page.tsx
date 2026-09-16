@@ -24,7 +24,7 @@ import { canManage } from '@/lib/server/auth/access'
 import { getCarrierProfile, matchCarriersForJob } from '@/lib/server/carriers'
 import { CarrierMatches } from '@/components/carriers/carrier-matches'
 
-export const metadata: Metadata = { title: '運搬案件 | Agri Machare' }
+export const metadata: Metadata = { title: '引越し案件 | Estate Machare' }
 export const dynamic = 'force-dynamic'
 
 export default async function TransportJobPage({
@@ -45,7 +45,7 @@ export default async function TransportJobPage({
     <PageShell>
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
         <div className="flex items-center justify-between gap-4">
-          <BackLink href="/transport" label="運搬案件にもどる" />
+          <BackLink href="/transport" label="引越し案件にもどる" />
           {manages && (
             <div className="flex flex-wrap gap-2">
               <Link
@@ -70,7 +70,7 @@ export default async function TransportJobPage({
               {job.status}
             </Badge>
             <span className="text-xs text-muted-foreground">
-              運搬案件 · {job.id}
+              引越し案件 · {job.id}
             </span>
           </div>
           <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -80,7 +80,7 @@ export default async function TransportJobPage({
         <div className="mt-8 grid items-start gap-8 lg:grid-cols-[1fr_1.25fr] lg:gap-12">
           <div className="lg:sticky lg:top-36 xl:top-24 lg:self-start">
             <section
-              aria-label="運搬区間"
+              aria-label="引越し区間"
               className="overflow-hidden rounded-2xl bg-primary p-6 text-primary-foreground sm:p-8"
             >
               <p className="flex items-center gap-2 text-xs font-medium tracking-wider text-primary-foreground/65">
@@ -119,7 +119,7 @@ export default async function TransportJobPage({
                 <div>
                   <dt className="flex items-center gap-1.5 text-xs text-primary-foreground/65">
                     <Scale className="size-3.5" />
-                    重量
+                    荷物量
                   </dt>
                   <dd className="mt-2 font-display text-lg font-semibold">
                     {job.weight}
@@ -144,7 +144,7 @@ export default async function TransportJobPage({
               href="/transport/pricing"
               className="mt-4 inline-flex items-center gap-2 px-1 text-xs font-medium text-muted-foreground hover:text-primary"
             >
-              運搬料金のめやす
+              引越し料金のめやす
               <ArrowRight className="size-3.5" />
             </Link>
           </div>
@@ -153,7 +153,7 @@ export default async function TransportJobPage({
               {manages ? 'MANAGE REQUEST' : 'APPLICATION'}
             </p>
             <h2 className="mt-3 font-display text-2xl font-bold text-foreground">
-              {manages ? '運搬依頼の管理' : 'この案件に応募する'}
+              {manages ? '引越し依頼の管理' : 'この案件に応募する'}
             </h2>
             <div className="mt-6">
               {job.status !== '完了' && !manages && (
@@ -174,7 +174,7 @@ export default async function TransportJobPage({
               ) : manages ? (
                 <div>
                   <h3 className="text-sm font-semibold text-foreground">
-                    この案件に合う運搬者
+                    この案件に合う引越しパートナー
                   </h3>
                   <div className="mt-4">
                     <CarrierMatches matches={matches} />

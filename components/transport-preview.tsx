@@ -15,18 +15,18 @@ export async function TransportPreview() {
             <span className="flex size-11 items-center justify-center rounded-xl bg-accent/15 text-accent-foreground">
               <Truck className="size-5" />
             </span>
-            <p className="eyebrow mt-5">TRANSPORT MATCHING</p>
+            <p className="eyebrow mt-5">MOVING SUPPORT</p>
             <h2 className="mt-3 text-balance font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              距離の先に、可能性を。
+              新しい暮らしへの、橋渡し。
             </h2>
             <p className="mt-3 text-pretty leading-relaxed text-muted-foreground">
-              遠くで見つけた一台も、地域の運搬者とつなぐ。空きトラックや帰り便を、次の仕事に。
+              物件が決まったら、引越しの相談も。希望のエリアと日程に合うパートナーを探せます。
             </p>
             <Link
               href="/transport"
               className="mt-6 inline-flex w-fit items-center gap-1 text-sm font-medium text-primary"
             >
-              運搬案件をすべて見る
+              引越しの依頼を見る
               <ArrowRight className="size-4" />
             </Link>
           </div>

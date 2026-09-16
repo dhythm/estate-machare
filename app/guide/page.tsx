@@ -4,51 +4,51 @@ import { Repeat2, ShoppingCart, Tag, Truck } from 'lucide-react'
 import { PageIntro, PageShell } from '@/components/page-shell'
 import { Badge } from '@/components/badge'
 
-export const metadata: Metadata = { title: 'はじめての方へ | Agri Machare' }
+export const metadata: Metadata = { title: 'はじめての方へ | Estate Machare' }
 
 const roles = [
   {
     icon: Tag,
     title: '売る・貸す',
-    body: '使わない期間だけ貸す、買い替えで手放す。出品フォームから機種・状態・価格を登録すると、販売とレンタルをまとめて募集できます。',
+    body: '住み替えで売却する、所有物件を貸し出す。所在地・間取り・面積・価格を登録し、購入希望者や入居希望者を募ります。',
     href: '/listings/new',
-    action: '出品する',
+    action: '掲載する',
   },
   {
     icon: Repeat2,
     title: '借りる',
-    body: '必要な期間だけレンタル。農機具の詳細で利用日を選び、申込み後はマイページで承認状況を確認できます。',
+    body: 'エリア・家賃・間取りから住まいを検索。気になる物件は内見や入居条件を相談し、マイページでやり取りを確認できます。',
     href: '/listings?deal=rent',
-    action: 'レンタルできる農機具を探す',
+    action: '賃貸できる物件を探す',
   },
   {
     icon: ShoppingCart,
     title: '買う',
-    body: '写真・状態・稼働時間を確認して、出品者に問い合わせ。マイページのメッセージで条件を相談し、取引を進めます。',
+    body: '写真・価格・間取り・周辺環境を比較。気になる物件の掲載者に内見や購入条件を相談できます。',
     href: '/listings?deal=sale',
-    action: '販売中の農機具を探す',
+    action: '販売中の物件を探す',
   },
   {
     icon: Truck,
-    title: '運ぶ',
-    body: '空きトラックや帰り便で農機具を運び、報酬を受け取ります。運搬者登録のあと、案件に応募できます。',
+    title: '引越す',
+    body: '新しい住まいへの引越しや家具配送を相談。荷物量・区間・希望日を登録して、対応できるパートナーを探します。',
     href: '/transport',
-    action: '運搬案件を見る',
+    action: '引越し案件を見る',
   },
 ]
 
-const rentToOwnSteps = [
+const searchSteps = [
   {
-    title: 'まず借りて試す',
-    body: '「レンタル購入可」の農機具を短期レンタル。自分の圃場・作業に合うかを実機で確かめます。',
+    title: '条件に合う物件を探す',
+    body: 'エリア・価格・間取りを比較して、気になる住まいを見つけます。',
   },
   {
-    title: '気に入ったら購入へ',
-    body: 'レンタル中はマイページから購入に切り替えられます。申込み時の充当条件で購入価格が決まります。',
+    title: '内見・条件を相談する',
+    body: '掲載者へ問い合わせ。内見希望日や入居時期をメッセージで調整します。',
   },
   {
-    title: 'レンタル料を一部充当',
-    body: '支払い済みレンタル料の一部（出品者が設定した割合・上限）を購入価格に充当。試した分が無駄になりません。',
+    title: '新生活の準備へ',
+    body: '条件を確認し、引越し先が決まったら家具配送や引越しも相談できます。',
   },
 ]
 
@@ -56,10 +56,10 @@ export default function GuidePage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8">
-        <p className="eyebrow mb-5">HOW AGRI MACHARE WORKS</p>
+        <p className="eyebrow mb-5">HOW ESTATE MACHARE WORKS</p>
         <PageIntro
           title="はじめての方へ"
-          description="農機具を売る、買う、借りる、運ぶ。あなたに合う入口から、次のつながりを。出品・申込み・問い合わせにはログインが必要です。"
+          description="買う、借りる、売る、貸す。物件探しから新しい暮らしまで、あなたに合う入口から。"
         />
 
         <section className="mt-10">
@@ -92,16 +92,16 @@ export default function GuidePage() {
           </div>
         </section>
 
-        <section id="rent-to-own" className="mt-12 scroll-mt-20">
+        <section id="find-your-home" className="mt-12 scroll-mt-20">
           <Badge variant="accent">
             <Repeat2 className="size-3.5" />
-            レンタル購入
+            住まい探しの流れ
           </Badge>
           <h2 className="mt-3 font-display text-xl font-bold text-foreground">
-            「借りて、良ければ買う」の流れ
+            見つける、その先まで。
           </h2>
           <ol className="mt-4 grid gap-4 md:grid-cols-3">
-            {rentToOwnSteps.map((step, index) => (
+            {searchSteps.map((step, index) => (
               <li
                 key={step.title}
                 className="rounded-2xl border border-border bg-card p-5"
@@ -119,10 +119,10 @@ export default function GuidePage() {
             ))}
           </ol>
           <Link
-            href="/listings?deal=rentToOwn"
+            href="/listings"
             className="mt-4 inline-block text-sm font-medium text-primary"
           >
-            レンタル購入できる農機具を探す →
+            あなたに合う物件を探す →
           </Link>
         </section>
 
@@ -139,11 +139,11 @@ export default function GuidePage() {
             </li>
             <li>
               <strong className="text-foreground">状態の記録。</strong>
-              年式・稼働時間・整備記録を出品時に登録し、詳細ページで確認できます。
+              所在地・築年・間取り・面積を掲載時に登録し、詳細ページで確認できます。
             </li>
             <li>
-              <strong className="text-foreground">運搬もまとめて。</strong>
-              遠方の農機具は運搬チャネルで配送を手配できます。料金は
+              <strong className="text-foreground">引越しもまとめて。</strong>
+              入居先への家具配送や引越しを相談できます。料金は
               <Link href="/transport/pricing" className="text-primary">
                 料金のめやす
               </Link>

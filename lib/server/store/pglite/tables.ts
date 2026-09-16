@@ -23,6 +23,7 @@ export const listingTable: TableSpec<Listing> = {
   table: 'listings',
   columns: [
     'id',
+    'property',
     'name',
     'category',
     'maker',
@@ -55,6 +56,7 @@ export const listingTable: TableSpec<Listing> = {
   ],
   toRow: (listing) => [
     listing.id,
+    nullable(listing.property),
     listing.name,
     listing.category,
     listing.maker,
@@ -88,6 +90,7 @@ export const listingTable: TableSpec<Listing> = {
   fromRow: (row: Row) =>
     compact({
       id: row.id as string,
+      property: (row.property as Listing['property']) ?? undefined,
       name: row.name as string,
       category: row.category as string,
       maker: row.maker as string,

@@ -1,3 +1,4 @@
+import { seedLegacyRentalListings } from '@/test/legacy-listings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   listBookedRanges,
@@ -13,7 +14,10 @@ import { demoAdmin, demoSeller, demoUser } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
 
-beforeEach(() => resetStore())
+beforeEach(async () => {
+  await resetStore()
+  await seedLegacyRentalListings()
+})
 
 const week = { startDate: '2026-10-01', endDate: '2026-10-07' }
 
@@ -142,7 +146,7 @@ describe('rental lists', () => {
     await request()
     const mine = await listRentalsForRenter('demo-user')
     expect(mine).toHaveLength(1)
-    expect(mine[0].listing?.name).toContain('クボタ')
+    expect(mine[0].listing?.name).toContain('南向き')
     const incoming = await listRentalsForOwner('demo-seller')
     expect(incoming.map((item) => item.rental.listingId)).toEqual(['trc-001'])
     expect(await listRentalsForOwner('demo-user')).toEqual([])

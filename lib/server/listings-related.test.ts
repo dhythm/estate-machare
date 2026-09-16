@@ -9,6 +9,6 @@ describe('getRelatedListings', () => {
     const related = await getRelatedListings(listing, 3)
     expect(related).toHaveLength(3)
     expect(related.map((item) => item.id)).not.toContain('trc-001')
-    expect(related.every((item) => item.category === 'トラクター')).toBe(true)
+    expect(related.every((item) => item.category === 'マンション')).toBe(true)
   })
 })

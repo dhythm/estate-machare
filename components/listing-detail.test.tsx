@@ -19,7 +19,7 @@ describe('ListingDetail', () => {
     )
 
     expect(
-      screen.getByRole('link', { name: 'この農機具の運搬を依頼する' }),
+      screen.getByRole('link', { name: '引越しを相談する' }),
     ).toHaveAttribute('href', '/transport/new?listingId=trc-001')
   })
 
@@ -40,10 +40,10 @@ describe('ListingDetail', () => {
 
     expect(purchase).toHaveAttribute('aria-pressed', 'true')
     expect(
-      screen.getByRole('link', { name: 'ログインして購入を申し込む' }),
-    ).toHaveAttribute('href', '/login?callbackUrl=%2Flistings%2Ftrc-001')
+      screen.getByRole('link', { name: '購入・内見を相談する' }),
+    ).toHaveAttribute('href', '/listings/trc-001/inquiry?mode=buy')
     expect(
-      screen.getByRole('link', { name: '出品者に質問する' }),
+      screen.getByRole('link', { name: '掲載者に質問する' }),
     ).toHaveAttribute('href', '/listings/trc-001/inquiry?mode=question')
   })
 
@@ -59,7 +59,7 @@ describe('ListingDetail', () => {
       />,
     )
 
-    expect(screen.getByRole('link', { name: '出品者ページ' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: '掲載者ページ' })).toHaveAttribute(
       'href',
       '/sellers/demo-seller',
     )

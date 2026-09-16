@@ -6,7 +6,7 @@ import { validateRentalRequest } from '@/lib/validation/rental'
 
 type Context = { params: Promise<{ id: string }> }
 
-const missing = () => notFound('農機具が見つかりません。')
+const missing = () => notFound('物件が見つかりません。')
 
 /** Booked date ranges of a listing (no renter details). */
 export async function GET(_request: Request, { params }: Context) {

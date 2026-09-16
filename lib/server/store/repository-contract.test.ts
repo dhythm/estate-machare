@@ -22,7 +22,14 @@ vi.mock('server-only', () => ({}))
 const listing = (id: string, name: string): Listing => ({
   id,
   name,
-  category: 'トラクター',
+  category: 'マンション',
+  property: {
+    areaSqm: 68.5,
+    floorPlan: '2LDK',
+    builtYear: 2019,
+    monthlyRent: 168000,
+    access: '駅 徒歩8分',
+  },
   maker: 'クボタ',
   year: 2019,
   hours: 620,
@@ -125,7 +132,7 @@ describe.each(stores)('$name store', { timeout: 20_000 }, ({ store }) => {
       name: '更新',
       seller: { name: 'X', rating: 1.5 },
       tags: [],
-      maker: 'クボタ',
+      maker: '',
     })
     expect((await store.listings.get('trc-001'))?.name).toBe('更新')
     expect(

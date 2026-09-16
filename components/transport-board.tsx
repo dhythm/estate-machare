@@ -17,8 +17,8 @@ import { getTransportJobs } from '@/lib/server/transport'
 
 const steps = [
   '区間・希望日を登録',
-  '運搬者と条件を調整',
-  '受け取り確認・運搬・完了を記録',
+  '引越しパートナーと条件を調整',
+  '荷物の確認・引越し・完了を記録',
 ]
 
 export async function TransportBoard() {
@@ -37,15 +37,15 @@ export async function TransportBoard() {
         <div className="relative grid gap-9 lg:grid-cols-[1.15fr_1fr] lg:items-center">
           <div>
             <p className="flex items-center gap-2 text-xs font-semibold tracking-[0.16em] text-primary-foreground/70">
-              <Truck className="size-4" /> TRANSPORT MATCHING
+              <Truck className="size-4" /> MOVING SUPPORT
             </p>
             <h1 className="mt-5 font-display text-3xl font-bold leading-[1.4] tracking-tight sm:text-4xl lg:text-5xl">
-              次の畑まで、
+              新しい住まいへ、
               <br />
-              農機をつなぐ。
+              暮らしをつなぐ。
             </h1>
             <p className="mt-5 max-w-md text-sm leading-7 text-primary-foreground/75">
-              運びたい農機具と、空きトラック・帰り便をマッチング。売買もレンタルも、運搬までひとつながりに。
+              物件探しの、その先まで。家具や家電の配送から家族の引越しまで、地域のパートナーと。
             </p>
             <Link
               href="/transport/pricing"
@@ -58,9 +58,9 @@ export async function TransportBoard() {
             <div className="flex flex-col rounded-2xl bg-accent p-5 text-accent-foreground sm:p-6">
               <ArrowUpRight className="size-7" strokeWidth={1.5} />
               <p className="mt-6 text-xs font-medium opacity-70">
-                農機具を運びたい方
+                引越しをお考えの方
               </p>
-              <h2 className="mt-2 text-lg font-bold">運搬を依頼する</h2>
+              <h2 className="mt-2 text-lg font-bold">引越しを依頼する</h2>
               <p className="mt-2 flex-1 text-xs leading-6 opacity-75">
                 出発地と届け先を登録して、運べる人を見つける。
               </p>
@@ -68,17 +68,17 @@ export async function TransportBoard() {
                 href="/transport/new"
                 className={cn(buttonVariants(), 'mt-6 h-11 w-full gap-2')}
               >
-                運搬を依頼する <ArrowRight className="size-4" />
+                引越しを依頼する <ArrowRight className="size-4" />
               </Link>
             </div>
             <div className="flex flex-col rounded-2xl border border-primary-foreground/20 bg-primary-foreground/5 p-5 sm:p-6">
               <ArrowDownLeft className="size-7" strokeWidth={1.5} />
               <p className="mt-6 text-xs font-medium text-primary-foreground/65">
-                トラックをお持ちの方
+                引越し・配送事業者の方
               </p>
               <h2 className="mt-2 text-lg font-bold">空き便を、仕事に。</h2>
               <p className="mt-2 flex-1 text-xs leading-6 text-primary-foreground/75">
-                車両と対応地域を登録して、あなたに合う運搬案件へ。
+                車両と対応地域を登録して、あなたに合う引越し案件へ。
               </p>
               <Link
                 href="/transport/register"
@@ -87,7 +87,7 @@ export async function TransportBoard() {
                   'mt-6 h-11 w-full border-primary-foreground/30 bg-transparent px-2 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground',
                 )}
               >
-                運搬者として登録する
+                引越しパートナーとして登録する
               </Link>
             </div>
           </div>
@@ -107,7 +107,7 @@ export async function TransportBoard() {
               id="transport-job-heading"
               className="mt-2 font-display text-2xl font-bold text-foreground"
             >
-              運搬案件
+              引越し案件
             </h2>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -125,7 +125,7 @@ export async function TransportBoard() {
           <div className="mt-5 flex flex-col items-center rounded-2xl border border-dashed border-border bg-card px-6 py-16 text-center">
             <Truck className="size-9 text-primary/50" strokeWidth={1.5} />
             <p className="mt-5 font-medium text-foreground">
-              現在、公開中の運搬案件はありません
+              現在、公開中の引越し案件はありません
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
               新しい案件が公開されると、ここに表示されます。

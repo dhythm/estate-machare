@@ -20,7 +20,7 @@ import { StarRating } from '@/components/reviews/star-rating'
 import { Badge } from '@/components/badge'
 
 export const metadata: Metadata = {
-  title: 'ダッシュボード | Agri Machare 運営',
+  title: 'ダッシュボード | Estate Machare 運営',
 }
 
 export const dynamic = 'force-dynamic'
@@ -30,21 +30,21 @@ const workspaces = [
     title: '取引管理',
     icon: Handshake,
     links: [
-      { label: '出品の審査', href: '/admin/deals' },
+      { label: '掲載の審査', href: '/admin/deals' },
       { label: '注文', href: '/admin/deals/orders' },
-      { label: 'レンタル', href: '/admin/deals/rentals' },
+      { label: '賃貸', href: '/admin/deals/rentals' },
       { label: '問い合わせ', href: '/admin/deals/inquiries' },
       { label: 'レビュー', href: '/admin/deals/reviews' },
     ],
   },
   {
-    title: '運搬管理',
+    title: '引越し管理',
     icon: Truck,
     links: [
-      { label: '運搬依頼の審査', href: '/admin/transport' },
-      { label: '運搬への応募', href: '/admin/transport/applications' },
+      { label: '引越し依頼の審査', href: '/admin/transport' },
+      { label: '引越しへの応募', href: '/admin/transport/applications' },
       { label: '案件への質問', href: '/admin/transport/inquiries' },
-      { label: '運搬者', href: '/admin/transport/carriers' },
+      { label: '引越しパートナー', href: '/admin/transport/carriers' },
     ],
   },
   {
@@ -69,7 +69,7 @@ export default async function AdminDashboardPage() {
       links: [{ label: '注文一覧', href: '/admin/deals/orders' }],
     },
     {
-      label: '申込中のレンタル',
+      label: '申込中の賃貸',
       value: counts.requestedRentals,
       icon: CalendarDays,
       links: [{ label: '申込一覧', href: '/admin/deals/rentals' }],
@@ -78,7 +78,7 @@ export default async function AdminDashboardPage() {
       label: '運搬中の案件',
       value: counts.haulingJobs,
       icon: Truck,
-      links: [{ label: '運搬依頼', href: '/admin/transport' }],
+      links: [{ label: '引越し依頼', href: '/admin/transport' }],
     },
     {
       label: '未対応のやり取り',
@@ -86,21 +86,23 @@ export default async function AdminDashboardPage() {
       icon: MessageSquare,
       links: [
         { label: '問い合わせ', href: '/admin/deals/inquiries' },
-        { label: '運搬への応募', href: '/admin/transport/applications' },
+        { label: '引越しへの応募', href: '/admin/transport/applications' },
       ],
     },
     {
-      label: '登録済みの運搬者',
+      label: '登録済みの引越しパートナー',
       value: counts.carriers,
       icon: Truck,
-      links: [{ label: '運搬者一覧', href: '/admin/transport/carriers' }],
+      links: [
+        { label: '引越しパートナー一覧', href: '/admin/transport/carriers' },
+      ],
     },
   ]
 
   return (
     <AdminSection
       title="ダッシュボード"
-      description="農機具と人をつなぐ、日々の運営をここから。"
+      description="物件と人をつなぐ、日々の運営をここから。"
     >
       <section className="relative overflow-hidden rounded-2xl bg-primary p-6 text-primary-foreground sm:p-8">
         <div
@@ -131,12 +133,12 @@ export default async function AdminDashboardPage() {
           <div className="grid gap-3 sm:grid-cols-2 xl:w-[52%]">
             {[
               {
-                label: '審査待ちの出品',
+                label: '審査待ちの掲載',
                 value: counts.pendingListings,
                 href: '/admin/deals',
               },
               {
-                label: '審査待ちの運搬依頼',
+                label: '審査待ちの引越し依頼',
                 value: counts.pendingTransportJobs,
                 href: '/admin/transport',
               },
@@ -227,8 +229,8 @@ export default async function AdminDashboardPage() {
                     {item.kind === 'order'
                       ? '注文'
                       : item.kind === 'rental'
-                        ? 'レンタル'
-                        : '運搬'}
+                        ? '賃貸'
+                        : '引越し'}
                   </Badge>
                   <Link
                     href={item.href}

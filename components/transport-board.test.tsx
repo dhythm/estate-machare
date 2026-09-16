@@ -49,13 +49,13 @@ describe('TransportBoard', () => {
     render(await TransportBoard())
 
     expect(
-      screen.getByText('現在、公開中の運搬案件はありません'),
+      screen.getByText('現在、公開中の引越し案件はありません'),
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: '運搬を依頼する' }),
+      screen.getByRole('link', { name: '引越しを依頼する' }),
     ).toHaveAttribute('href', '/transport/new')
     expect(
-      screen.getByRole('link', { name: '運搬者として登録する' }),
+      screen.getByRole('link', { name: '引越しパートナーとして登録する' }),
     ).toHaveAttribute('href', '/transport/register')
   })
 })

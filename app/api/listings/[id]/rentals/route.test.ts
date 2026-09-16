@@ -1,3 +1,4 @@
+import { seedLegacyRentalListings } from '@/test/legacy-listings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { GET, POST } from './route'
 import { resetStore } from '@/lib/server/store'
@@ -9,9 +10,10 @@ vi.mock('@/auth', () => import('@/test/mock-auth'))
 const context = (id: string) => ({ params: Promise.resolve({ id }) })
 const week = { startDate: '2026-10-01', endDate: '2026-10-07' }
 
-beforeEach(() => {
+beforeEach(async () => {
   signInAs(demoUser)
-  return resetStore()
+  await resetStore()
+  await seedLegacyRentalListings()
 })
 
 const post = (id: string, body: unknown) =>

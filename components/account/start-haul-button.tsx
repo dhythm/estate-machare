@@ -40,7 +40,7 @@ export function StartHaulButton({ jobId }: { jobId: string }) {
         disabled={busy}
         onClick={() => void start()}
       >
-        運搬を開始
+        引越しを開始
       </Button>
       {error && <span className="text-xs text-destructive">{error}</span>}
     </span>

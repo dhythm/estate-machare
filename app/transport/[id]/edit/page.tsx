@@ -9,7 +9,9 @@ import { canManage } from '@/lib/server/auth/access'
 import { getCurrentUser } from '@/lib/server/auth/session'
 import { getTransportJob } from '@/lib/server/transport'
 
-export const metadata: Metadata = { title: '運搬依頼を編集する | Agri Machare' }
+export const metadata: Metadata = {
+  title: '引越し依頼を編集する | Estate Machare',
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -33,7 +35,7 @@ export default async function EditTransportJobPage({
             <span className="mb-6 flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
               <Pencil className="size-5" />
             </span>
-            <PageIntro title="運搬依頼を編集する" description={job.item} />
+            <PageIntro title="引越し依頼を編集する" description={job.item} />
           </div>
           <div className="min-w-0 rounded-2xl border border-border bg-card p-5 sm:p-8">
             {user ? (
@@ -55,7 +57,7 @@ export default async function EditTransportJobPage({
               />
             ) : (
               <LoginPrompt
-                action="運搬依頼を編集する"
+                action="引越し依頼を編集する"
                 callbackUrl={`/transport/${id}/edit`}
               />
             )}

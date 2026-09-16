@@ -151,7 +151,7 @@ describe('admin tables', () => {
         items={[
           {
             id: 'demo-seller',
-            name: '出品者デモ',
+            name: '掲載者デモ',
             email: 'seller@example.com',
             role: 'user',
             listingCount: 6,
@@ -164,7 +164,7 @@ describe('admin tables', () => {
         currentUserId="demo-admin"
       />,
     )
-    expect(screen.getByText('出品者デモ')).toBeInTheDocument()
+    expect(screen.getByText('掲載者デモ')).toBeInTheDocument()
     expect(screen.getByText('一般')).toBeInTheDocument()
     expect(screen.getByText('停止中')).toBeInTheDocument()
     expect(screen.getByText('規約違反')).toBeInTheDocument()

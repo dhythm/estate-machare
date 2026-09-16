@@ -25,7 +25,7 @@ describe('GET /api/listings', () => {
   it('returns filtered, searched, and paged listings', async () => {
     const response = await GET(
       new Request(
-        'http://localhost/api/listings?category=トラクター&deal=rent&q=クボタ&page=1&pageSize=3',
+        'http://localhost/api/listings?category=マンション&deal=rent&q=世田谷&page=1&pageSize=3',
       ),
     )
     expect(response.status).toBe(200)
@@ -82,9 +82,9 @@ describe('GET /api/listings', () => {
 })
 
 const submission = {
-  name: 'クボタ トラクター 30馬力',
-  category: 'トラクター',
-  maker: 'クボタ',
+  name: '世田谷 マンション 30馬力',
+  category: 'マンション',
+  maker: '世田谷',
   year: '2018',
   hours: '500',
   condition: '目立った傷なし',
@@ -96,7 +96,7 @@ const submission = {
   rentToOwn: false,
   summary: 'キャビン付き。',
   sellerName: 'テスト農園',
-  sellerKind: '農業法人',
+  sellerKind: '不動産会社',
   contactEmail: 'seller@example.com',
 }
 

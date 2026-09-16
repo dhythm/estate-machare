@@ -58,7 +58,7 @@ describe('matching', () => {
       vehicles: ['4tトラック'],
       serviceAreas: ['山形県'],
     })
-    const job = (await getTransportJob('tj-01'))! // 秋田県 → 山形県, 約2.4t
+    const job = { ...(await getTransportJob('tj-01'))!, weight: '約2.4t' }
     const matches = await matchCarriersForJob(job)
     expect(matches.map((match) => match.profile.name)).toEqual(['大型運送'])
     const light = await matchCarriersForJob({ ...job, weight: '約1t' })

@@ -46,7 +46,7 @@ export function rentalFailure(
     case 'conflict':
       return conflict('その期間はすでに予約されています。')
     case 'unavailable':
-      return conflict('この農機具はレンタルできません。')
+      return conflict('この物件はレンタルできません。')
     case 'invalid':
       return badRequest('期間の指定が正しくありません。')
     case 'transition':
@@ -66,7 +66,7 @@ export function orderFailure(
     case 'conflict':
       return conflict('他の方の購入手続きが進んでいます。')
     case 'unavailable':
-      return conflict('この農機具は購入できません。')
+      return conflict('この物件は購入できません。')
     case 'transition':
       return conflict('現在の状態ではその操作はできません。')
   }

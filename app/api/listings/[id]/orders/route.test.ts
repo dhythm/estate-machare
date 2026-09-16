@@ -35,7 +35,7 @@ describe('orders API', () => {
     const created = await post('trc-001', { message: '現金で' })
     expect(created.status).toBe(201)
     const order = await created.json()
-    expect(order).toMatchObject({ status: 'requested', price: 18_800_000 })
+    expect(order).toMatchObject({ status: 'requested', price: 42_800_000 })
     expect((await post('trc-001', {})).status).toBe(409)
     expect((await patch(order.id, { status: 'accepted' })).status).toBe(409)
     signInAs(demoSeller)

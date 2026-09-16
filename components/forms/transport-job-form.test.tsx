@@ -28,7 +28,7 @@ describe('TransportJobForm', () => {
     const user = setup(undefined, {
       jobId: 'tj-01',
       values: {
-        item: 'コンバイン 4条刈',
+        item: 'ふたり暮らし 4条刈',
         from: '秋田県 大仙市',
         to: '山形県 天童市',
         distanceKm: '120',
@@ -38,7 +38,7 @@ describe('TransportJobForm', () => {
         contactEmail: 'seller@example.com',
       },
     })
-    expect(screen.getByLabelText('運ぶもの')).toHaveValue('コンバイン 4条刈')
+    expect(screen.getByLabelText('運ぶもの')).toHaveValue('ふたり暮らし 4条刈')
     expect(screen.getByLabelText('出発地の都道府県')).toHaveValue('秋田県')
     expect(screen.getByLabelText('出発地の市区町村')).toHaveValue('大仙市')
     expect(screen.getByLabelText('届け先の都道府県')).toHaveValue('山形県')
@@ -67,7 +67,7 @@ describe('TransportJobForm', () => {
 
   it('fills distance and a suggested reward from the prefectures and category', async () => {
     const user = setup()
-    await user.selectOptions(screen.getByLabelText('種類'), 'コンバイン')
+    await user.selectOptions(screen.getByLabelText('種類'), 'ふたり暮らし')
     await user.selectOptions(
       screen.getByLabelText('出発地の都道府県'),
       '秋田県',
@@ -84,26 +84,26 @@ describe('TransportJobForm', () => {
     expect(screen.getByLabelText('報酬（円）')).toHaveValue('75600')
   })
 
-  it('prefills from a listing', () => {
+  it('prefills the move destination from a property without moving the property itself', () => {
     setup({
-      item: 'クボタ トラクター 45馬力',
-      category: 'トラクター',
-      fromPrefecture: '新潟県',
-      fromCity: '長岡市',
+      item: 'リバーサイド長岡への引越し',
+      toPrefecture: '新潟県',
+      toCity: '長岡市',
     })
     expect(screen.getByLabelText('運ぶもの')).toHaveValue(
-      'クボタ トラクター 45馬力',
+      'リバーサイド長岡への引越し',
     )
-    expect(screen.getByLabelText('種類')).toHaveValue('トラクター')
-    expect(screen.getByLabelText('出発地の都道府県')).toHaveValue('新潟県')
-    expect(screen.getByLabelText('出発地の市区町村')).toHaveValue('長岡市')
+    expect(screen.getByLabelText('種類')).toHaveValue('')
+    expect(screen.getByLabelText('届け先の都道府県')).toHaveValue('新潟県')
+    expect(screen.getByLabelText('届け先の市区町村')).toHaveValue('長岡市')
+    expect(screen.getByLabelText('出発地の都道府県')).toHaveValue('')
   })
 
   it('validates before posting', async () => {
     const fetchMock = vi.fn()
     vi.stubGlobal('fetch', fetchMock)
     const user = setup()
-    await user.click(screen.getByRole('button', { name: '運搬を依頼する' }))
+    await user.click(screen.getByRole('button', { name: '引越しを依頼する' }))
     expect(screen.getByLabelText('運ぶもの')).toHaveAccessibleDescription(
       '運ぶものを入力してください。',
     )
@@ -119,7 +119,7 @@ describe('TransportJobForm', () => {
     )
     vi.stubGlobal('fetch', fetchMock)
     const user = setup()
-    await user.type(screen.getByLabelText('運ぶもの'), 'トラクター 25馬力')
+    await user.type(screen.getByLabelText('運ぶもの'), '単身引越し 25馬力')
     await user.selectOptions(
       screen.getByLabelText('出発地の都道府県'),
       '長野県',
@@ -132,7 +132,7 @@ describe('TransportJobForm', () => {
     await user.type(screen.getByLabelText('届け先の市区町村'), '諏訪市')
     await user.clear(screen.getByLabelText('距離（km）'))
     await user.type(screen.getByLabelText('距離（km）'), '40')
-    await user.type(screen.getByLabelText('重量'), '約1.2t')
+    await user.type(screen.getByLabelText('荷物量'), '約1.2t')
     await user.type(screen.getByLabelText('希望日'), '相談')
     await user.clear(screen.getByLabelText('報酬（円）'))
     await user.type(screen.getByLabelText('報酬（円）'), '14000')
@@ -140,7 +140,7 @@ describe('TransportJobForm', () => {
       screen.getByLabelText('メールアドレス'),
       'owner@example.com',
     )
-    await user.click(screen.getByRole('button', { name: '運搬を依頼する' }))
+    await user.click(screen.getByRole('button', { name: '引越しを依頼する' }))
     expect(await screen.findByRole('status')).toHaveTextContent(
       '受け付けました',
     )

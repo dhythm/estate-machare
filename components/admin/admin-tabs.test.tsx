@@ -13,16 +13,16 @@ describe('AdminTabs', () => {
     render(
       <AdminTabs
         items={[
-          { href: '/admin/deals', label: '出品' },
-          { href: '/admin/deals/rentals', label: 'レンタル' },
+          { href: '/admin/deals', label: '掲載' },
+          { href: '/admin/deals/rentals', label: '賃貸' },
         ]}
       />,
     )
-    expect(screen.getByRole('link', { name: 'レンタル' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: '賃貸' })).toHaveAttribute(
       'aria-current',
       'page',
     )
-    expect(screen.getByRole('link', { name: '出品' })).not.toHaveAttribute(
+    expect(screen.getByRole('link', { name: '掲載' })).not.toHaveAttribute(
       'aria-current',
     )
   })

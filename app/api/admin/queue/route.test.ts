@@ -26,9 +26,9 @@ afterEach(() => {
 })
 
 const listingBody = {
-  name: '審査中トラクター',
-  category: 'トラクター',
-  maker: 'クボタ',
+  name: '審査中マンション',
+  category: 'マンション',
+  maker: '世田谷',
   year: '2018',
   hours: '500',
   condition: '目立った傷なし',
@@ -40,7 +40,7 @@ const listingBody = {
   rentToOwn: false,
   summary: '審査中。',
   sellerName: '審査農園',
-  sellerKind: '農業法人',
+  sellerKind: '不動産会社',
   contactEmail: 'seller@example.com',
 }
 

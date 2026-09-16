@@ -1,8 +1,15 @@
-import { describe, expect, it, vi } from 'vitest'
+import { seedLegacyRentalListings } from '@/test/legacy-listings'
+import { resetStore } from './store'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getListing } from './listings'
 import { buildModes } from './listing-detail'
 
 vi.mock('server-only', () => ({}))
+
+beforeEach(async () => {
+  await resetStore()
+  await seedLegacyRentalListings()
+})
 
 describe('listing detail business rules', () => {
   it('offers rental, rent-to-own, and purchase for eligible equipment', async () => {

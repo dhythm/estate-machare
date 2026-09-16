@@ -1,3 +1,4 @@
+import { seedLegacyRentalListings } from '@/test/legacy-listings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { getDeal, listDealsForUser } from './deals'
 import { getListing } from './listings'
@@ -10,7 +11,10 @@ import { demoAdmin, demoSeller, demoUser } from '@/test/mock-auth'
 
 vi.mock('server-only', () => ({}))
 
-beforeEach(() => resetStore())
+beforeEach(async () => {
+  await resetStore()
+  await seedLegacyRentalListings()
+})
 
 describe('getDeal', () => {
   it('summarizes an order for its parties and admins with events and related threads', async () => {
@@ -31,13 +35,13 @@ describe('getDeal', () => {
     if (!asBuyer.ok) return
     expect(asBuyer.value.summary).toMatchObject({
       kind: 'order',
-      title: expect.stringContaining('クボタ'),
+      title: expect.stringContaining('南向き'),
       href: '/listings/trc-001',
       amount: 18_800_000,
       status: 'accepted',
       statusLabel: '承諾',
       role: '買い手',
-      counterpart: '出品者デモ',
+      counterpart: '掲載者デモ',
     })
     expect(asBuyer.value.events.map((e) => e.statusLabel)).toEqual([
       '申込中',
@@ -91,10 +95,10 @@ describe('getDeal', () => {
     await updateThreadStatus(threadId, demoSeller, 'agreed')
     const asCarrier = await getDeal('transportJob', 'tj-01', demoUser)
     expect(asCarrier.ok && asCarrier.value.summary).toMatchObject({
-      title: expect.stringContaining('コンバイン'),
+      title: expect.stringContaining('引越し'),
       href: '/transport/tj-01',
       status: '調整中',
-      role: '運搬者',
+      role: '引越しパートナー',
       amount: 38_000,
     })
   })

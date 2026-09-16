@@ -27,7 +27,7 @@ const listing = (
   summary: '説明',
   deals: ['sale'],
   salePrice: 1_000_000,
-  seller: { name: '出品者デモ', kind: '農業法人', rating: 0, reviews: 0 },
+  seller: { name: '掲載者デモ', kind: '農業法人', rating: 0, reviews: 0 },
   tags: [],
   ...extra,
 })
@@ -163,7 +163,7 @@ const overview: AccountOverview = {
       status: 'delivered',
       statusLabel: '引き渡し済み',
       role: '買い手',
-      counterpart: '出品者デモ',
+      counterpart: '掲載者デモ',
       updatedAt: '2026-09-13T00:00:00.000Z',
     },
     {
@@ -265,13 +265,13 @@ describe('AccountOverviewView', () => {
     )
     const navigation = screen.getByRole('navigation', { name: '取引メニュー' })
     expect(
-      within(navigation).getByRole('link', { name: '出品管理' }),
+      within(navigation).getByRole('link', { name: '掲載管理' }),
     ).toHaveAttribute('href', '#equipment')
     expect(
-      within(navigation).getByRole('link', { name: 'レンタル管理' }),
+      within(navigation).getByRole('link', { name: '賃貸管理' }),
     ).toHaveAttribute('href', '#rentals')
     expect(
-      within(navigation).getByRole('link', { name: '運搬管理' }),
+      within(navigation).getByRole('link', { name: '引越し管理' }),
     ).toHaveAttribute('href', '#transport')
     expect(
       within(navigation).getByRole('link', { name: '送信したやり取り' }),
@@ -285,7 +285,7 @@ describe('AccountOverviewView', () => {
       '/account/threads/new-request',
     ])
     expect(
-      screen.getByRole('link', { name: 'レンタル申込を確認する' }),
+      screen.getByRole('link', { name: '賃貸申込を確認する' }),
     ).toHaveAttribute('href', '#lending')
   })
 
@@ -310,7 +310,7 @@ describe('AccountOverviewView', () => {
         }}
       />,
     )
-    const renting = screen.getByRole('region', { name: '借りている農機具' })
+    const renting = screen.getByRole('region', { name: '借りている物件' })
     expect(
       within(renting).queryByRole('button', { name: 'レビューを送る' }),
     ).toBeNull()
@@ -320,7 +320,7 @@ describe('AccountOverviewView', () => {
 
   it('lists owned rows with status and what came in', () => {
     render(<AccountOverviewView overview={overview} />)
-    const mine = screen.getByRole('region', { name: '自分の出品' })
+    const mine = screen.getByRole('region', { name: '自分の掲載' })
     expect(within(mine).getByText('公開中のトラクター')).toBeInTheDocument()
     expect(within(mine).getByText('審査待ち')).toBeInTheDocument()
     expect(within(mine).getByText('取り下げ中')).toBeInTheDocument()
@@ -344,7 +344,9 @@ describe('AccountOverviewView', () => {
     ).toBeInTheDocument()
     expect(within(summary).getAllByText('1件')).toHaveLength(3)
     expect(within(summary).getByText('2件')).toBeInTheDocument()
-    const carrier = screen.getByRole('region', { name: '運搬者プロフィール' })
+    const carrier = screen.getByRole('region', {
+      name: '引越しパートナープロフィール',
+    })
     expect(within(carrier).getByText('高橋運送')).toBeInTheDocument()
     expect(
       within(carrier).getByRole('link', { name: 'プロフィールを編集' }),
@@ -353,7 +355,7 @@ describe('AccountOverviewView', () => {
       within(carrier).getByRole('link', { name: 'コンバイン' }),
     ).toHaveAttribute('href', '/transport/tj-01')
     expect(within(mine).getByText('未対応')).toBeInTheDocument()
-    const jobs = screen.getByRole('region', { name: '自分の運搬依頼' })
+    const jobs = screen.getByRole('region', { name: '自分の引越し依頼' })
     expect(within(jobs).getByText('コンバイン')).toBeInTheDocument()
     expect(within(jobs).getByText('応募はまだありません')).toBeInTheDocument()
     expect(
@@ -370,33 +372,33 @@ describe('AccountOverviewView', () => {
     const applications = screen.getByRole('region', { name: '送った応募' })
     expect(within(applications).getByText('受託した田植機')).toBeInTheDocument()
     expect(
-      within(applications).getByRole('button', { name: '運搬を開始' }),
+      within(applications).getByRole('button', { name: '引越しを開始' }),
     ).toBeInTheDocument()
     const questions = screen.getByRole('region', { name: '送った質問' })
     expect(within(questions).getByText('積載方法は？')).toBeInTheDocument()
-    const bought = screen.getByRole('region', { name: '買った農機具' })
+    const bought = screen.getByRole('region', { name: '買った物件' })
     expect(within(bought).getByText('ジョンディア 90馬力')).toBeInTheDocument()
     expect(within(bought).getByText('引き渡し済み')).toBeInTheDocument()
     expect(
       within(bought).getByRole('button', { name: '受け取りを確認' }),
     ).toBeInTheDocument()
     expect(
-      within(bought).getByRole('link', { name: '運搬を依頼する' }),
+      within(bought).getByRole('link', { name: '引越しを依頼する' }),
     ).toHaveAttribute('href', '/transport/new?listingId=trc-006')
     const history = screen.getByRole('region', { name: '取引の履歴' })
     expect(
       within(history).getByRole('link', { name: /ジョンディア 90馬力/ }),
     ).toHaveAttribute('href', '/account/deals/order/o-1')
     expect(within(history).queryByText('Invalid Date')).not.toBeInTheDocument()
-    const sold = screen.getByRole('region', { name: '売った農機具' })
+    const sold = screen.getByRole('region', { name: '売った物件' })
     expect(within(sold).getByText('現金で')).toBeInTheDocument()
     expect(
       within(sold).getByRole('button', { name: '承諾する' }),
     ).toBeInTheDocument()
-    const renting = screen.getByRole('region', { name: '借りている農機具' })
+    const renting = screen.getByRole('region', { name: '借りている物件' })
     expect(within(renting).getByText('購入に切替')).toBeInTheDocument()
     expect(
-      within(renting).getByRole('link', { name: '運搬を依頼する' }),
+      within(renting).getByRole('link', { name: '引越しを依頼する' }),
     ).toHaveAttribute('href', '/transport/new?listingId=trc-001')
     expect(
       within(renting).getByRole('button', { name: 'レビューを送る' }),
@@ -407,7 +409,7 @@ describe('AccountOverviewView', () => {
     expect(
       within(renting).queryByRole('button', { name: '購入に切り替える' }),
     ).toBeNull()
-    const lending = screen.getByRole('region', { name: '貸している農機具' })
+    const lending = screen.getByRole('region', { name: '貸している物件' })
     expect(within(lending).getByText('申込中')).toBeInTheDocument()
     expect(
       within(lending).getByRole('button', { name: '承認する' }),
